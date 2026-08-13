@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/*
+  Organic — design-system tokens ported from the Kapa design project.
+  Tailwind v4 reads @theme to generate utilities: bg-bg, text-ink,
+  bg-accent-500, font-heading, rounded-lg, shadow-md, etc.
+*/
+@theme {
+  /* Fonts (variables provided by next/font in layout.tsx) */
+  --font-body: var(--font-body), system-ui, sans-serif;
+  --font-heading: var(--font-heading), Georgia, serif;
+
+  /* Core ground */
+  --color-bg: #f5ead8;
+  --color-surface: #ebddc5;
+  --color-ink: #201e1d;
+
+  /* Neutral / sand ramp */
+  --color-sand-100: #f9f4ed;
+  --color-sand-200: #eee7db;
+  --color-sand-300: #dcd3c4;
+  --color-sand-400: #c0b6a5;
+  --color-sand-500: #a19786;
+  --color-sand-600: #82796a;
+  --color-sand-700: #645c50;
+  --color-sand-800: #474238;
+  --color-sand-900: #2e2b25;
+
+  /* Terracotta accent ramp (default = the design's #c67139) */
+  --color-accent: #c67139;
+  --color-accent-100: #fff2eb;
+  --color-accent-200: #ffe1d0;
+  --color-accent-300: #ffc6a5;
+  --color-accent-400: #f6a06b;
+  --color-accent-500: #d67f48;
+  --color-accent-600: #b2622d;
+  --color-accent-700: #8c491a;
+  --color-accent-800: #643312;
+  --color-accent-900: #402310;
+
+  /* Sage "you're fine" ramp (default = #8fa073) */
+  --color-sage: #8fa073;
+  --color-sage-100: #f0fae1;
+  --color-sage-200: #e1eecc;
+  --color-sage-300: #ccdbb2;
+  --color-sage-400: #aebf92;
+  --color-sage-500: #8fa073;
+  --color-sage-600: #728157;
+  --color-sage-700: #56633f;
+  --color-sage-800: #3d472b;
+  --color-sage-900: #272e1b;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2e2b25 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2e2b25 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2e2b25 22%, transparent);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
