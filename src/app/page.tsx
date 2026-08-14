@@ -17,6 +17,7 @@ import { TodayList } from '@/components/home/TodayList';
 import { DailySpendChart } from '@/components/home/DailySpendChart';
 import { Button } from '@/components/ui/Button';
 import { GearIcon } from '@/components/ui/icons';
+import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 
 export default async function Home() {
   const user = await verifySession();
@@ -179,6 +180,8 @@ export default async function Home() {
               currentUserId={user.id}
             />
           </section>
+
+          <InstallPrompt />
         </div>
 
         <div className="hidden lg:flex lg:flex-col lg:gap-8">

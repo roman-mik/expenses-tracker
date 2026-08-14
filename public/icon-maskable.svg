@@ -1,0 +1,18 @@
+<!--
+  Kapa app icon — maskable variant. Same mark, inset into a safe zone
+  (~60% of the canvas width) on a full-bleed field, so Android's
+  circle/squircle adaptive-icon mask can't clip it.
+
+  Regenerate with:
+    rsvg-convert -w 512 -h 512 public/icon-maskable.svg -o public/icon-maskable-512.png
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#b2622d" />
+  <g transform="translate(256 251) scale(1.18)">
+    <path
+      d="M -100,20 A 100,100 0 0 1 100,20 L 100,50 L -100,50 L -100,20 Z"
+      fill="#f5ead8"
+    />
+    <rect x="-130" y="70" width="260" height="18" rx="9" fill="#f5ead8" />
+  </g>
+</svg>
