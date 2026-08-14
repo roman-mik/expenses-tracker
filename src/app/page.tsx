@@ -8,11 +8,14 @@ import {
   getHousehold,
   getHouseholdMembers,
 } from '@/lib/queries/household';
-import { currentMonth } from '@/lib/kapa-math';
+import { currentMonth, recoveryCap } from '@/lib/kapa-math';
 import { zonedDateKey } from '@/lib/date';
 import { formatMoney } from '@/lib/format';
 import { SpentBar } from '@/components/home/SpentBar';
 import { PaceLine } from '@/components/home/PaceLine';
+import { RecoveryPlan } from '@/components/home/RecoveryPlan';
+import { NudgeBanner } from '@/components/home/NudgeBanner';
+import { ProjectionCard } from '@/components/home/ProjectionCard';
 import { TodayList } from '@/components/home/TodayList';
 import { Button } from '@/components/ui/Button';
 import { GearIcon } from '@/components/ui/icons';
@@ -48,6 +51,12 @@ export default async function Home() {
     (e) => zonedDateKey(new Date(e.spentAt), timeZone) === todayKey
   );
 
+  // Home state: over-cap wins over the nudge, which wins over the healthy view.
+  const isOver = summary.overspend > 0;
+  const isNudge =
+    !isOver && summary.nudgeEnabled && summary.spentPct >= summary.nudgePct;
+  const barState = isOver ? 'over' : isNudge ? 'nudge' : 'healthy';
+
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-xl flex flex-col gap-8">
@@ -64,13 +73,27 @@ export default async function Home() {
           </nav>
         </header>
 
+        {isNudge && (
+          <NudgeBanner
+            spentPct={summary.spentPct}
+            remaining={summary.remaining}
+            safeDaily={summary.safeDaily}
+            currency={summary.currency}
+          />
+        )}
+
         <section className="rounded-lg bg-surface shadow-md p-7 flex flex-col gap-5">
           <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-            Left to spend
+            {isOver ? 'Over budget by' : 'Left to spend'}
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="font-heading text-5xl">
-              {formatMoney(summary.remaining, summary.currency)}
+            <span
+              className={`font-heading text-5xl ${isOver ? 'text-accent-700' : ''}`}
+            >
+              {formatMoney(
+                isOver ? summary.overspend : summary.remaining,
+                summary.currency
+              )}
             </span>
             <span className="font-semibold text-ink/55">{summary.currency}</span>
           </div>
@@ -80,6 +103,7 @@ export default async function Home() {
             cap={summary.cap}
             spentPct={summary.spentPct}
             currency={summary.currency}
+            state={barState}
           />
 
           <div className="-mt-2 -mr-2 flex justify-end">
@@ -93,15 +117,35 @@ export default async function Home() {
               <strong className="text-ink">{summary.daysLeft}</strong> days until
               reset
             </span>
-            <span className="text-ink/70">
-              <strong className="text-ink">
-                {formatMoney(Math.round(summary.safeDaily), summary.currency)}
-              </strong>{' '}
-              safe a day
-            </span>
+            {!isOver && (
+              <span className="text-ink/70">
+                <strong className="text-ink">
+                  {formatMoney(Math.round(summary.safeDaily), summary.currency)}
+                </strong>{' '}
+                safe a day
+              </span>
+            )}
           </div>
 
-          <PaceLine paceGap={summary.paceGap} currency={summary.currency} />
+          {isOver ? (
+            <RecoveryPlan
+              cap={summary.cap}
+              overspend={summary.overspend}
+              recoveryCap={recoveryCap(summary.cap, summary.overspend)}
+              daysLeft={summary.daysLeft}
+              currency={summary.currency}
+            />
+          ) : (
+            <>
+              <PaceLine paceGap={summary.paceGap} currency={summary.currency} />
+              <ProjectionCard
+                projection={summary.projection}
+                cap={summary.cap}
+                elapsedDays={summary.elapsedDays}
+                currency={summary.currency}
+              />
+            </>
+          )}
         </section>
 
         <Button href="/add" variant="primary" className="py-4 text-center">

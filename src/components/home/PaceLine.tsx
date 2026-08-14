@@ -6,7 +6,7 @@ import type { Currency } from '@/lib/types';
  *   positive = under an even pace (sage "you're fine" voice)
  *   negative = ahead of pace (a gentle nudge, still kind)
  *   zero     = right on pace
- * (Over-cap recovery copy is Phase 3 — this is the healthy state.)
+ * Only the under-cap states render this; over-cap swaps in RecoveryPlan.
  */
 export function PaceLine({
   paceGap,

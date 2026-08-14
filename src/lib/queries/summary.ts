@@ -12,6 +12,7 @@ import {
   elapsedDays,
   evenPace,
   monthWindow,
+  overspend,
   paceGap,
   projection,
   remaining,
@@ -35,7 +36,7 @@ export async function getSummary(
     getHousehold(supabase, householdId),
     supabase
       .from('budget_settings')
-      .select('monthly_cap')
+      .select('monthly_cap, nudge_enabled, nudge_pct')
       .eq('household_id', householdId)
       .maybeSingle(),
   ]);
@@ -94,6 +95,9 @@ export async function getSummary(
     paceGap: paceGap(pace, spent),
     projection: projection(spent, elapsed, D),
     spentPct: spentPct(spent, cap),
+    overspend: overspend(cap, spent),
+    nudgeEnabled: budget?.nudge_enabled ?? true,
+    nudgePct: budget?.nudge_pct ?? 80,
     categoryBreakdown: [...breakdown.entries()].map(([categoryId, s]) => ({
       categoryId,
       spent: s,
