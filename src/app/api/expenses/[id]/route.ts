@@ -17,7 +17,7 @@ export async function PATCH(
   const { amountMinor, categoryId, note, spentAt } = parsed.data;
 
   // Currency is never patched from the client — it stays as stamped at insert.
-  const patch: Record<string, unknown> = {};
+  const patch: Partial<ExpenseRow> = {};
   if (amountMinor !== undefined) patch.amount_minor = amountMinor;
   if (categoryId !== undefined) patch.category_id = categoryId;
   if (note !== undefined) patch.note = note;

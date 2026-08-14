@@ -106,6 +106,12 @@ export function monthWindow(
   return { startUtc, endUtc };
 }
 
+/** The current calendar month ('YYYY-MM') as seen in `timeZone`. */
+export function currentMonth(now: Date, timeZone: string): string {
+  const { year, month } = zonedParts(now, timeZone);
+  return `${year}-${String(month).padStart(2, '0')}`;
+}
+
 /** Calendar days in the given 'YYYY-MM'. */
 export function daysInMonth(month: string): number {
   const { year, monthIndex } = parseMonth(month);
