@@ -7,6 +7,7 @@
  * currency-stable and can't be spoofed.
  */
 import { z } from 'zod';
+import { CATEGORY_COLORS } from './category-colors';
 
 export const monthParamSchema = z
   .string()
@@ -29,9 +30,17 @@ export const capUpdateSchema = z.object({
 
 export const categoryCreateSchema = z.object({
   name: z.string().min(1).max(60),
-  color: z.string().min(1),
+  color: z.enum(CATEGORY_COLORS),
   sortOrder: z.number().int().optional(),
 });
+
+export const categoryUpdateSchema = z
+  .object({
+    name: z.string().min(1).max(60).optional(),
+    color: z.enum(CATEGORY_COLORS).optional(),
+    archived: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, 'No changes given.');
 
 export const joinHouseholdSchema = z.object({
   code: z.string().trim().min(1).max(64),
@@ -41,4 +50,5 @@ export type ExpenseCreateInput = z.infer<typeof expenseCreateSchema>;
 export type ExpenseUpdateInput = z.infer<typeof expenseUpdateSchema>;
 export type CapUpdateInput = z.infer<typeof capUpdateSchema>;
 export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
+export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
 export type JoinHouseholdInput = z.infer<typeof joinHouseholdSchema>;

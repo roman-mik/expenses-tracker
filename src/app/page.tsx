@@ -66,6 +66,9 @@ export default async function Home() {
               <Button href="/household" variant="pill">
                 Household
               </Button>
+              <Button href="/categories" variant="pill">
+                Categories
+              </Button>
               <Button href="/cap" variant="pill">
                 <GearIcon />
                 Set cap
