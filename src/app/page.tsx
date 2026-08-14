@@ -4,10 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
 import { listExpenses } from '@/lib/queries/expenses';
 import { getCategories } from '@/lib/queries/categories';
-import {
-  getHousehold,
-  getHouseholdMembers,
-} from '@/lib/queries/household';
+import { getHousehold, getHouseholdMembers } from '@/lib/queries/household';
 import { currentMonth, recoveryCap } from '@/lib/kapa-math';
 import { zonedDateKey } from '@/lib/date';
 import { formatMoney } from '@/lib/format';
@@ -66,6 +63,9 @@ export default async function Home() {
             <Button href="/household" variant="pill">
               Household
             </Button>
+            <Button href="/categories" variant="pill">
+              Categories
+            </Button>
             <Button href="/cap" variant="pill">
               <GearIcon />
               Set cap
@@ -95,7 +95,9 @@ export default async function Home() {
                 summary.currency
               )}
             </span>
-            <span className="font-semibold text-ink/55">{summary.currency}</span>
+            <span className="font-semibold text-ink/55">
+              {summary.currency}
+            </span>
           </div>
 
           <SpentBar
@@ -114,8 +116,8 @@ export default async function Home() {
 
           <div className="flex gap-6 text-sm">
             <span className="text-ink/70">
-              <strong className="text-ink">{summary.daysLeft}</strong> days until
-              reset
+              <strong className="text-ink">{summary.daysLeft}</strong> days
+              until reset
             </span>
             {!isOver && (
               <span className="text-ink/70">

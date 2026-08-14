@@ -184,7 +184,7 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 - [ ] **Over-cap** state + recovery-plan copy.
 - [ ] **History** grouped by day + category filter + month breakdown.
 - [ ] **Web overview** layout with daily-spend chart + projection card.
-- [ ] Category management (add/rename/reorder).
+- [x] Category management (add/rename/reorder).
 
 ### Phase 4 — Polish & install (1–2 days)
 - [ ] PWA manifest + service worker → installable, offline add-expense.
