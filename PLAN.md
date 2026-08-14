@@ -183,7 +183,7 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 ### Phase 3 — Full experience (2–3 days)
 - [ ] **Over-cap** state + recovery-plan copy.
 - [ ] **History** grouped by day + category filter + month breakdown.
-- [ ] **Web overview** layout with daily-spend chart + projection card.
+- [x] **Web overview** layout with daily-spend chart + projection card.
 - [ ] Category management (add/rename/reorder).
 
 ### Phase 4 — Polish & install (1–2 days)
