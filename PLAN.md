@@ -58,7 +58,7 @@ Cream ground `#f5ead8`, terracotta accent `#c67139`/`#8c491a`, sage "you're fine
 | Charts | **Recharts** or hand-rolled bars (design uses simple CSS bars) | Avoid heavy deps for the daily-spend chart |
 | Forms/validation | **Zod** (shared client + server schemas) | One source of truth for expense/cap validation |
 | State/data fetching | **TanStack Query** (or Next server components + actions) | Cache + optimistic "add expense" for the two-tap feel |
-| PWA | `next-pwa` / manifest + service worker | Installable, offline-friendly add-expense |
+| PWA | Next 16's `app/manifest.ts` + the experimental `useOffline` hook/config | Installable to the home screen; navigations, prefetches, and Server Actions auto-retry once the connection returns. No third-party dep — `next-pwa` predates this repo's Next 16 pin and isn't used. |
 
 **Money guardrail:** everything above stays on free tiers indefinitely for a personal/small-user app. The only things that could ever cost money — custom domain, Supabase paid tier past 500MB/50k MAU, Vercel Pro for team features — are all avoidable at this stage.
 
@@ -164,33 +164,33 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 ## 5. Phased roadmap
 
 ### Phase 0 — Foundations (½–1 day)
-- [ ] `create-next-app` (App Router, TypeScript, Tailwind), push to GitHub.
-- [ ] Connect repo to **Vercel** → live URL on every push.
-- [ ] Create **Supabase** project; add env vars to Vercel.
-- [ ] Port Organic design tokens (colors, Caprasimo/Figtree fonts) into Tailwind config + global CSS.
+- [x] `create-next-app` (App Router, TypeScript, Tailwind), push to GitHub.
+- [x] Connect repo to **Vercel** → live URL on every push.
+- [x] Create **Supabase** project; add env vars to Vercel.
+- [x] Port Organic design tokens (colors, Caprasimo/Figtree fonts) into Tailwind config + global CSS.
 
 ### Phase 1 — Auth + data (1–2 days)
-- [ ] Supabase Auth (email magic-link or Google). Login/logout, session handling.
-- [ ] Run the schema migration (§3) + RLS policies. Seed default categories on first login.
-- [ ] `lib/kapa-math.ts` with the §1 formulas + unit tests (this is the heart — test it).
+- [x] Supabase Auth (email+password — see §7). Login/logout, session handling.
+- [x] Run the schema migration (§3) + RLS policies. Seed default categories on first login.
+- [x] `lib/kapa-math.ts` with the §1 formulas + unit tests (this is the heart — test it).
 
 ### Phase 2 — Core loop, healthy state (2–3 days)
-- [ ] **Home** screen (healthy state): hero, bar, pace line, today's list.
-- [ ] **Add expense** flow with optimistic update (the "two taps" feel).
-- [ ] **Set cap** screen with live consequences.
-- [ ] `GET /api/summary` powering the home screen.
+- [x] **Home** screen (healthy state): hero, bar, pace line, today's list.
+- [x] **Add expense** flow with optimistic update (the "two taps" feel).
+- [x] **Set cap** screen with live consequences.
+- [x] `GET /api/summary` powering the home screen.
 
 ### Phase 3 — Full experience (2–3 days)
-- [ ] **Over-cap** state + recovery-plan copy.
+- [x] **Over-cap** state + recovery-plan copy.
 - [x] **History** grouped by day + category filter + month breakdown.
 - [x] **Web overview** layout with daily-spend chart + projection card.
 - [x] Category management (add/rename/reorder).
 
 ### Phase 4 — Polish & install (1–2 days)
-- [ ] PWA manifest + service worker → installable, offline add-expense.
-- [ ] 80% nudge (in-app banner first; push notifications are a later, native concern).
-- [ ] Empty states, loading skeletons, error toasts, warm microcopy pass.
-- [ ] Basic analytics (optional, free: Vercel Analytics or Plausible free tier).
+- [x] PWA manifest + `useOffline`-based graceful degradation → installable, expenses submitted offline retry automatically. (No service worker/write queue — a cold offline launch of the installed app still needs the network; that's a deliberate v1 cut, not a gap.)
+- [x] 80% nudge (in-app banner; push notifications are a later, native concern).
+- [ ] Empty states, loading skeletons, error toasts, warm microcopy pass. *(Empty states and route-level skeletons are done; toasts + a `global-error.tsx` for root-layout crashes are the remaining slice.)*
+- [x] Basic analytics (Vercel Analytics + Speed Insights).
 
 ### Phase 5 — Mobile (later, separate effort)
 - [ ] Expo (React Native) app hitting the same `/api/*` endpoints.
@@ -211,16 +211,16 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ---
 
-## 7. Open questions (answer when convenient)
+## 7. Open questions — resolved
 
-1. **Auth method** — email magic-link (simplest, no passwords) or Google sign-in, or both?
-2. **Single cap vs. per-category caps** — the design is one global cap. Confirm we're *not* doing per-category budgets in v1 (the History screen shows category *breakdown*, not per-category limits).
-3. **Timezone/month boundary** — hardcode `Europe/Belgrade`, or detect per user? (Matters for exactly when the month "resets".)
-4. **Currency** — RSD-only for v1, or leave the door open for others from day one?
-5. **App name** — the design calls it **Kapa** (URL `kapa.app`). Keep that, or is "Tracker" the working name?
+1. **Auth method** — **email + password** (f2da965 switched off magic-link; see `src/app/login/page.tsx`).
+2. **Single cap vs. per-category caps** — one global cap per household, confirmed. History shows category *breakdown*, not per-category limits.
+3. **Timezone/month boundary** — per-household, defaulting to `Europe/Belgrade` (`households.timezone`, `supabase/migrations/0003_households.sql`); not hardcoded, but not currently user-editable from the UI.
+4. **Currency** — RSD-only for v1, household-level, no FX conversion. Schema leaves room for more.
+5. **App name** — **Kapa**.
 
 ---
 
 ## 8. Next step
 
-On your go, I'll start **Phase 0**: scaffold the Next.js app, wire up Vercel + Supabase, and port the Organic design tokens — so you have a live (empty) deployed URL before we write a single feature.
+Phases 0–3 are shipped. What's left of **Phase 4** — a toast/feedback system and a `global-error.tsx` boundary — is the only open item; see the roadmap above. Phase 5 (mobile) remains a later, separate effort.

@@ -1,0 +1,18 @@
+<!--
+  Kapa app icon — Apple touch icon source. Square, fully opaque (iOS
+  composites any transparency to black) — iOS applies its own corner
+  rounding, so no rx here.
+
+  Regenerate with:
+    rsvg-convert -w 180 -h 180 public/icon-apple.svg -o src/app/apple-icon.png
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#fff2eb" />
+  <g transform="translate(256 251) scale(1.28)">
+    <path
+      d="M -100,20 A 100,100 0 0 1 100,20 L 100,50 L -100,50 L -100,20 Z"
+      fill="#8c491a"
+    />
+    <rect x="-130" y="70" width="260" height="18" rx="9" fill="#8c491a" />
+  </g>
+</svg>

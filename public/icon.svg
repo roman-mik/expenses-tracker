@@ -1,0 +1,22 @@
+<!--
+  Kapa app icon — source mark.
+
+  Regenerate the committed PNGs with:
+    rsvg-convert -w 192 -h 192 public/icon.svg -o public/icon-192.png
+    rsvg-convert -w 512 -h 512 public/icon.svg -o public/icon-512.png
+    rsvg-convert -w 512 -h 512 public/icon-maskable.svg -o public/icon-maskable-512.png
+    rsvg-convert -w 180 -h 180 public/icon-apple.svg -o src/app/apple-icon.png
+
+  Pure geometry, no text — Caprasimo isn't installed locally, so a
+  text-based mark would rasterize with a fallback font.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="104" fill="#fff2eb" />
+  <g transform="translate(256 251) scale(1.28)">
+    <path
+      d="M -100,20 A 100,100 0 0 1 100,20 L 100,50 L -100,50 L -100,20 Z"
+      fill="#8c491a"
+    />
+    <rect x="-130" y="70" width="260" height="18" rx="9" fill="#8c491a" />
+  </g>
+</svg>
