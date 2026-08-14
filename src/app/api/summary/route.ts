@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { verifySession } from "@/lib/auth/dal";
-import { createClient } from "@/lib/supabase/server";
-import { badRequest, json, unauthorized } from "@/lib/api/http";
-import { monthParamSchema } from "@/lib/validation";
-import type { Currency, CurrencyBucket, Summary } from "@/lib/types";
+import { NextRequest } from 'next/server';
+import { verifySession } from '@/lib/auth/dal';
+import { createClient } from '@/lib/supabase/server';
+import { badRequest, json, unauthorized } from '@/lib/api/http';
+import { monthParamSchema } from '@/lib/validation';
+import type { Currency, CurrencyBucket, Summary } from '@/lib/types';
 import {
   daysInMonth,
   daysLeft,
@@ -15,7 +15,7 @@ import {
   remaining,
   safeDaily,
   spentPct,
-} from "@/lib/kapa-math";
+} from '@/lib/kapa-math';
 
 interface SummaryRow {
   amount_minor: number;
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   if (!user) return unauthorized();
 
   const monthParsed = monthParamSchema.safeParse(
-    request.nextUrl.searchParams.get("month"),
+    request.nextUrl.searchParams.get('month')
   );
   if (!monthParsed.success) return badRequest(monthParsed.error.flatten());
   const month = monthParsed.data;
@@ -38,31 +38,31 @@ export async function GET(request: NextRequest) {
   const [{ data: profile, error: pErr }, { data: budget, error: bErr }] =
     await Promise.all([
       supabase
-        .from("profiles")
-        .select("currency, timezone")
-        .eq("id", user.id)
+        .from('profiles')
+        .select('currency, timezone')
+        .eq('id', user.id)
         .maybeSingle(),
       supabase
-        .from("budget_settings")
-        .select("monthly_cap")
-        .eq("user_id", user.id)
+        .from('budget_settings')
+        .select('monthly_cap')
+        .eq('user_id', user.id)
         .maybeSingle(),
     ]);
   if (pErr) return json({ error: pErr.message }, { status: 500 });
   if (bErr) return json({ error: bErr.message }, { status: 500 });
 
   // Fall back to schema defaults if the user's rows aren't seeded yet.
-  const currency = (profile?.currency ?? "RSD") as Currency;
-  const timeZone = profile?.timezone ?? "Europe/Belgrade";
+  const currency = (profile?.currency ?? 'RSD') as Currency;
+  const timeZone = profile?.timezone ?? 'Europe/Belgrade';
   const cap = Number(budget?.monthly_cap ?? 0);
   const { startUtc, endUtc } = monthWindow(month, timeZone);
 
   const { data: rows, error: eErr } = await supabase
-    .from("expenses")
-    .select("amount_minor, currency, category_id")
-    .eq("user_id", user.id)
-    .gte("spent_at", startUtc.toISOString())
-    .lt("spent_at", endUtc.toISOString());
+    .from('expenses')
+    .select('amount_minor, currency, category_id')
+    .eq('user_id', user.id)
+    .gte('spent_at', startUtc.toISOString())
+    .lt('spent_at', endUtc.toISOString());
   if (eErr) return json({ error: eErr.message }, { status: 500 });
 
   // Split by currency. Only the active (profile) currency feeds the cap math;
@@ -76,10 +76,13 @@ export async function GET(request: NextRequest) {
       spent += row.amount_minor;
       breakdown.set(
         row.category_id,
-        (breakdown.get(row.category_id) ?? 0) + row.amount_minor,
+        (breakdown.get(row.category_id) ?? 0) + row.amount_minor
       );
     } else {
-      others.set(row.currency, (others.get(row.currency) ?? 0) + row.amount_minor);
+      others.set(
+        row.currency,
+        (others.get(row.currency) ?? 0) + row.amount_minor
+      );
     }
   }
 
@@ -105,12 +108,10 @@ export async function GET(request: NextRequest) {
       categoryId,
       spent: s,
     })),
-    otherCurrencies: [...others.entries()].map(
-      ([c, s]): CurrencyBucket => ({
-        currency: c as Currency,
-        spent: s as CurrencyBucket["spent"],
-      }),
-    ),
+    otherCurrencies: [...others.entries()].map(([c, s]): CurrencyBucket => ({
+      currency: c as Currency,
+      spent: s as CurrencyBucket['spent'],
+    })),
   };
 
   return json(summary);

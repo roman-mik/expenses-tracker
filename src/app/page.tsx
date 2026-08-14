@@ -9,9 +9,9 @@ export default function Home() {
             One cap. Every expense in two taps. Always know what&rsquo;s left.
           </h1>
           <p className="text-ink/70 text-base leading-relaxed max-w-[40em]">
-            A warm monthly spending-cap tracker. Set a number you&rsquo;d be glad
-            to land under, log expenses in seconds, and always see the days left
-            and what&rsquo;s safe to spend today.
+            A warm monthly spending-cap tracker. Set a number you&rsquo;d be
+            glad to land under, log expenses in seconds, and always see the days
+            left and what&rsquo;s safe to spend today.
           </p>
         </div>
 
@@ -35,7 +35,8 @@ export default function Home() {
             </div>
           </div>
           <p className="text-sm text-sage-700">
-            Nicely paced — you&rsquo;re under an even month. Nothing to fix today.
+            Nicely paced — you&rsquo;re under an even month. Nothing to fix
+            today.
           </p>
         </div>
 
