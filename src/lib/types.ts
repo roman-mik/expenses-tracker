@@ -82,6 +82,11 @@ export interface Summary {
   paceGap: number;
   projection: number;
   spentPct: number;
+  /** How far past the cap this month is (0 while under or exactly at cap). */
+  overspend: number;
+  /** Household nudge settings, so the home screen can render the threshold banner. */
+  nudgeEnabled: boolean;
+  nudgePct: number;
   categoryBreakdown: { categoryId: string | null; spent: number }[];
   otherCurrencies: CurrencyBucket[];
 }

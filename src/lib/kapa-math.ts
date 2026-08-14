@@ -186,3 +186,17 @@ export function spentPct(spent: number, cap: number): number {
   if (cap === 0) return spent > 0 ? 100 : 0;
   return Math.min(100, Math.round((spent / cap) * 100));
 }
+
+/** How far past the cap this month's spend is; 0 while still under or exactly at cap. */
+export function overspend(cap: number, spent: number): number {
+  return Math.max(spent - cap, 0);
+}
+
+/**
+ * Forward-looking recovery target: the cap that, if adopted next month, absorbs
+ * this month's overspend in one month so the two months net even. Never below 0.
+ * (A gentle suggestion — the design never forces a lower cap.)
+ */
+export function recoveryCap(cap: number, overspendValue: number): number {
+  return Math.max(cap - overspendValue, 0);
+}

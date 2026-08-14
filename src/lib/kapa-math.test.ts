@@ -10,6 +10,8 @@ import {
   paceGap,
   projection,
   spentPct,
+  overspend,
+  recoveryCap,
 } from './kapa-math';
 
 describe('daysInMonth', () => {
@@ -154,5 +156,29 @@ describe('spentPct', () => {
   it('rounds to nearest percent', () => {
     expect(spentPct(495, 1000)).toBe(50); // 49.5 → 50
     expect(spentPct(354, 1000)).toBe(35); // 35.4 → 35
+  });
+});
+
+describe('overspend', () => {
+  it('under cap → 0', () => {
+    expect(overspend(100000, 80000)).toBe(0);
+  });
+  it('exactly at cap → 0 (boundary, not yet over)', () => {
+    expect(overspend(100000, 100000)).toBe(0);
+  });
+  it('over cap → the excess', () => {
+    expect(overspend(100000, 104200)).toBe(4200);
+  });
+});
+
+describe('recoveryCap', () => {
+  it('no overspend → cap unchanged', () => {
+    expect(recoveryCap(100000, 0)).toBe(100000);
+  });
+  it('absorbs the overspend into next month', () => {
+    expect(recoveryCap(100000, 4200)).toBe(95800);
+  });
+  it('overspend beyond the cap floors at 0', () => {
+    expect(recoveryCap(100000, 130000)).toBe(0);
   });
 });
