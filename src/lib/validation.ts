@@ -33,7 +33,12 @@ export const categoryCreateSchema = z.object({
   sortOrder: z.number().int().optional(),
 });
 
+export const joinHouseholdSchema = z.object({
+  code: z.string().trim().min(1).max(64),
+});
+
 export type ExpenseCreateInput = z.infer<typeof expenseCreateSchema>;
 export type ExpenseUpdateInput = z.infer<typeof expenseUpdateSchema>;
 export type CapUpdateInput = z.infer<typeof capUpdateSchema>;
 export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
+export type JoinHouseholdInput = z.infer<typeof joinHouseholdSchema>;

@@ -8,12 +8,12 @@ import { toBudgetSettings, type BudgetSettingsRow } from '@/lib/mappers';
 
 export async function getCap(
   supabase: SupabaseServerClient,
-  userId: string
+  householdId: string
 ): Promise<BudgetSettings | null> {
   const { data, error } = await supabase
     .from('budget_settings')
     .select('monthly_cap, nudge_enabled, nudge_pct')
-    .eq('user_id', userId)
+    .eq('household_id', householdId)
     .maybeSingle();
 
   if (error) throw new Error(error.message);

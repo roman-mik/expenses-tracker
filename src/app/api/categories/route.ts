@@ -1,4 +1,4 @@
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { toCategory, type CategoryRow } from '@/lib/mappers';
 import { categoryCreateSchema } from '@/lib/validation';
@@ -11,7 +11,9 @@ export async function GET() {
 
   const supabase = await createClient();
   try {
-    const categories = await getCategories(supabase, user.id);
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const categories = await getCategories(supabase, householdId);
     return json(categories);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
@@ -22,6 +24,8 @@ export async function GET() {
 export async function POST(request: Request) {
   const user = await verifySession();
   if (!user) return unauthorized();
+  const householdId = await getHouseholdId(user.id);
+  if (!householdId) return unauthorized();
 
   const parsed = await parseBody(request, categoryCreateSchema);
   if ('response' in parsed) return parsed.response;
@@ -31,7 +35,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from('categories')
     .insert({
-      user_id: user.id,
+      household_id: householdId,
       name,
       color,
       ...(sortOrder !== undefined ? { sort_order: sortOrder } : {}),

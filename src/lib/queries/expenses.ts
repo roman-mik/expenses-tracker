@@ -5,6 +5,7 @@
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Expense } from '@/lib/types';
 import { toExpense, type ExpenseRow } from '@/lib/mappers';
+import { getHousehold } from '@/lib/queries/household';
 import { monthWindow } from '@/lib/kapa-math';
 
 export interface ListExpensesOptions {
@@ -15,22 +16,18 @@ export interface ListExpensesOptions {
 
 export async function listExpenses(
   supabase: SupabaseServerClient,
-  userId: string,
+  householdId: string,
   { month, categoryId }: ListExpensesOptions = {}
 ): Promise<Expense[]> {
+  // Shared pool: `user_id` comes back as attribution (`addedBy`), not a filter.
   let query = supabase
     .from('expenses')
-    .select('id, category_id, amount_minor, currency, note, spent_at')
-    .eq('user_id', userId)
+    .select('id, category_id, amount_minor, currency, note, spent_at, user_id')
+    .eq('household_id', householdId)
     .order('spent_at', { ascending: false });
 
   if (month) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('timezone')
-      .eq('id', userId)
-      .maybeSingle();
-    const timezone = profile?.timezone ?? 'Europe/Belgrade';
+    const { timezone } = await getHousehold(supabase, householdId);
     const { startUtc, endUtc } = monthWindow(month, timezone);
     query = query
       .gte('spent_at', startUtc.toISOString())

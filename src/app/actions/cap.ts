@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { capUpdateSchema } from '@/lib/validation';
 import { upsertCap } from '@/lib/mutations/cap';
@@ -19,8 +19,10 @@ export async function setCap(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return { ok: false, error: 'Please check the cap.' };
 
   try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
-    await upsertCap(supabase, user.id, parsed.data);
+    await upsertCap(supabase, householdId, parsed.data);
   } catch {
     return { ok: false, error: "Couldn't save that just now — try again." };
   }

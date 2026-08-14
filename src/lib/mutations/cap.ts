@@ -10,7 +10,7 @@ import type { CapUpdateInput } from '@/lib/validation';
 
 export async function upsertCap(
   supabase: SupabaseServerClient,
-  userId: string,
+  householdId: string,
   input: CapUpdateInput,
   now: Date = new Date()
 ): Promise<BudgetSettings> {
@@ -20,13 +20,13 @@ export async function upsertCap(
     .from('budget_settings')
     .upsert(
       {
-        user_id: userId,
+        household_id: householdId,
         monthly_cap: monthlyCap,
         ...(nudgeEnabled !== undefined ? { nudge_enabled: nudgeEnabled } : {}),
         ...(nudgePct !== undefined ? { nudge_pct: nudgePct } : {}),
         updated_at: now.toISOString(),
       },
-      { onConflict: 'user_id' }
+      { onConflict: 'household_id' }
     )
     .select('monthly_cap, nudge_enabled, nudge_pct')
     .single();

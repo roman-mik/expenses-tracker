@@ -9,31 +9,33 @@ import type { ExpenseCreateInput } from '@/lib/validation';
 
 export async function createExpense(
   supabase: SupabaseServerClient,
+  householdId: string,
   userId: string,
   input: ExpenseCreateInput
 ): Promise<Expense> {
   const { amountMinor, categoryId, note, spentAt } = input;
 
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
+  const { data: household, error: hErr } = await supabase
+    .from('households')
     .select('currency')
-    .eq('id', userId)
+    .eq('id', householdId)
     .maybeSingle();
-  if (profileError) throw new Error(profileError.message);
-  // Fall back to the default currency if the profile isn't seeded yet.
-  const currency = profile?.currency ?? 'RSD';
+  if (hErr) throw new Error(hErr.message);
+  // Fall back to the default currency if the household isn't seeded yet.
+  const currency = household?.currency ?? 'RSD';
 
   const { data, error } = await supabase
     .from('expenses')
     .insert({
-      user_id: userId,
+      household_id: householdId,
+      user_id: userId, // attribution: who logged it
       category_id: categoryId ?? null,
       amount_minor: amountMinor,
       currency,
       note: note ?? null,
       ...(spentAt ? { spent_at: spentAt } : {}),
     })
-    .select('id, category_id, amount_minor, currency, note, spent_at')
+    .select('id, category_id, amount_minor, currency, note, spent_at, user_id')
     .single();
 
   if (error) throw new Error(error.message);

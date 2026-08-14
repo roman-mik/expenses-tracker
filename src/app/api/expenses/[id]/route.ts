@@ -1,4 +1,4 @@
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { toExpense, type ExpenseRow } from '@/lib/mappers';
 import { expenseUpdateSchema } from '@/lib/validation';
@@ -10,6 +10,8 @@ export async function PATCH(
 ) {
   const user = await verifySession();
   if (!user) return unauthorized();
+  const householdId = await getHouseholdId(user.id);
+  if (!householdId) return unauthorized();
   const { id } = await params;
 
   const parsed = await parseBody(request, expenseUpdateSchema);
@@ -23,13 +25,15 @@ export async function PATCH(
   if (note !== undefined) patch.note = note;
   if (spentAt !== undefined) patch.spent_at = spentAt;
 
+  // Shared pool: any member may edit any household expense (scoped by household,
+  // not by author). RLS enforces the same.
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('expenses')
     .update(patch)
     .eq('id', id)
-    .eq('user_id', user.id)
-    .select('id, category_id, amount_minor, currency, note, spent_at')
+    .eq('household_id', householdId)
+    .select('id, category_id, amount_minor, currency, note, spent_at, user_id')
     .maybeSingle();
 
   if (error) return json({ error: error.message }, { status: 500 });
@@ -43,6 +47,8 @@ export async function DELETE(
 ) {
   const user = await verifySession();
   if (!user) return unauthorized();
+  const householdId = await getHouseholdId(user.id);
+  if (!householdId) return unauthorized();
   const { id } = await params;
 
   const supabase = await createClient();
@@ -50,7 +56,7 @@ export async function DELETE(
     .from('expenses')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('household_id', householdId)
     .select('id')
     .maybeSingle();
 

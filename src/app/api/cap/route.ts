@@ -1,4 +1,4 @@
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { capUpdateSchema } from '@/lib/validation';
 import { json, parseBody, unauthorized } from '@/lib/api/http';
@@ -11,7 +11,9 @@ export async function GET() {
 
   const supabase = await createClient();
   try {
-    const cap = await getCap(supabase, user.id);
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const cap = await getCap(supabase, householdId);
     if (!cap) return json(null, { status: 204 });
     return json(cap);
   } catch (error) {
@@ -29,7 +31,9 @@ export async function PUT(request: Request) {
 
   const supabase = await createClient();
   try {
-    const cap = await upsertCap(supabase, user.id, parsed.data);
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const cap = await upsertCap(supabase, householdId, parsed.data);
     return json(cap);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';

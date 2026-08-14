@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { expenseCreateSchema } from '@/lib/validation';
 import { createExpense } from '@/lib/mutations/expenses';
@@ -20,8 +20,10 @@ export async function addExpense(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return { ok: false, error: 'Please check the amount.' };
 
   try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
-    await createExpense(supabase, user.id, parsed.data);
+    await createExpense(supabase, householdId, user.id, parsed.data);
   } catch {
     return { ok: false, error: "Couldn't save that just now — try again." };
   }

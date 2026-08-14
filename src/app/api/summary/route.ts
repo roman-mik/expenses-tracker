@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { badRequest, json, unauthorized } from '@/lib/api/http';
 import { monthParamSchema } from '@/lib/validation';
@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
   try {
-    const summary = await getSummary(supabase, user.id, monthParsed.data);
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const summary = await getSummary(supabase, householdId, monthParsed.data);
     return json(summary);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';

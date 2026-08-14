@@ -66,27 +66,45 @@ Cream ground `#f5ead8`, terracotta accent `#c67139`/`#8c491a`, sage "you're fine
 
 ## 3. Data model (Supabase / Postgres)
 
-Minimal, because most values are computed. All tables carry `user_id` and are protected by RLS (`user_id = auth.uid()`).
+Minimal, because most values are computed. The **household** is the unit of ownership: a solo user is just a household of one, and a couple/family sharing a cap is a household of 2+. Data tables are scoped by `household_id` and protected by membership RLS (see §4). Implemented in `supabase/migrations/0003_households.sql`.
 
 ```
+households                                        -- the shared cap lives here
+  id            uuid  PK
+  currency      char(3) default 'RSD'             -- the cap's currency (moved off profiles)
+  timezone      text    default 'Europe/Belgrade' -- month boundaries respect this
+  created_at    timestamptz
+
+household_members                                 -- who's in a household
+  household_id  uuid  FK → households
+  user_id       uuid  FK → auth.users
+  role          text  default 'member'            -- 'owner' | 'member'
+  joined_at     timestamptz
+  PK (household_id, user_id), UNIQUE (user_id)     -- one household per user (v1)
+
+household_invites                                 -- invite-code join flow
+  code          text  PK                          -- short app-generated token
+  household_id  uuid  FK → households
+  created_by    uuid  FK → auth.users
+  created_at    timestamptz
+  expires_at    timestamptz null                  -- null = no expiry (v1)
+
 profiles
   id            uuid  PK → auth.users.id
-  display_name  text
-  currency      text  default 'RSD'
-  timezone      text  default 'Europe/Belgrade'   -- month boundaries respect this
+  display_name  text                              -- shown for expense attribution
   created_at    timestamptz
 
 categories
   id            uuid  PK
-  user_id       uuid  FK → auth.users
+  household_id  uuid  FK → households              -- shared per household
   name          text                              -- Groceries, Eating out, Transport, Home, Fun
   color         text                              -- token from the Organic palette
   sort_order    int
   archived      bool  default false
   created_at    timestamptz
 
-budget_settings                                   -- one row per user (the "cap")
-  user_id        uuid PK FK → auth.users
+budget_settings                                   -- one row per HOUSEHOLD (the "cap")
+  household_id   uuid PK FK → households
   monthly_cap    bigint                           -- e.g. 100000
   nudge_enabled  bool   default true
   nudge_pct      int    default 80                -- "nudge me at 80%"
@@ -94,16 +112,25 @@ budget_settings                                   -- one row per user (the "cap"
 
 expenses
   id            uuid  PK
-  user_id       uuid  FK → auth.users
+  household_id  uuid  FK → households              -- aggregation/scope key (the shared pool)
+  user_id       uuid  FK → auth.users             -- *added_by*: who logged it (attribution)
   category_id   uuid  FK → categories
-  amount        bigint                            -- whole RSD
+  amount_minor  bigint                            -- whole RSD (minor units)
+  currency      char(3)                           -- stamped from the household at insert
   note          text  null
   spent_at      timestamptz                       -- defaults now(); editable
   created_at    timestamptz
 ```
 
+**Shared-cap model (v1 decisions)**
+- **Full shared pool** — all members see every household expense; a member's spend counts toward the one shared cap.
+- **Attribution** — `expenses.user_id` records who added each expense ("you" vs partner in the UI).
+- **Join by invite code** — an owner mints a code (`household_invites`); the joiner redeems it via the `join_household(code)` RPC, whose data merges into the target household (their expenses move across, remapped to same-named categories; they adopt the target's cap).
+- **One household per user** (the `UNIQUE (user_id)` on `household_members`) — drop that constraint later to allow multiple/switchable households.
+- **Currency is household-level** — members share it; no FX conversion in v1 (non-matching currencies still surface separately in the summary).
+
 **Notes**
-- **Monthly reset** is not a stored event — it's a *query*. "This month's spend" = `sum(amount) where spent_at` falls in the current calendar month for the user's timezone. Changing the cap mid-month just changes one number; history is untouched (matches "the month adjusts, nothing is lost").
+- **Monthly reset** is not a stored event — it's a *query*. "This month's spend" = `sum(amount) where spent_at` falls in the current calendar month for the household's timezone. Changing the cap mid-month just changes one number; history is untouched (matches "the month adjusts, nothing is lost").
 - **Last month / 3-month average** reference chips = simple `date_trunc('month', spent_at)` aggregates over `expenses`. No snapshot table needed.
 - **Cap history** (optional, phase 3): add a `cap_changes` table only if you want to show "you raised your cap on the 12th". Not needed for v1.
 - Seed the five default categories on first sign-in.
@@ -122,6 +149,13 @@ Keep it thin and RESTish. Auth via Supabase session (web) / bearer token (mobile
 | `PATCH`/`DELETE` | `/api/expenses/:id` | Edit / remove |
 | `GET`/`PUT` | `/api/cap` | Read / set `{ monthly_cap, nudge_enabled, nudge_pct }` |
 | `GET`/`POST`/`PATCH` | `/api/categories` | List / add / rename / reorder / archive |
+| `GET` | `/api/household` | Members (with display names + roles), active invite code, current user id |
+| `POST` | `/api/household/invite` | Mint a fresh invite code for the caller's household |
+| `POST` | `/api/household/join` | Redeem `{ code }` → merge into that household (via the `join_household` RPC) |
+
+Every request resolves the caller's household once via `getHouseholdId(userId)` (`lib/auth/dal.ts`, `cache()`-wrapped) and passes `householdId` to the query/mutation layer; `user.id` is still passed to writes for attribution.
+
+**RLS (membership-based).** Data tables use `is_household_member(household_id)`; `profiles` also allows co-members via `same_household(id)` (attribution). These are `SECURITY DEFINER` helpers so a membership check inside a policy doesn't recurse on `household_members`. Cross-household work (the join merge) runs inside the `join_household` definer RPC.
 
 The derived-values formulas from §1 live in **one shared module** (`lib/kapa-math.ts`) imported by both the API and the UI, so web and mobile can never drift from the prototype's math.
 

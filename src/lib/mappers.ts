@@ -8,6 +8,7 @@ import type {
   Category,
   Currency,
   Expense,
+  Household,
   Money,
   Profile,
 } from './types';
@@ -19,6 +20,8 @@ type Tables = Database['public']['Tables'];
 type Row<T extends keyof Tables> = Tables[T]['Row'];
 
 export type ProfileRow = Row<'profiles'>;
+
+export type HouseholdRow = Row<'households'>;
 
 export type CategoryRow = Row<'categories'>;
 
@@ -32,6 +35,12 @@ export function toProfile(row: ProfileRow): Profile {
   return {
     id: row.id,
     displayName: row.display_name,
+  };
+}
+
+export function toHousehold(row: HouseholdRow): Household {
+  return {
+    id: row.id,
     currency: row.currency as Currency,
     timezone: row.timezone,
   };
@@ -63,5 +72,6 @@ export function toExpense(row: ExpenseRow): Expense {
     currency: row.currency as Currency,
     note: row.note,
     spentAt: row.spent_at,
+    addedBy: row.user_id,
   };
 }

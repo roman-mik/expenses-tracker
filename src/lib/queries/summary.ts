@@ -5,6 +5,7 @@
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Currency, CurrencyBucket, Summary } from '@/lib/types';
+import { getHousehold } from '@/lib/queries/household';
 import {
   daysInMonth,
   daysLeft,
@@ -26,36 +27,30 @@ interface SummaryRow {
 
 export async function getSummary(
   supabase: SupabaseServerClient,
-  userId: string,
+  householdId: string,
   month: string,
   now: Date = new Date()
 ): Promise<Summary> {
-  const [{ data: profile, error: pErr }, { data: budget, error: bErr }] =
-    await Promise.all([
-      supabase
-        .from('profiles')
-        .select('currency, timezone')
-        .eq('id', userId)
-        .maybeSingle(),
-      supabase
-        .from('budget_settings')
-        .select('monthly_cap')
-        .eq('user_id', userId)
-        .maybeSingle(),
-    ]);
-  if (pErr) throw new Error(pErr.message);
+  const [household, { data: budget, error: bErr }] = await Promise.all([
+    getHousehold(supabase, householdId),
+    supabase
+      .from('budget_settings')
+      .select('monthly_cap')
+      .eq('household_id', householdId)
+      .maybeSingle(),
+  ]);
   if (bErr) throw new Error(bErr.message);
 
-  // Fall back to schema defaults if the user's rows aren't seeded yet.
-  const currency = (profile?.currency ?? 'RSD') as Currency;
-  const timeZone = profile?.timezone ?? 'Europe/Belgrade';
+  // Currency + timezone belong to the household; the cap is implicitly in it.
+  const { currency, timezone: timeZone } = household;
   const cap = Number(budget?.monthly_cap ?? 0);
   const { startUtc, endUtc } = monthWindow(month, timeZone);
 
+  // Whole household pool — every member's expenses count toward the shared cap.
   const { data: rows, error: eErr } = await supabase
     .from('expenses')
     .select('amount_minor, currency, category_id')
-    .eq('user_id', userId)
+    .eq('household_id', householdId)
     .gte('spent_at', startUtc.toISOString())
     .lt('spent_at', endUtc.toISOString());
   if (eErr) throw new Error(eErr.message);
