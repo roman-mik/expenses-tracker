@@ -10,7 +10,7 @@ import type {
   Expense,
   Money,
   Profile,
-} from "./types";
+} from './types';
 
 export interface ProfileRow {
   id: string;

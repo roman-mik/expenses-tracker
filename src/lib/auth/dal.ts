@@ -6,9 +6,9 @@
  * `verifySession` is wrapped in React `cache()` so repeated calls within a single
  * request/render hit Supabase only once.
  */
-import { cache } from "react";
-import type { User } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { cache } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 
 /** Returns the authenticated user, or null. Never throws. */
 export const verifySession = cache(async (): Promise<User | null> => {

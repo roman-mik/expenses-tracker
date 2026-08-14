@@ -31,19 +31,19 @@ interface ZonedParts {
 
 /** Wall-clock fields shown by `instant` in the given IANA timezone. */
 function zonedParts(instant: Date, timeZone: string): ZonedParts {
-  const dtf = new Intl.DateTimeFormat("en-US", {
+  const dtf = new Intl.DateTimeFormat('en-US', {
     timeZone,
-    hourCycle: "h23",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
   });
   const out: Record<string, number> = {};
   for (const part of dtf.formatToParts(instant)) {
-    if (part.type !== "literal") out[part.type] = Number(part.value);
+    if (part.type !== 'literal') out[part.type] = Number(part.value);
   }
   return {
     year: out.year,
@@ -58,7 +58,14 @@ function zonedParts(instant: Date, timeZone: string): ZonedParts {
 /** Offset (ms) such that localWallClockAsUTC - offset = utcInstant, at `instant`. */
 function tzOffsetMs(instant: Date, timeZone: string): number {
   const p = zonedParts(instant, timeZone);
-  const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+  const asUtc = Date.UTC(
+    p.year,
+    p.month - 1,
+    p.day,
+    p.hour,
+    p.minute,
+    p.second
+  );
   return asUtc - instant.getTime();
 }
 
@@ -67,7 +74,7 @@ function zonedMidnightToUtc(
   year: number,
   monthIndex: number,
   day: number,
-  timeZone: string,
+  timeZone: string
 ): Date {
   // Treat the wall-clock as if it were UTC, then correct by the zone offset.
   const guess = Date.UTC(year, monthIndex, day, 0, 0, 0);
@@ -91,7 +98,7 @@ function parseMonth(month: string): { year: number; monthIndex: number } {
  */
 export function monthWindow(
   month: string,
-  timeZone: string,
+  timeZone: string
 ): { startUtc: Date; endUtc: Date } {
   const { year, monthIndex } = parseMonth(month);
   const startUtc = zonedMidnightToUtc(year, monthIndex, 1, timeZone);
@@ -124,7 +131,10 @@ export function daysLeft(month: string, now: Date, timeZone: string): number {
 // ---------------------------------------------------------------------------
 
 /** Days elapsed including today: daysInMonth - daysLeft, clamped to >= 1. */
-export function elapsedDays(daysInMonthValue: number, daysLeftValue: number): number {
+export function elapsedDays(
+  daysInMonthValue: number,
+  daysLeftValue: number
+): number {
   return Math.max(daysInMonthValue - daysLeftValue, 1);
 }
 
@@ -134,12 +144,19 @@ export function remaining(cap: number, spent: number): number {
 }
 
 /** Safe amount to spend per day for the rest of the month (today still spendable). */
-export function safeDaily(remainingValue: number, daysLeftValue: number): number {
+export function safeDaily(
+  remainingValue: number,
+  daysLeftValue: number
+): number {
   return remainingValue / Math.max(daysLeftValue + 1, 1);
 }
 
 /** Where spending "should" be if spread evenly across the month so far. */
-export function evenPace(cap: number, elapsed: number, daysInMonthValue: number): number {
+export function evenPace(
+  cap: number,
+  elapsed: number,
+  daysInMonthValue: number
+): number {
   if (daysInMonthValue <= 0) return 0;
   return cap * (elapsed / daysInMonthValue);
 }
@@ -150,7 +167,11 @@ export function paceGap(evenPaceValue: number, spent: number): number {
 }
 
 /** Month-end projection: "if today's rate were the whole month". */
-export function projection(spent: number, elapsed: number, daysInMonthValue: number): number {
+export function projection(
+  spent: number,
+  elapsed: number,
+  daysInMonthValue: number
+): number {
   return (spent / Math.max(elapsed, 1)) * daysInMonthValue;
 }
 

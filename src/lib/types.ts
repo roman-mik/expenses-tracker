@@ -9,10 +9,10 @@
  * for arithmetic in kapa-math, which stays integer-based.
  */
 
-export type Currency = "RSD" | "EUR" | "USD";
+export type Currency = 'RSD' | 'EUR' | 'USD';
 
 /** Minor units of some currency (integer). Branded to prevent mixing with plain numbers. */
-export type Money = number & { readonly __brand: "MoneyMinor" };
+export type Money = number & { readonly __brand: 'MoneyMinor' };
 
 export const CURRENCY_EXPONENT: Record<Currency, number> = {
   RSD: 0,

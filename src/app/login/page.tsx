@@ -1,32 +1,33 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 type Status =
-  | { kind: "idle" }
-  | { kind: "signing" }
-  | { kind: "error"; message: string };
+  { kind: 'idle' } | { kind: 'signing' } | { kind: 'error'; message: string };
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
   const router = useRouter();
   const supabase = createClient();
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
-    setStatus({ kind: "signing" });
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setStatus({ kind: 'signing' });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) {
-      setStatus({ kind: "error", message: error.message });
+      setStatus({ kind: 'error', message: error.message });
       return;
     }
     // refresh() re-runs server components so they see the freshly-set session.
-    router.push("/");
+    router.push('/');
     router.refresh();
   }
 
@@ -60,13 +61,15 @@ export default function LoginPage() {
         />
         <button
           type="submit"
-          disabled={status.kind === "signing"}
+          disabled={status.kind === 'signing'}
           className="rounded-[var(--radius-md)] bg-[var(--color-accent)] px-4 py-3 font-medium text-white disabled:opacity-60"
         >
-          {status.kind === "signing" ? "Signing in…" : "Sign in"}
+          {status.kind === 'signing' ? 'Signing in…' : 'Sign in'}
         </button>
-        {status.kind === "error" && (
-          <p className="text-sm text-[var(--color-accent-700)]">{status.message}</p>
+        {status.kind === 'error' && (
+          <p className="text-sm text-[var(--color-accent-700)]">
+            {status.message}
+          </p>
         )}
       </form>
     </main>
