@@ -6,6 +6,7 @@ import { setCap } from '@/app/actions/cap';
 import { formatMoney } from '@/lib/format';
 import { remaining, safeDaily } from '@/lib/kapa-math';
 import type { Currency } from '@/lib/types';
+import { Button } from '@/components/ui/Button';
 
 const MIN = 20_000;
 const MAX = 300_000;
@@ -107,14 +108,9 @@ export function SetCapForm({
 
       {error ? <p className="text-sm text-accent-700">{error}</p> : null}
 
-      <button
-        type="button"
-        onClick={save}
-        disabled={pending}
-        className="rounded-lg bg-accent text-white font-semibold py-4 shadow-md hover:bg-accent-600 transition-colors disabled:opacity-40"
-      >
+      <Button type="button" onClick={save} disabled={pending} className="py-4">
         {pending ? 'Saving…' : 'Save cap'}
-      </button>
+      </Button>
     </div>
   );
 }

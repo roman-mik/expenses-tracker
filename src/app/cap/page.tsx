@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 import { redirect } from 'next/navigation';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
@@ -27,12 +27,12 @@ export default async function SetCapPage() {
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <header className="flex items-center justify-between">
-          <Link href="/" className="text-sm text-ink/60 hover:text-ink">
+        <header className="grid grid-cols-[1fr_auto_1fr] items-center">
+          <Button href="/" variant="ghost" className="justify-self-start text-sm">
             ← Back
-          </Link>
+          </Button>
           <span className="font-heading text-xl">Set cap</span>
-          <span className="w-12" aria-hidden />
+          <span aria-hidden />
         </header>
 
         <SetCapForm

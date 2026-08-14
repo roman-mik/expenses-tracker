@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { addExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import { CURRENCY_EXPONENT, type Category, type Currency } from '@/lib/types';
+import { Button } from '@/components/ui/Button';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] as const;
 
@@ -115,14 +116,9 @@ export function AddExpenseForm({
 
       {error ? <p className="text-sm text-accent-700">{error}</p> : null}
 
-      <button
-        type="button"
-        onClick={submit}
-        disabled={!canSubmit}
-        className="rounded-lg bg-accent text-white font-semibold py-4 shadow-md hover:bg-accent-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-      >
+      <Button type="button" onClick={submit} disabled={!canSubmit} className="py-4">
         {pending ? 'Saving…' : 'Add expense'}
-      </button>
+      </Button>
     </div>
   );
 }

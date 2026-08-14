@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { HouseholdMember } from '@/lib/types';
+import { Button } from '@/components/ui/Button';
 
 export function HouseholdPanel({
   members,
@@ -119,27 +120,28 @@ export function HouseholdPanel({
             <code className="flex-1 rounded-lg bg-surface px-4 py-3 font-heading text-2xl tracking-widest text-center shadow-sm">
               {code}
             </code>
-            <button
+            <Button
               type="button"
               onClick={copyCode}
-              className="rounded-lg border border-sand-300 px-4 py-3 text-sm hover:bg-surface"
+              variant="secondary"
+              className="text-sm"
             >
               {copied ? 'Copied' : 'Copy'}
-            </button>
+            </Button>
           </div>
         ) : null}
-        <button
+        <Button
           type="button"
           onClick={mintInvite}
           disabled={busy === 'invite'}
-          className="rounded-lg bg-accent text-white text-center font-semibold py-3 shadow-md hover:bg-accent-600 transition-colors disabled:opacity-60"
+          className="py-3"
         >
           {busy === 'invite'
             ? 'Generating…'
             : code
               ? 'Generate a new code'
               : 'Generate invite code'}
-        </button>
+        </Button>
       </section>
 
       {/* Join */}
@@ -158,13 +160,14 @@ export function HouseholdPanel({
             placeholder="ABCD1234"
             className="flex-1 rounded-lg bg-surface px-4 py-3 tracking-widest shadow-sm outline-none focus:ring-2 focus:ring-accent/40"
           />
-          <button
+          <Button
             type="submit"
             disabled={busy === 'join' || !joinCode.trim()}
-            className="rounded-lg border border-sand-300 px-4 py-3 text-sm hover:bg-surface disabled:opacity-60"
+            variant="secondary"
+            className="text-sm"
           >
             {busy === 'join' ? 'Joining…' : 'Join'}
-          </button>
+          </Button>
         </form>
       </section>
 
