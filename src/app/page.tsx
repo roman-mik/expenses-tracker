@@ -109,9 +109,14 @@ export default async function Home() {
         </Button>
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-            Today
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+              Today
+            </h2>
+            <Button href="/history" variant="ghost" className="text-sm">
+              View all →
+            </Button>
+          </div>
           <TodayList
             expenses={todays}
             categoryMap={categoryMap}

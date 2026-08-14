@@ -2,9 +2,14 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { addExpense } from '@/app/actions/expenses';
+import { addExpense, updateExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
-import { CURRENCY_EXPONENT, type Category, type Currency } from '@/lib/types';
+import {
+  CURRENCY_EXPONENT,
+  type Category,
+  type Currency,
+  type Expense,
+} from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] as const;
@@ -13,16 +18,24 @@ export function AddExpenseForm({
   categories,
   currency,
   remaining,
+  expense,
 }: {
   categories: Category[];
   currency: Currency;
   remaining: number;
+  /** When present, the form edits this expense instead of creating a new one. */
+  expense?: Expense;
 }) {
+  const editing = expense !== undefined;
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [digits, setDigits] = useState('');
-  const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [note, setNote] = useState('');
+  const [digits, setDigits] = useState(() =>
+    expense ? String(expense.amountMinor / 10 ** CURRENCY_EXPONENT[currency]) : ''
+  );
+  const [categoryId, setCategoryId] = useState<string | null>(
+    expense?.categoryId ?? null
+  );
+  const [note, setNote] = useState(expense?.note ?? '');
   const [error, setError] = useState<string | null>(null);
 
   // The keypad enters whole major units (the design has no decimals); convert
@@ -41,13 +54,22 @@ export function AddExpenseForm({
     if (!canSubmit) return;
     setError(null);
     startTransition(async () => {
-      const result = await addExpense({
-        amountMinor,
-        categoryId: categoryId ?? undefined,
-        note: note.trim() || undefined,
-      });
+      // On edit, send explicit `null` (not `undefined`) so deselecting the
+      // category or clearing the note actually clears it — `undefined` means
+      // "leave unchanged" in the update path.
+      const result = expense
+        ? await updateExpense(expense.id, {
+            amountMinor,
+            categoryId: categoryId ?? null,
+            note: note.trim() || null,
+          })
+        : await addExpense({
+            amountMinor,
+            categoryId: categoryId ?? undefined,
+            note: note.trim() || undefined,
+          });
       if (result.ok) {
-        router.push('/');
+        router.push(editing ? '/history' : '/');
       } else {
         setError(result.error);
       }
@@ -117,7 +139,7 @@ export function AddExpenseForm({
       {error ? <p className="text-sm text-accent-700">{error}</p> : null}
 
       <Button type="button" onClick={submit} disabled={!canSubmit} className="py-4">
-        {pending ? 'Saving…' : 'Add expense'}
+        {pending ? 'Saving…' : editing ? 'Save changes' : 'Add expense'}
       </Button>
     </div>
   );

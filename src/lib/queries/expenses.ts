@@ -40,3 +40,23 @@ export async function listExpenses(
   if (error) throw new Error(error.message);
   return (data as ExpenseRow[]).map(toExpense);
 }
+
+/**
+ * Fetch a single expense scoped to the household (for the edit screen).
+ * Returns `null` if the id isn't in this household — the caller renders 404.
+ */
+export async function getExpense(
+  supabase: SupabaseServerClient,
+  householdId: string,
+  id: string
+): Promise<Expense | null> {
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('id, category_id, amount_minor, currency, note, spent_at, user_id')
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? toExpense(data as ExpenseRow) : null;
+}
