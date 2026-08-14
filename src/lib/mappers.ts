@@ -12,35 +12,19 @@ import type {
   Profile,
 } from './types';
 
-export interface ProfileRow {
-  id: string;
-  display_name: string | null;
-  currency: string;
-  timezone: string;
-}
+import { Database } from './supabase/database.types';
 
-export interface CategoryRow {
-  id: string;
-  name: string;
-  color: string;
-  sort_order: number;
-  archived: boolean;
-}
+type Tables = Database['public']['Tables'];
 
-export interface BudgetSettingsRow {
-  monthly_cap: number;
-  nudge_enabled: boolean;
-  nudge_pct: number;
-}
+type Row<T extends keyof Tables> = Tables[T]['Row'];
 
-export interface ExpenseRow {
-  id: string;
-  category_id: string | null;
-  amount_minor: number;
-  currency: string;
-  note: string | null;
-  spent_at: string;
-}
+export type ProfileRow = Row<'profiles'>;
+
+export type CategoryRow = Row<'categories'>;
+
+export type BudgetSettingsRow = Row<'budget_settings'>;
+
+export type ExpenseRow = Row<'expenses'>;
 
 const money = (n: number): Money => n as Money;
 

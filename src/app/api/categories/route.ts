@@ -3,20 +3,20 @@ import { createClient } from '@/lib/supabase/server';
 import { toCategory, type CategoryRow } from '@/lib/mappers';
 import { categoryCreateSchema } from '@/lib/validation';
 import { json, parseBody, unauthorized } from '@/lib/api/http';
+import { getCategories } from '@/lib/queries/categories';
 
 export async function GET() {
   const user = await verifySession();
   if (!user) return unauthorized();
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .select('id, name, color, sort_order, archived')
-    .eq('user_id', user.id)
-    .order('sort_order', { ascending: true });
-
-  if (error) return json({ error: error.message }, { status: 500 });
-  return json((data as CategoryRow[]).map(toCategory));
+  try {
+    const categories = await getCategories(supabase, user.id);
+    return json(categories);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return json({ error: message }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
