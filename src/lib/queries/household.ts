@@ -3,12 +3,20 @@
  * month boundaries), the member list (for attribution), and the active invite
  * code. Shared by the Home/summary paths and the Household settings screen.
  */
+import { cache } from 'react';
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Household, HouseholdMember } from '@/lib/types';
 import { toHousehold, type HouseholdRow } from '@/lib/mappers';
 
-/** The household's currency + timezone. Falls back to defaults if unseeded. */
-export async function getHousehold(
+/**
+ * The household's currency + timezone. Falls back to defaults if unseeded.
+ *
+ * `cache()`-wrapped: within one render the household is read by the page itself
+ * *and* re-read inside `getSummary` and `listExpenses` (each needs the timezone).
+ * Keyed on `(supabase, householdId)` — the page passes the same client instance
+ * to all three, so the three would-be round-trips collapse to a single query.
+ */
+export const getHousehold = cache(async function getHousehold(
   supabase: SupabaseServerClient,
   householdId: string
 ): Promise<Household> {
@@ -22,7 +30,7 @@ export async function getHousehold(
     return { id: householdId, currency: 'RSD', timezone: 'Europe/Belgrade' };
   }
   return toHousehold(data as HouseholdRow);
-}
+});
 
 /**
  * Members of a household with their display names. Done as two reads because

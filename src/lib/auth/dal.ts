@@ -7,16 +7,26 @@
  * request/render hit Supabase only once.
  */
 import { cache } from 'react';
-import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 
-/** Returns the authenticated user, or null. Never throws. */
-export const verifySession = cache(async (): Promise<User | null> => {
+/** The authenticated identity. Only the user id is ever consumed downstream. */
+export type SessionUser = { id: string };
+
+/**
+ * Returns the authenticated user, or null. Never throws.
+ *
+ * Uses `getClaims()` rather than `getUser()`: with asymmetric JWT signing keys
+ * it verifies the token's signature *locally* (no round-trip to the Supabase
+ * Auth server), which is the hot path on every authed navigation. It falls back
+ * to a network `getUser()` internally only when the project still signs with the
+ * legacy symmetric HS256 secret — so this is safe regardless of key type.
+ */
+export const verifySession = cache(async (): Promise<SessionUser | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user ?? null;
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data) return null;
+  const id = data.claims.sub;
+  return id ? { id } : null;
 });
 
 /** Alias for readability at call sites that just want the user. */
