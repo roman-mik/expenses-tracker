@@ -9,6 +9,9 @@ import { zonedDateKey } from '@/lib/date';
 import { Button } from '@/components/ui/Button';
 import { ChevronLeftIcon } from '@/components/ui/icons';
 import { HistoryList, type ExpenseGroup } from '@/components/home/HistoryList';
+import { CategoryFilter } from '@/components/history/CategoryFilter';
+import { CategoryBreakdown } from '@/components/history/CategoryBreakdown';
+import { categoryBreakdown } from '@/lib/category-breakdown';
 
 /** Human day label ("Today", "Yesterday", else "Mon, 12 Aug"). */
 function dayLabel(
@@ -28,7 +31,11 @@ function dayLabel(
   }).format(new Date(spentAt));
 }
 
-export default async function HistoryPage() {
+export default async function HistoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
   const user = await verifySession();
   if (!user) redirect('/login');
 
@@ -36,7 +43,10 @@ export default async function HistoryPage() {
   if (!householdId) redirect('/login');
 
   const supabase = await createClient();
-  const { timezone: timeZone } = await getHousehold(supabase, householdId);
+  const { timezone: timeZone, currency } = await getHousehold(
+    supabase,
+    householdId
+  );
 
   const now = new Date();
   const month = currentMonth(now, timeZone);
@@ -47,6 +57,19 @@ export default async function HistoryPage() {
     getHouseholdMembers(supabase, householdId),
   ]);
 
+  // Whole-month breakdown, unaffected by the category filter below.
+  const breakdown = categoryBreakdown(expenses, currency);
+  const hasOtherCurrencies = expenses.some((e) => e.currency !== currency);
+
+  const { category: rawCategoryId } = await searchParams;
+  const activeCategoryId =
+    rawCategoryId && categories.some((c) => c.id === rawCategoryId)
+      ? rawCategoryId
+      : null;
+  const filteredExpenses = activeCategoryId
+    ? expenses.filter((e) => e.categoryId === activeCategoryId)
+    : expenses;
+
   const todayKey = zonedDateKey(now, timeZone);
   const yesterdayKey = zonedDateKey(
     new Date(now.getTime() - 24 * 60 * 60 * 1000),
@@ -55,7 +78,7 @@ export default async function HistoryPage() {
 
   // `listExpenses` returns newest-first, so groups form in that order too.
   const groups: ExpenseGroup[] = [];
-  for (const e of expenses) {
+  for (const e of filteredExpenses) {
     const key = zonedDateKey(new Date(e.spentAt), timeZone);
     let group = groups[groups.length - 1];
     if (!group || group.key !== key) {
@@ -92,6 +115,18 @@ export default async function HistoryPage() {
           <span className="font-heading text-xl">This month</span>
           <span aria-hidden />
         </header>
+
+        <CategoryBreakdown
+          breakdown={breakdown}
+          categories={categories}
+          currency={currency}
+          hasOtherCurrencies={hasOtherCurrencies}
+        />
+
+        <CategoryFilter
+          categories={categories}
+          activeCategoryId={activeCategoryId}
+        />
 
         <HistoryList
           groups={groups}
