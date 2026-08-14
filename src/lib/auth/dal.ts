@@ -21,3 +21,23 @@ export const verifySession = cache(async (): Promise<User | null> => {
 
 /** Alias for readability at call sites that just want the user. */
 export const getUser = verifySession;
+
+/**
+ * Resolves the household a user belongs to. Every user is in exactly one
+ * household (a household-of-one until they pair up), seeded by the
+ * `handle_new_user` trigger. `cache()`-wrapped so repeated calls within a
+ * request hit Supabase once. Returns null only in the pathological case of a
+ * user with no membership row.
+ */
+export const getHouseholdId = cache(
+  async (userId: string): Promise<string | null> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('household_members')
+      .select('household_id')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data?.household_id ?? null;
+  }
+);

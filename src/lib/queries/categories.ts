@@ -8,12 +8,12 @@ import { toCategory, type CategoryRow } from '@/lib/mappers';
 
 export async function getCategories(
   supabase: SupabaseServerClient,
-  userId: string
+  householdId: string
 ): Promise<Category[]> {
   const { data, error } = await supabase
     .from('categories')
     .select('id, name, color, sort_order, archived')
-    .eq('user_id', userId)
+    .eq('household_id', householdId)
     .order('sort_order', { ascending: true });
 
   if (error) throw new Error(error.message);

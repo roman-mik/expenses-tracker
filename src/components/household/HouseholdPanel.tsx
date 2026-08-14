@@ -1,0 +1,174 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import type { HouseholdMember } from '@/lib/types';
+
+export function HouseholdPanel({
+  members,
+  invite,
+  currentUserId,
+}: {
+  members: HouseholdMember[];
+  invite: string | null;
+  currentUserId: string;
+}) {
+  const router = useRouter();
+  const [code, setCode] = useState(invite);
+  const [joinCode, setJoinCode] = useState('');
+  const [busy, setBusy] = useState<null | 'invite' | 'join'>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const shared = members.length > 1;
+
+  async function mintInvite() {
+    setBusy('invite');
+    setError(null);
+    try {
+      const res = await fetch('/api/household/invite', { method: 'POST' });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error ?? 'Could not create a code');
+      setCode(body.code as string);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong');
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function copyCode() {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable — the code is visible to copy manually */
+    }
+  }
+
+  async function submitJoin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+    setBusy('join');
+    setError(null);
+    try {
+      const res = await fetch('/api/household/join', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ code: joinCode.trim() }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        throw new Error(
+          typeof body?.details === 'string'
+            ? body.details
+            : (body?.error ?? 'Invalid code')
+        );
+      }
+      setJoinCode('');
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not join');
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-8">
+      {/* Members */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+          {shared ? 'Sharing this cap' : 'Just you'}
+        </h2>
+        <ul className="flex flex-col divide-y divide-sand-300/60">
+          {members.map((m) => (
+            <li
+              key={m.userId}
+              className="flex items-center justify-between py-3"
+            >
+              <span className="text-ink/80">
+                {m.displayName?.trim() ||
+                  (m.userId === currentUserId ? 'You' : 'Member')}
+                {m.userId === currentUserId ? (
+                  <span className="text-ink/45"> · you</span>
+                ) : null}
+              </span>
+              <span className="text-xs uppercase tracking-wide text-ink/45">
+                {m.role}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Invite */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+          Invite someone
+        </h2>
+        <p className="text-sm text-ink/60">
+          Share this code with your partner. When they enter it, their budget
+          merges into yours and you share one cap.
+        </p>
+        {code ? (
+          <div className="flex items-center gap-3">
+            <code className="flex-1 rounded-lg bg-surface px-4 py-3 font-heading text-2xl tracking-widest text-center shadow-sm">
+              {code}
+            </code>
+            <button
+              type="button"
+              onClick={copyCode}
+              className="rounded-lg border border-sand-300 px-4 py-3 text-sm hover:bg-surface"
+            >
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+        ) : null}
+        <button
+          type="button"
+          onClick={mintInvite}
+          disabled={busy === 'invite'}
+          className="rounded-lg bg-accent text-white text-center font-semibold py-3 shadow-md hover:bg-accent-600 transition-colors disabled:opacity-60"
+        >
+          {busy === 'invite'
+            ? 'Generating…'
+            : code
+              ? 'Generate a new code'
+              : 'Generate invite code'}
+        </button>
+      </section>
+
+      {/* Join */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+          Join a household
+        </h2>
+        <p className="text-sm text-ink/60">
+          Got a code from someone? Enter it to share their cap. Your existing
+          expenses come with you.
+        </p>
+        <form onSubmit={submitJoin} className="flex items-center gap-3">
+          <input
+            value={joinCode}
+            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+            placeholder="ABCD1234"
+            className="flex-1 rounded-lg bg-surface px-4 py-3 tracking-widest shadow-sm outline-none focus:ring-2 focus:ring-accent/40"
+          />
+          <button
+            type="submit"
+            disabled={busy === 'join' || !joinCode.trim()}
+            className="rounded-lg border border-sand-300 px-4 py-3 text-sm hover:bg-surface disabled:opacity-60"
+          >
+            {busy === 'join' ? 'Joining…' : 'Join'}
+          </button>
+        </form>
+      </section>
+
+      {error ? <p className="text-sm text-accent-700">{error}</p> : null}
+    </div>
+  );
+}

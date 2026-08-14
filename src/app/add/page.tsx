@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
 import { getCategories } from '@/lib/queries/categories';
+import { getHousehold } from '@/lib/queries/household';
 import { currentMonth } from '@/lib/kapa-math';
 import { AddExpenseForm } from '@/components/add/AddExpenseForm';
 
@@ -11,18 +12,16 @@ export default async function AddExpensePage() {
   const user = await verifySession();
   if (!user) redirect('/login');
 
+  const householdId = await getHouseholdId(user.id);
+  if (!householdId) redirect('/login');
+
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('timezone')
-    .eq('id', user.id)
-    .maybeSingle();
-  const timeZone = profile?.timezone ?? 'Europe/Belgrade';
+  const { timezone: timeZone } = await getHousehold(supabase, householdId);
   const now = new Date();
 
   const [summary, categories] = await Promise.all([
-    getSummary(supabase, user.id, currentMonth(now, timeZone), now),
-    getCategories(supabase, user.id),
+    getSummary(supabase, householdId, currentMonth(now, timeZone), now),
+    getCategories(supabase, householdId),
   ]);
 
   const activeCategories = categories.filter((c) => !c.archived);

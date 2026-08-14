@@ -23,8 +23,20 @@ export const CURRENCY_EXPONENT: Record<Currency, number> = {
 export interface Profile {
   id: string;
   displayName: string | null;
+}
+
+/** A household — the unit that owns the cap, categories and the expense pool. */
+export interface Household {
+  id: string;
   currency: Currency;
   timezone: string;
+}
+
+/** A member of a household, with their profile display name for attribution. */
+export interface HouseholdMember {
+  userId: string;
+  displayName: string | null;
+  role: 'owner' | 'member';
 }
 
 export interface Category {
@@ -48,6 +60,7 @@ export interface Expense {
   currency: Currency;
   note: string | null;
   spentAt: string; // ISO timestamp
+  addedBy: string; // user_id of the member who logged it (attribution)
 }
 
 /** Per-currency spend bucket for currencies other than the profile's active one. */

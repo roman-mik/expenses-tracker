@@ -1,12 +1,27 @@
 import { formatMoney } from '@/lib/format';
-import type { Category, Expense } from '@/lib/types';
+import type { Category, Expense, HouseholdMember } from '@/lib/types';
+
+/** Short attribution label: "you" for the viewer, else the member's name. */
+function attributionLabel(
+  addedBy: string,
+  currentUserId: string,
+  member: HouseholdMember | undefined
+): string {
+  if (addedBy === currentUserId) return 'you';
+  return member?.displayName?.trim() || 'partner';
+}
 
 export function TodayList({
   expenses,
   categoryMap,
+  memberMap,
+  currentUserId,
 }: {
   expenses: Expense[];
   categoryMap: Map<string, Category>;
+  /** Present only in a shared household (>1 member) — enables attribution. */
+  memberMap?: Map<string, HouseholdMember>;
+  currentUserId: string;
 }) {
   if (expenses.length === 0) {
     return (
@@ -20,6 +35,9 @@ export function TodayList({
     <ul className="flex flex-col divide-y divide-sand-300/60">
       {expenses.map((e) => {
         const category = e.categoryId ? categoryMap.get(e.categoryId) : null;
+        const who = memberMap
+          ? attributionLabel(e.addedBy, currentUserId, memberMap.get(e.addedBy))
+          : null;
         return (
           <li key={e.id} className="flex items-center justify-between py-3">
             <span className="flex items-center gap-2.5">
@@ -32,6 +50,9 @@ export function TodayList({
                 {category?.name ?? 'Uncategorized'}
                 {e.note ? (
                   <span className="text-ink/45"> · {e.note}</span>
+                ) : null}
+                {who ? (
+                  <span className="text-ink/45"> · {who}</span>
                 ) : null}
               </span>
             </span>

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { verifySession } from '@/lib/auth/dal';
+import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { expenseCreateSchema, monthParamSchema } from '@/lib/validation';
 import { badRequest, json, parseBody, unauthorized } from '@/lib/api/http';
@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
   try {
-    const expenses = await listExpenses(supabase, user.id, {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const expenses = await listExpenses(supabase, householdId, {
       month,
       categoryId: category ?? undefined,
     });
@@ -42,7 +44,14 @@ export async function POST(request: Request) {
 
   const supabase = await createClient();
   try {
-    const expense = await createExpense(supabase, user.id, parsed.data);
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const expense = await createExpense(
+      supabase,
+      householdId,
+      user.id,
+      parsed.data
+    );
     return json(expense, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
