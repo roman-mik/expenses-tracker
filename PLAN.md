@@ -232,7 +232,7 @@ Shipped across four independent branches/PRs (`phase6/correctness`, `phase6/tool
 
 **Coverage**
 - [x] Tests now cover `src/lib/queries/*`, `src/lib/mutations/*`, every `/api/*` route, every Server Action, and the auth DAL, via an in-memory fake Supabase client (`src/test/fake-supabase.ts`) plus 5 component tests. 53 → 184 passing tests.
-- [ ] **Deferred:** `join_household` (`supabase/migrations/0003_households.sql`) — still the highest-risk untested code in the repo. No local Supabase stack exists to test it against (no `supabase/config.toml`, Docker not running, and the linked CLI project is the live hosted one — a DB-level test today would run against production). Needs `supabase init` + pgTAP in CI (Docker is available there) before this can close.
+- [x] `join_household` (`supabase/migrations/0003_households.sql`) — pgTAP suite (`supabase/tests/database/join_household.sql`, 13 assertions) covers the merge/remap, empty-household cleanup, a still-populated household surviving, the re-join no-op, and the auth/invite error paths. Runs locally via `npm run test:db` (`supabase test db`) and in CI (`.github/workflows/ci.yml` now runs `supabase start` before it, `supabase stop` after).
 
 **Ops**
 - [x] `vercel.json` schedules a daily cron against `GET /api/keepalive`, which does one trivial read behind a `CRON_SECRET` bearer check to keep the Supabase project warm.
@@ -286,4 +286,4 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 8. Next step
 
-Phases 0–4 are shipped and verified. Phase 6 (hardening) is done except one deliberately deferred item — pgTAP tests for `join_household`; a local Supabase stack now exists (`supabase init` + `supabase start`, 2026-08-15), so this is unblocked and just needs the pgTAP suite written. Phase 7 (i18n: English + Russian) is shipped; Serbian remains an unstarted stretch item. Phase 5 (mobile, Expo) is postponed.
+Phases 0–4 are shipped and verified. Phase 6 (hardening) is fully done — the pgTAP suite for `join_household` shipped 2026-08-15. Phase 7 (i18n: English + Russian) is shipped; Serbian remains an unstarted stretch item. Phase 5 (mobile, Expo) is postponed.

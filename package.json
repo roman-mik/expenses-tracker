@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:db": "supabase test db",
     "gen:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "engines": {
