@@ -33,13 +33,24 @@ describe('GET /api/summary', () => {
 
   it('400s on a missing/invalid month param', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    mockedGetHouseholdId.mockResolvedValue('h1');
+    mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     const res = await GET(new NextRequest('http://x/api/summary'));
     expect(res.status).toBe(400);
   });
 
-  it('500s (current behavior) when the caller has no household', async () => {
+  it('401s when the caller has no household', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
-    mockedGetHouseholdId.mockRejectedValue(new Error('No household for user'));
+    mockedGetHouseholdId.mockResolvedValue(null);
+    const res = await GET(
+      new NextRequest('http://x/api/summary?month=2026-08')
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('500s on a DB error resolving the household', async () => {
+    mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    mockedGetHouseholdId.mockRejectedValue(new Error('connection lost'));
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     const res = await GET(
       new NextRequest('http://x/api/summary?month=2026-08')

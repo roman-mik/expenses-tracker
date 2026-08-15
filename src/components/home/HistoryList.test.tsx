@@ -13,6 +13,12 @@ vi.mock('@/app/actions/expenses', () => ({
   deleteExpense: (...args: unknown[]) => mockDeleteExpense(...args),
 }));
 
+const mockToastSuccess = vi.fn();
+const mockToastError = vi.fn();
+vi.mock('@/components/ui/Toast', () => ({
+  useToast: () => ({ success: mockToastSuccess, error: mockToastError }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -76,10 +82,11 @@ describe('HistoryList', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove?' }));
 
     await waitFor(() => expect(mockDeleteExpense).toHaveBeenCalledWith('e1'));
+    expect(mockToastSuccess).toHaveBeenCalledWith('Expense removed');
     expect(mockRefresh).toHaveBeenCalled();
   });
 
-  it('shows an inline error and does not refresh when delete fails', async () => {
+  it('shows an error toast and does not refresh when delete fails', async () => {
     mockDeleteExpense.mockResolvedValue({ ok: false, error: 'Network error' });
     render(
       <HistoryList
@@ -94,7 +101,7 @@ describe('HistoryList', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove?' }));
 
     await waitFor(() =>
-      expect(screen.getByRole('alert')).toHaveTextContent('Network error')
+      expect(mockToastError).toHaveBeenCalledWith('Network error')
     );
     expect(mockRefresh).not.toHaveBeenCalled();
   });

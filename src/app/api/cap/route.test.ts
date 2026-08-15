@@ -28,9 +28,16 @@ describe('GET /api/cap', () => {
     expect(res.status).toBe(401);
   });
 
-  it('500s (current behavior) when the caller has no household', async () => {
+  it('401s when the caller has no household', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
-    mockedGetHouseholdId.mockRejectedValue(new Error('No household for user'));
+    mockedGetHouseholdId.mockResolvedValue(null);
+    const res = await GET();
+    expect(res.status).toBe(401);
+  });
+
+  it('500s on a DB error resolving the household', async () => {
+    mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    mockedGetHouseholdId.mockRejectedValue(new Error('connection lost'));
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     const res = await GET();
     expect(res.status).toBe(500);

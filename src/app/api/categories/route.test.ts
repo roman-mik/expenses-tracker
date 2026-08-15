@@ -27,9 +27,15 @@ describe('GET /api/categories', () => {
     expect((await GET()).status).toBe(401);
   });
 
-  it('500s (current behavior) when the caller has no household', async () => {
+  it('401s when the caller has no household', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
-    mockedGetHouseholdId.mockRejectedValue(new Error('No household for user'));
+    mockedGetHouseholdId.mockResolvedValue(null);
+    expect((await GET()).status).toBe(401);
+  });
+
+  it('500s on a DB error resolving the household', async () => {
+    mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    mockedGetHouseholdId.mockRejectedValue(new Error('connection lost'));
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     expect((await GET()).status).toBe(500);
   });
@@ -64,7 +70,7 @@ describe('GET /api/categories', () => {
 });
 
 describe('POST /api/categories', () => {
-  it('401s (pre-check, unlike GET) when the caller has no household', async () => {
+  it('401s when the caller has no household', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
     mockedGetHouseholdId.mockResolvedValue(null);
     const res = await POST(
