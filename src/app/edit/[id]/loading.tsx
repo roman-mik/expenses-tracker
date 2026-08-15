@@ -2,7 +2,7 @@ import { PageLoadingShell } from '@/components/ui/PageLoadingShell';
 
 export default function EditExpenseLoading() {
   return (
-    <PageLoadingShell title="Edit expense">
+    <PageLoadingShell title="Edit expense" backHref="/history">
       <div className="h-14 w-full rounded-lg bg-sand-200" />
       <div className="flex gap-3">
         <div className="h-10 w-20 rounded-lg bg-sand-200" />

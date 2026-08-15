@@ -46,9 +46,21 @@ export const joinHouseholdSchema = z.object({
   code: z.string().trim().min(1).max(64),
 });
 
+// Trimmed, 1-40 chars — matches the "short attribution label" use in the UI
+// (TodayList / HistoryList / HouseholdPanel). Empty/whitespace-only clears it.
+export const displayNameSchema = z.object({
+  displayName: z
+    .string()
+    .trim()
+    .max(40)
+    .nullable()
+    .transform((v) => (v ? v : null)),
+});
+
 export type ExpenseCreateInput = z.infer<typeof expenseCreateSchema>;
 export type ExpenseUpdateInput = z.infer<typeof expenseUpdateSchema>;
 export type CapUpdateInput = z.infer<typeof capUpdateSchema>;
 export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
 export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
 export type JoinHouseholdInput = z.infer<typeof joinHouseholdSchema>;
+export type DisplayNameInput = z.infer<typeof displayNameSchema>;

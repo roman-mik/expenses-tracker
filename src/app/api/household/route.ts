@@ -1,6 +1,4 @@
-import { getHouseholdId, verifySession } from '@/lib/auth/dal';
-import { createClient } from '@/lib/supabase/server';
-import { json, unauthorized } from '@/lib/api/http';
+import { json, requireHousehold } from '@/lib/api/http';
 import {
   getActiveInviteCode,
   getHouseholdMembers,
@@ -8,20 +6,22 @@ import {
 
 /** The Household screen payload: members, the active invite code, and self. */
 export async function GET() {
-  const user = await verifySession();
-  if (!user) return unauthorized();
-  const householdId = await getHouseholdId(user.id);
-  if (!householdId) return unauthorized();
+  const ctx = await requireHousehold();
+  if ('response' in ctx) return ctx.response;
 
-  const supabase = await createClient();
   try {
     const [members, invite] = await Promise.all([
-      getHouseholdMembers(supabase, householdId),
-      getActiveInviteCode(supabase, householdId),
+      getHouseholdMembers(ctx.supabase, ctx.householdId),
+      getActiveInviteCode(ctx.supabase, ctx.householdId),
     ]);
-    return json({ householdId, currentUserId: user.id, members, invite });
+    return json({
+      householdId: ctx.householdId,
+      currentUserId: ctx.user.id,
+      members,
+      invite,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return json({ error: message }, { status: 500 });
+    console.error('GET /api/household failed', error);
+    return json({ error: 'Failed to load the household' }, { status: 500 });
   }
 }

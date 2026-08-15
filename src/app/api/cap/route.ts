@@ -1,42 +1,34 @@
-import { getHouseholdId, verifySession } from '@/lib/auth/dal';
-import { createClient } from '@/lib/supabase/server';
 import { capUpdateSchema } from '@/lib/validation';
-import { json, parseBody, unauthorized } from '@/lib/api/http';
+import { json, parseBody, requireHousehold } from '@/lib/api/http';
 import { getCap } from '@/lib/queries/cap';
 import { upsertCap } from '@/lib/mutations/cap';
 
 export async function GET() {
-  const user = await verifySession();
-  if (!user) return unauthorized();
+  const ctx = await requireHousehold();
+  if ('response' in ctx) return ctx.response;
 
-  const supabase = await createClient();
   try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const cap = await getCap(supabase, householdId);
+    const cap = await getCap(ctx.supabase, ctx.householdId);
     if (!cap) return json(null, { status: 204 });
     return json(cap);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return json({ error: `Failed to get a monthly cap ${message}` }, { status: 500 });
+    console.error('GET /api/cap failed', error);
+    return json({ error: 'Failed to get the monthly cap' }, { status: 500 });
   }
 }
 
 export async function PUT(request: Request) {
-  const user = await verifySession();
-  if (!user) return unauthorized();
+  const ctx = await requireHousehold();
+  if ('response' in ctx) return ctx.response;
 
   const parsed = await parseBody(request, capUpdateSchema);
   if ('response' in parsed) return parsed.response;
 
-  const supabase = await createClient();
   try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const cap = await upsertCap(supabase, householdId, parsed.data);
+    const cap = await upsertCap(ctx.supabase, ctx.householdId, parsed.data);
     return json(cap);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return json({ error: message }, { status: 500 });
+    console.error('PUT /api/cap failed', error);
+    return json({ error: 'Failed to save the monthly cap' }, { status: 500 });
   }
 }
