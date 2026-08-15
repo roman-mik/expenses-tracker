@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { HouseholdMember } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 
 export function HouseholdPanel({
   members,
@@ -15,17 +16,16 @@ export function HouseholdPanel({
   currentUserId: string;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [code, setCode] = useState(invite);
   const [joinCode, setJoinCode] = useState('');
   const [busy, setBusy] = useState<null | 'invite' | 'join'>(null);
-  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const shared = members.length > 1;
 
   async function mintInvite() {
     setBusy('invite');
-    setError(null);
     try {
       const res = await fetch('/api/household/invite', { method: 'POST' });
       const body = await res.json();
@@ -33,7 +33,7 @@ export function HouseholdPanel({
       setCode(body.code as string);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      toast.error(e instanceof Error ? e.message : 'Something went wrong');
     } finally {
       setBusy(null);
     }
@@ -54,7 +54,6 @@ export function HouseholdPanel({
     e.preventDefault();
     if (!joinCode.trim()) return;
     setBusy('join');
-    setError(null);
     try {
       const res = await fetch('/api/household/join', {
         method: 'POST',
@@ -70,9 +69,10 @@ export function HouseholdPanel({
         );
       }
       setJoinCode('');
+      toast.success('Joined the household');
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not join');
+      toast.error(e instanceof Error ? e.message : 'Could not join');
     } finally {
       setBusy(null);
     }
@@ -170,8 +170,6 @@ export function HouseholdPanel({
           </Button>
         </form>
       </section>
-
-      {error ? <p className="text-sm text-accent-700">{error}</p> : null}
     </div>
   );
 }

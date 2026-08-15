@@ -189,7 +189,7 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 ### Phase 4 — Polish & install (1–2 days)
 - [x] PWA manifest + `useOffline`-based graceful degradation → installable, expenses submitted offline retry automatically. (No service worker/write queue — a cold offline launch of the installed app still needs the network; that's a deliberate v1 cut, not a gap.)
 - [x] 80% nudge (in-app banner; push notifications are a later, native concern).
-- [ ] Empty states, loading skeletons, error toasts, warm microcopy pass. *(Empty states and route-level skeletons are done; toasts + a `global-error.tsx` for root-layout crashes are the remaining slice.)*
+- [x] Empty states, loading skeletons, error toasts, warm microcopy pass.
 - [x] Basic analytics (Vercel Analytics + Speed Insights).
 
 ### Phase 5 — Mobile (later, separate effort)
@@ -223,4 +223,4 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 8. Next step
 
-Phases 0–3 are shipped. What's left of **Phase 4** — a toast/feedback system and a `global-error.tsx` boundary — is the only open item; see the roadmap above. Phase 5 (mobile) remains a later, separate effort.
+Phases 0–4 are shipped. Phase 5 (mobile, Expo) is a later, separate effort — see the roadmap above.

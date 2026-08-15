@@ -3,6 +3,7 @@ import { Caprasimo, Figtree } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { OfflineBanner } from '@/components/pwa/OfflineBanner';
+import { ToastProvider } from '@/components/ui/Toast';
 import './globals.css';
 
 const figtree = Figtree({
@@ -39,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     >
       <body className="min-h-full flex flex-col font-body">
         <OfflineBanner />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
         <Analytics />
         <SpeedInsights />
       </body>
