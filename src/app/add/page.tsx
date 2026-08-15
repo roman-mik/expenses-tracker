@@ -1,5 +1,6 @@
 import { PageHeader } from '@/components/ui/PageHeader';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
@@ -25,11 +26,12 @@ export default async function AddExpensePage() {
   ]);
 
   const activeCategories = categories.filter((c) => !c.archived);
+  const t = await getTranslations('Add');
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <PageHeader title="Add expense" />
+        <PageHeader title={t('titleNew')} />
 
         <AddExpenseForm
           categories={activeCategories}

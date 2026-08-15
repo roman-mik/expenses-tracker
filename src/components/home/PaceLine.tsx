@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -8,30 +9,27 @@ import type { Currency } from '@/lib/types';
  *   zero     = right on pace
  * Only the under-cap states render this; over-cap swaps in RecoveryPlan.
  */
-export function PaceLine({
+export async function PaceLine({
   paceGap,
   currency,
 }: {
   paceGap: number;
   currency: Currency;
 }) {
+  const t = await getTranslations('PaceLine');
   if (paceGap > 0) {
     return (
       <p className="text-sm text-sage-700">
-        Nicely paced — you&rsquo;re {formatMoney(paceGap, currency)} under an
-        even month. Nothing to fix today.
+        {t('underPace', { amount: formatMoney(paceGap, currency) })}
       </p>
     );
   }
   if (paceGap < 0) {
     return (
       <p className="text-sm text-accent-700">
-        A touch ahead of pace — about {formatMoney(-paceGap, currency)} over an
-        even month. Easy to ease back.
+        {t('overPace', { amount: formatMoney(-paceGap, currency) })}
       </p>
     );
   }
-  return (
-    <p className="text-sm text-ink/60">Right on an even pace for the month.</p>
-  );
+  return <p className="text-sm text-ink/60">{t('onPace')}</p>;
 }

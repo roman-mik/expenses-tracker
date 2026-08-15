@@ -9,6 +9,8 @@
  * for arithmetic in kapa-math, which stays integer-based.
  */
 
+import type { Locale } from '@/i18n/routing';
+
 export type Currency = 'RSD' | 'EUR' | 'USD';
 
 /** Minor units of some currency (integer). Branded to prevent mixing with plain numbers. */
@@ -23,6 +25,7 @@ export const CURRENCY_EXPONENT: Record<Currency, number> = {
 export interface Profile {
   id: string;
   displayName: string | null;
+  locale: Locale;
 }
 
 /** A household — the unit that owns the cap, categories and the expense pool. */

@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -7,7 +8,7 @@ import type { Currency } from '@/lib/types';
  * Callers gate this on nudgeEnabled and the threshold; it always assumes it
  * should render.
  */
-export function NudgeBanner({
+export async function NudgeBanner({
   spentPct,
   remaining,
   safeDaily,
@@ -18,16 +19,19 @@ export function NudgeBanner({
   safeDaily: number;
   currency: Currency;
 }) {
+  const t = await getTranslations('NudgeBanner');
   return (
     <div className="rounded-lg border border-accent/30 bg-accent/8 px-5 py-4">
       <p className="text-sm text-ink/80">
-        <strong className="text-accent-700">{spentPct}% used</strong> — heads
-        up, you&rsquo;re getting close. {formatMoney(remaining, currency)} left,
-        so about{' '}
-        <strong className="text-ink">
-          {formatMoney(Math.round(safeDaily), currency)}
-        </strong>{' '}
-        a day carries you comfortably to the reset.
+        {t.rich('message', {
+          spentPct,
+          remaining: formatMoney(remaining, currency),
+          safeDaily: formatMoney(Math.round(safeDaily), currency),
+          pct: (chunks) => (
+            <strong className="text-accent-700">{chunks}</strong>
+          ),
+          daily: (chunks) => <strong className="text-ink">{chunks}</strong>,
+        })}
       </p>
     </div>
   );

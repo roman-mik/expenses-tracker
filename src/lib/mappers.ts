@@ -12,6 +12,7 @@ import type {
   Money,
   Profile,
 } from './types';
+import type { Locale } from '@/i18n/routing';
 
 import { Database } from './supabase/database.types';
 
@@ -35,6 +36,7 @@ export function toProfile(row: ProfileRow): Profile {
   return {
     id: row.id,
     displayName: row.display_name,
+    locale: row.locale as Locale,
   };
 }
 

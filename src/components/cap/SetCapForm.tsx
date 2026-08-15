@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { setCap } from '@/app/actions/cap';
 import { formatMoney } from '@/lib/format';
 import { remaining, safeDaily } from '@/lib/kapa-math';
@@ -28,6 +29,8 @@ export function SetCapForm({
   initialNudgeEnabled: boolean;
   initialNudgePct: number;
 }) {
+  const t = useTranslations('Cap');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -49,7 +52,7 @@ export function SetCapForm({
         nudgePct: initialNudgePct,
       });
       if (result.ok) {
-        toast.success('Cap updated');
+        toast.success(t('capUpdated'));
         router.push('/');
       } else {
         toast.error(result.error);
@@ -61,7 +64,7 @@ export function SetCapForm({
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center gap-1">
         <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-          Monthly cap
+          {t('monthlyCap')}
         </span>
         <div className="flex items-baseline gap-2">
           <span className="font-heading text-5xl">
@@ -79,26 +82,28 @@ export function SetCapForm({
         value={cap}
         onChange={(e) => setCapValue(Number(e.target.value))}
         className="w-full accent-accent"
-        aria-label="Monthly cap"
+        aria-label={t('monthlyCapAria')}
       />
 
       <div className="rounded-lg bg-surface p-5 flex flex-col gap-3">
         <Consequence
-          label="Safe a day"
+          label={t('safeADay')}
           value={`${formatMoney(Math.round(perDay), currency)} ${currency}`}
         />
         <Consequence
-          label="Safe a week"
+          label={t('safeAWeek')}
           value={`${formatMoney(Math.round(perWeek), currency)} ${currency}`}
         />
         <Consequence
-          label="Already spent this month"
+          label={t('alreadySpent')}
           value={`${formatMoney(spent, currency)} ${currency}`}
         />
       </div>
 
       <label className="flex items-center justify-between">
-        <span className="text-ink/80">Nudge me at {initialNudgePct}%</span>
+        <span className="text-ink/80">
+          {t('nudgeMe', { pct: initialNudgePct })}
+        </span>
         <input
           type="checkbox"
           checked={nudgeEnabled}
@@ -108,7 +113,7 @@ export function SetCapForm({
       </label>
 
       <Button type="button" onClick={save} disabled={pending} className="py-4">
-        {pending ? 'Saving…' : 'Save cap'}
+        {pending ? tCommon('saving') : t('saveCap')}
       </Button>
     </div>
   );

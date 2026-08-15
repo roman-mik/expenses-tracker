@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useTranslations } from 'next-intl';
 
 type ToastKind = 'success' | 'error';
 type ToastItem = { id: number; kind: ToastKind; message: string };
@@ -28,6 +29,7 @@ const DURATION_MS = 4000;
  * never-blaming voice as the rest of Kapa's copy.
  */
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations('Common');
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
 
@@ -61,20 +63,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         role="status"
         className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
       >
-        {toasts.map((t) => (
+        {toasts.map((item) => (
           <div
-            key={t.id}
+            key={item.id}
             className={`pointer-events-auto flex max-w-sm items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${
-              t.kind === 'error'
+              item.kind === 'error'
                 ? 'bg-accent-700 text-white'
                 : 'bg-sage-700 text-white'
             }`}
           >
-            <span>{t.message}</span>
+            <span>{item.message}</span>
             <button
               type="button"
-              onClick={() => dismiss(t.id)}
-              aria-label="Dismiss"
+              onClick={() => dismiss(item.id)}
+              aria-label={t('dismiss')}
               className="text-white/70 transition-colors hover:text-white"
             >
               ×

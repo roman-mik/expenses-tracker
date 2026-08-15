@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import { syncLocaleCookie } from '@/app/actions/profile';
 
 type Status =
   { kind: 'idle' } | { kind: 'signing' } | { kind: 'error'; message: string };
 
 export function LoginForm({ initialError }: { initialError?: string }) {
+  const t = useTranslations('Login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>(
@@ -28,6 +31,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
       setStatus({ kind: 'error', message: error.message });
       return;
     }
+    await syncLocaleCookie();
     // refresh() re-runs server components so they see the freshly-set session.
     router.push('/');
     router.refresh();
@@ -41,7 +45,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         autoComplete="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@example.com"
+        placeholder={t('emailPlaceholder')}
         className="rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
       />
       <input
@@ -50,7 +54,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         autoComplete="current-password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
+        placeholder={t('passwordPlaceholder')}
         className="rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
       />
       <button
@@ -58,7 +62,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         disabled={status.kind === 'signing'}
         className="rounded-[var(--radius-md)] bg-[var(--color-accent)] px-4 py-3 font-medium text-white disabled:opacity-60"
       >
-        {status.kind === 'signing' ? 'Signing in…' : 'Sign in'}
+        {status.kind === 'signing' ? t('signingIn') : t('signIn')}
       </button>
       {status.kind === 'error' && (
         <p className="text-sm text-[var(--color-accent-700)]">

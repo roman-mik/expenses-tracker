@@ -1,12 +1,13 @@
 /**
- * Display-name update, shared by the Settings screen. Update rather than
- * upsert — `handle_new_user` guarantees every user already has a profile row.
- * RLS confines this to `id = auth.uid()`.
+ * Display-name / locale updates, shared by the Settings screen. Update
+ * rather than upsert — `handle_new_user` guarantees every user already has a
+ * profile row. RLS confines this to `id = auth.uid()`.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Profile } from '@/lib/types';
 import { toProfile, type ProfileRow } from '@/lib/mappers';
 import type { DisplayNameInput } from '@/lib/validation';
+import type { Locale } from '@/i18n/routing';
 
 export async function updateDisplayName(
   supabase: SupabaseServerClient,
@@ -17,7 +18,23 @@ export async function updateDisplayName(
     .from('profiles')
     .update({ display_name: input.displayName })
     .eq('id', userId)
-    .select('id, display_name')
+    .select('id, display_name, locale')
+    .single();
+
+  if (error) throw new Error(error.message);
+  return toProfile(data as ProfileRow);
+}
+
+export async function updateLocale(
+  supabase: SupabaseServerClient,
+  userId: string,
+  locale: Locale
+): Promise<Profile> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ locale })
+    .eq('id', userId)
+    .select('id, display_name, locale')
     .single();
 
   if (error) throw new Error(error.message);

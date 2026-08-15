@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { expenseCreateSchema, expenseUpdateSchema } from '@/lib/validation';
@@ -17,11 +18,12 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
  * session here regardless of any client-side gating.
  */
 export async function addExpense(input: unknown): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   const parsed = expenseCreateSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: 'Please check the amount.' };
+  if (!parsed.success) return { ok: false, error: t('checkAmount') };
 
   try {
     const householdId = await getHouseholdId(user.id);
@@ -29,7 +31,7 @@ export async function addExpense(input: unknown): Promise<ActionResult> {
     const supabase = await createClient();
     await createExpense(supabase, householdId, user.id, parsed.data);
   } catch {
-    return { ok: false, error: "Couldn't save that just now — try again." };
+    return { ok: false, error: t('saveFailed') };
   }
 
   revalidatePath('/');
@@ -45,11 +47,12 @@ export async function updateExpense(
   id: string,
   input: unknown
 ): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   const parsed = expenseUpdateSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: 'Please check the amount.' };
+  if (!parsed.success) return { ok: false, error: t('checkAmount') };
 
   try {
     const householdId = await getHouseholdId(user.id);
@@ -61,10 +64,9 @@ export async function updateExpense(
       id,
       parsed.data
     );
-    if (!updated)
-      return { ok: false, error: "That expense couldn't be found." };
+    if (!updated) return { ok: false, error: t('expenseNotFound') };
   } catch {
-    return { ok: false, error: "Couldn't save that just now — try again." };
+    return { ok: false, error: t('saveFailed') };
   }
 
   revalidatePath('/');
@@ -74,18 +76,18 @@ export async function updateExpense(
 
 /** Delete an expense, scoped to the caller's household. */
 export async function deleteExpense(id: string): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   try {
     const householdId = await getHouseholdId(user.id);
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     const removed = await deleteExpenseRow(supabase, householdId, id);
-    if (!removed)
-      return { ok: false, error: "That expense couldn't be found." };
+    if (!removed) return { ok: false, error: t('expenseNotFound') };
   } catch {
-    return { ok: false, error: "Couldn't remove that just now — try again." };
+    return { ok: false, error: t('removeFailed') };
   }
 
   revalidatePath('/');

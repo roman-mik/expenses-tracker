@@ -1,8 +1,9 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import { attributionLabel } from '@/lib/attribution';
 import type { Category, Expense, HouseholdMember } from '@/lib/types';
 
-export function TodayList({
+export async function TodayList({
   expenses,
   categoryMap,
   memberMap,
@@ -14,12 +15,9 @@ export function TodayList({
   memberMap?: Map<string, HouseholdMember>;
   currentUserId: string;
 }) {
+  const t = await getTranslations('TodayList');
   if (expenses.length === 0) {
-    return (
-      <p className="text-sm text-ink/45">
-        Nothing logged today. A quiet day is a good day.
-      </p>
-    );
+    return <p className="text-sm text-ink/45">{t('nothingLoggedToday')}</p>;
   }
 
   return (
@@ -40,7 +38,7 @@ export function TodayList({
                 }}
               />
               <span className="text-ink/80">
-                {category?.name ?? 'Uncategorized'}
+                {category?.name ?? t('uncategorized')}
                 {e.note ? (
                   <span className="text-ink/45"> · {e.note}</span>
                 ) : null}

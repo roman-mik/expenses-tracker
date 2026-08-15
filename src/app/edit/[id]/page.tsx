@@ -1,5 +1,6 @@
 import { PageHeader } from '@/components/ui/PageHeader';
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
@@ -38,11 +39,12 @@ export default async function EditExpensePage({
   // Treat the edit as a replacement: add this expense's amount back so the
   // form's "left after this" line reflects swapping it, not double-charging.
   const remainingIfReplaced = summary.remaining + expense.amountMinor;
+  const t = await getTranslations('Add');
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <PageHeader title="Edit expense" backHref="/history" />
+        <PageHeader title={t('titleEdit')} backHref="/history" />
 
         <AddExpenseForm
           categories={activeCategories}

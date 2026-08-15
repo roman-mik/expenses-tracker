@@ -96,6 +96,7 @@ household_invites                                 -- invite-code join flow
 profiles                                          -- currency/timezone live on households, not here
   id            uuid  PK → auth.users.id
   display_name  text                              -- shown for expense attribution
+  locale        text  default 'en'                -- UI language (Phase 7), 'en' | 'ru'
   created_at    timestamptz
 
 allowed_emails                                    -- private/invite-only gate (§0.1)
@@ -239,7 +240,8 @@ Shipped across four independent branches/PRs (`phase6/correctness`, `phase6/tool
 
 ### Phase 7 — Localization
 
-- [ ] **i18n**: `next-intl`, English default/fallback, Russian second, Serbian stretch. Locale lives on `profiles.locale` (per-user, not per-household) — currency/number formatting (`sr-RS`) stays tied to the household regardless of UI language.
+- [x] **i18n**: `next-intl` (no `[locale]` URL segment — locale travels via a `KAPA_LOCALE` cookie, resolved cookie → `Accept-Language` → `en` default in `src/i18n/request.ts`). English default/fallback, Russian shipped complete; Serbian remains a stretch item, not started. Locale lives on `profiles.locale` (per-user, not per-household, `supabase/migrations/0004_profile_locale.sql`) — currency/number formatting (`sr-RS`) stays tied to the household regardless of UI language (`lib/format.ts` untouched). Switcher lives on `/settings` (`LocaleForm.tsx`); `src/test/messages.test.ts` keeps `en.json`/`ru.json` keys from drifting.
+  - Deliberately left English: `/api/*` route error strings (the future Expo client's own concern, per §4/§5), `global-error.tsx` (renders outside the root layout, no provider), `manifest.ts` (one manifest per build), and Zod messages in `lib/validation.ts` (never surfaced — actions map to their own copy).
 
 ---
 
@@ -284,4 +286,4 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 8. Next step
 
-Phases 0–4 are shipped and verified. Phase 6 (hardening) is done except one deliberately deferred item — pgTAP tests for `join_household`, blocked on a local Supabase stack (see Phase 6 → Coverage). Phase 5 (mobile, Expo) is postponed.
+Phases 0–4 are shipped and verified. Phase 6 (hardening) is done except one deliberately deferred item — pgTAP tests for `join_household`; a local Supabase stack now exists (`supabase init` + `supabase start`, 2026-08-15), so this is unblocked and just needs the pgTAP suite written. Phase 7 (i18n: English + Russian) is shipped; Serbian remains an unstarted stretch item. Phase 5 (mobile, Expo) is postponed.
