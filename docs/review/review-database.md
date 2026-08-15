@@ -175,7 +175,15 @@ create unique index if not exists uq_categories_household_name
 
 Consider also a partial unique on non-archived rows if you want to allow reusing a name after archiving.
 
+### No migration ever GRANTs table privileges to `anon`/`authenticated`
+
+**Status: found and fixed during P0 remediation, not in the original review.** Discovered while retrofitting the pgTAP suite to run as `authenticated` instead of the BYPASSRLS superuser: it failed immediately on `permission denied for table household_invites`, and a check of `pg_class.relacl` confirmed every table in `public` had only `TRUNCATE`/`REFERENCES`/`TRIGGER` granted to `anon`/`authenticated` — none of `SELECT`/`INSERT`/`UPDATE`/`DELETE`. Postgres checks table-level privileges *before* RLS is ever consulted, so on a database bootstrapped purely from this repo's migrations (a fresh `supabase db reset`, or a hosted project provisioned outside Supabase Cloud's dashboard-driven project-creation flow), every one of the 22 policies in `0003_households.sql:191-233` is unreachable dead code and the app cannot read or write anything. The app evidently works in the real deployment only because Supabase Cloud's project bootstrap grants these outside of any migration this repo controls.
+
+**Status: fixed** — `supabase/migrations/0006_table_grants.sql` grants exactly the verbs each table's policy set exercises, to `authenticated` only (nothing to `anon` — every policy predicate keys off `auth.uid()`, which is null for anon, so an anon grant would be reachable-but-always-denied at best).
+
 ### pgTAP tests run as superuser, so they verify none of the RLS
+
+**Status: fixed** — see `docs/review/review-testing.md` §3 and `REVIEW.md` P0 item 4 for the retrofit and the `rls.sql` suite.
 
 **Severity: Medium**
 

@@ -189,6 +189,8 @@ Add two more if budget allows: a `POST /api/expenses` handler invoked with a rea
 
 ### 3. The pgTAP file tests logic as a superuser and therefore tests no security
 
+**Status: fixed** — `tests.login_as`/`tests.logout` helpers added, `join_household.sql` retrofitted, `rls.sql` added (16 assertions, this doc's sketch declared `plan(14)` but wrote 11 — recount landed on 16 once the fixture and sanity checks were filled in). Two implementation notes for whoever touches this next: (1) `select count(*) from (update ... returning 1) u` is not valid SQL — a data-modifying CTE must be the statement's top level, so use `with u as (update ...) select is((select count(*) from u), ...)` instead; (2) an UPDATE whose RLS `using` clause excludes the target row doesn't throw — it silently affects zero rows, so assert on row count, not `throws_ok`, for update/delete denial (insert denial does throw, since there's no row to filter yet). Also surfaced a bug this doc didn't anticipate: none of the migrations ever `GRANT` table privileges to `anon`/`authenticated`, so the retrofit initially failed on `permission denied` rather than on policy logic — see `docs/review/review-database.md`'s grants finding.
+
 **Severity: High. Cheapest fix in this document.**
 
 `supabase/tests/database/join_household.sql:33-34` (and every repetition at `:42-43`, `:49-50`, `:74-75`, `:82-83`) does:

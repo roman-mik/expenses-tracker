@@ -4,9 +4,32 @@
 -- Strategy: create three users directly via auth.users (bypassing the real
 -- signup flow), which fires handle_new_user() and gives each their own
 -- household-of-one with default categories. Impersonate a user for a
--- statement by setting the `request.jwt.claims` GUC that auth.uid() reads.
+-- statement with tests.login_as(), which sets the `request.jwt.claims` GUC
+-- that auth.uid() reads AND switches the session role to `authenticated`, so
+-- every statement below is actually subject to RLS rather than running as
+-- the BYPASSRLS superuser `supabase test db` connects as. tests.logout()
+-- reverts to that superuser role for fixture setup that needs it.
 
 begin;
+
+create schema if not exists tests;
+grant usage on schema tests to authenticated;
+create or replace function tests.login_as(uid uuid) returns void as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', uid, 'role', 'authenticated')::text, true);
+  perform set_config('request.jwt.claim.sub', uid::text, true);
+  execute 'set local role authenticated';
+end $$ language plpgsql;
+create or replace function tests.logout() returns void as $$
+begin
+  perform set_config('request.jwt.claims', null, true);
+  perform set_config('request.jwt.claim.sub', null, true);
+  execute 'reset role';
+end $$ language plpgsql;
+grant execute on function tests.login_as(uuid) to authenticated;
+grant execute on function tests.logout() to authenticated;
+
 select plan(13);
 
 -- ---------------------------------------------------------------------------
@@ -17,6 +40,8 @@ select gen_random_uuid() as owner_id \gset
 select gen_random_uuid() as joiner_id \gset
 select gen_random_uuid() as third_id \gset
 
+-- Fixture setup stays as the unrestricted superuser role: auth.users rows and
+-- allowed_emails inserts are not things a real client can do at all.
 insert into public.allowed_emails (email) values
   ('pgtap-owner@example.com'), ('pgtap-joiner@example.com'), ('pgtap-third@example.com');
 
@@ -30,8 +55,7 @@ values
 
 -- A third member joins the owner's household up front, so later we can assert
 -- the owner's household survives (it isn't left empty) when the joiner leaves it.
-select set_config('request.jwt.claims', json_build_object('sub', :'owner_id')::text, true);
-select set_config('request.jwt.claim.sub', :'owner_id', true);
+select tests.login_as(:'owner_id');
 
 insert into public.household_invites (code, household_id, created_by)
   select 'OWNER-CODE-' || :'owner_id', household_id, :'owner_id'
@@ -39,15 +63,13 @@ insert into public.household_invites (code, household_id, created_by)
 
 select ('OWNER-CODE-' || :'owner_id') as owner_code \gset
 
-select set_config('request.jwt.claims', json_build_object('sub', :'third_id')::text, true);
-select set_config('request.jwt.claim.sub', :'third_id', true);
+select tests.login_as(:'third_id');
 
 select public.join_household(:'owner_code');
 
 -- Give the joiner an expense in a category the owner's household also has by
 -- name ("Groceries") and one in a category unique to the joiner ("Custom").
-select set_config('request.jwt.claims', json_build_object('sub', :'joiner_id')::text, true);
-select set_config('request.jwt.claim.sub', :'joiner_id', true);
+select tests.login_as(:'joiner_id');
 
 insert into public.categories (household_id, name, color, sort_order)
   select household_id, 'Custom', 'accent-500', 5
@@ -71,25 +93,25 @@ select household_id as joiner_old_household from public.household_members where 
 -- Error cases first (don't disturb fixtures below)
 -- ---------------------------------------------------------------------------
 
-select set_config('request.jwt.claims', '', true);
-select set_config('request.jwt.claim.sub', '', true);
+select tests.logout();
 select throws_like(
   format($$ select public.join_household(%L) $$, :'owner_code'),
   '%Not authenticated%',
   'unauthenticated caller is rejected'
 );
 
-select set_config('request.jwt.claims', json_build_object('sub', :'joiner_id')::text, true);
-select set_config('request.jwt.claim.sub', :'joiner_id', true);
+select tests.login_as(:'joiner_id');
 select throws_like(
   $$ select public.join_household('NO-SUCH-CODE') $$,
   '%Invalid or expired invite code%',
   'unknown invite code is rejected'
 );
 
+select tests.login_as(:'owner_id');
 insert into public.household_invites (code, household_id, created_by, expires_at)
   select 'EXPIRED-CODE-' || :'owner_id', household_id, :'owner_id', now() - interval '1 day'
   from public.household_members where user_id = :'owner_id';
+select tests.login_as(:'joiner_id');
 select throws_like(
   format($$ select public.join_household(%L) $$, 'EXPIRED-CODE-' || :'owner_id'),
   '%Invalid or expired invite code%',
@@ -133,6 +155,12 @@ select results_eq(
   'all of the joiner''s expenses move to the target household'
 );
 
+-- These two are absence checks: once the joiner leaves joiner_old_household,
+-- RLS would hide any surviving row from them regardless of whether it was
+-- actually deleted. Verify as the unrestricted superuser so a "0 rows" result
+-- means the row is gone, not merely invisible to this caller.
+select tests.logout();
+
 select is(
   (select count(*)::int from public.households where id = :'joiner_old_household'),
   0,
@@ -145,7 +173,11 @@ select is(
   'the deleted household''s categories are gone (cascade)'
 );
 
--- Owner's household must survive — the third user is still in it.
+select tests.login_as(:'joiner_id');
+
+-- Owner's household must survive — the third user is still in it. The joiner
+-- is now a member of that same household too, so this is a real RLS-visible
+-- read, not a privileged one.
 select is(
   (select count(*)::int from public.household_members where user_id = :'owner_id'),
   1,
