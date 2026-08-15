@@ -16,7 +16,7 @@ import { ProjectionCard } from '@/components/home/ProjectionCard';
 import { TodayList } from '@/components/home/TodayList';
 import { DailySpendChart } from '@/components/home/DailySpendChart';
 import { Button } from '@/components/ui/Button';
-import { GearIcon } from '@/components/ui/icons';
+import { AppHeader } from '@/components/layout/AppHeader';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 
 export default async function Home() {
@@ -61,24 +61,7 @@ export default async function Home() {
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-xl lg:max-w-5xl lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
         <div className="flex flex-col gap-8">
-          <header className="flex items-center justify-between">
-            <span className="font-heading text-2xl">Kapa</span>
-            <nav className="flex items-center gap-3">
-              <Button href="/household" variant="pill">
-                Household
-              </Button>
-              <Button href="/categories" variant="pill">
-                Categories
-              </Button>
-              <Button href="/cap" variant="pill">
-                <GearIcon />
-                Set cap
-              </Button>
-              <Button href="/settings" variant="pill">
-                Settings
-              </Button>
-            </nav>
-          </header>
+          <AppHeader />
 
           {isNudge && (
             <NudgeBanner

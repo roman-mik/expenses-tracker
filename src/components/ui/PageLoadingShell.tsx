@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/Button';
-import { ChevronLeftIcon } from '@/components/ui/icons';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * Shared instant-navigation shell for the sub-pages (add / cap / household).
@@ -21,14 +20,7 @@ export function PageLoadingShell({
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <header className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <Button href={backHref} variant="pill" className="justify-self-start">
-            <ChevronLeftIcon />
-            Back
-          </Button>
-          <span className="font-heading text-xl">{title}</span>
-          <span aria-hidden />
-        </header>
+        <PageHeader title={title} backHref={backHref} />
 
         <div className="flex flex-col gap-5 animate-pulse">{children}</div>
       </div>

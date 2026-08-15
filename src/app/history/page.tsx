@@ -6,8 +6,7 @@ import { getCategories } from '@/lib/queries/categories';
 import { getHousehold, getHouseholdMembers } from '@/lib/queries/household';
 import { currentMonth } from '@/lib/kapa-math';
 import { zonedDateKey } from '@/lib/date';
-import { Button } from '@/components/ui/Button';
-import { ChevronLeftIcon } from '@/components/ui/icons';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { HistoryList, type ExpenseGroup } from '@/components/home/HistoryList';
 import { CategoryFilter } from '@/components/history/CategoryFilter';
 import { CategoryBreakdown } from '@/components/history/CategoryBreakdown';
@@ -107,14 +106,7 @@ export default async function HistoryPage({
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-xl flex flex-col gap-8">
-        <header className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <Button href="/" variant="pill" className="justify-self-start">
-            <ChevronLeftIcon />
-            Back
-          </Button>
-          <span className="font-heading text-xl">This month</span>
-          <span aria-hidden />
-        </header>
+        <PageHeader title="This month" />
 
         <CategoryBreakdown
           breakdown={breakdown}
