@@ -10,6 +10,7 @@ import {
   moveCategory,
 } from '@/app/actions/categories';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { TrashIcon } from '@/components/ui/icons';
 
 function Swatch({
@@ -66,6 +67,7 @@ function CategoryRow({
   isLast: boolean;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<
     null | 'move-up' | 'move-down' | 'save' | 'archive' | 'restore'
@@ -74,22 +76,19 @@ function CategoryRow({
   const [confirming, setConfirming] = useState(false);
   const [name, setName] = useState(category.name);
   const [color, setColor] = useState(category.color);
-  const [error, setError] = useState<string | null>(null);
 
   const move = (direction: 'up' | 'down') => {
-    setError(null);
     setBusy(direction === 'up' ? 'move-up' : 'move-down');
     startTransition(async () => {
       const result = await moveCategory(category.id, direction);
       if (result.ok) router.refresh();
-      else setError(result.error);
+      else toast.error(result.error);
       setBusy(null);
     });
   };
 
   const save = () => {
     if (!name.trim()) return;
-    setError(null);
     setBusy('save');
     startTransition(async () => {
       const result = await editCategory(category.id, {
@@ -98,24 +97,25 @@ function CategoryRow({
       });
       if (result.ok) {
         setEditing(false);
+        toast.success('Category saved');
         router.refresh();
       } else {
-        setError(result.error);
+        toast.error(result.error);
       }
       setBusy(null);
     });
   };
 
   const setArchived = (archived: boolean) => {
-    setError(null);
     setBusy(archived ? 'archive' : 'restore');
     startTransition(async () => {
       const result = await editCategory(category.id, { archived });
       if (result.ok) {
         setConfirming(false);
+        toast.success(archived ? 'Category archived' : 'Category restored');
         router.refresh();
       } else {
-        setError(result.error);
+        toast.error(result.error);
       }
       setBusy(null);
     });
@@ -155,11 +155,6 @@ function CategoryRow({
             Cancel
           </Button>
         </div>
-        {error ? (
-          <span className="text-xs text-accent-700" role="alert">
-            {error}
-          </span>
-        ) : null}
       </li>
     );
   }
@@ -246,35 +241,30 @@ function CategoryRow({
           </>
         )}
       </div>
-      {error ? (
-        <span className="text-right text-xs text-accent-700" role="alert">
-          {error}
-        </span>
-      ) : null}
     </li>
   );
 }
 
 function AddCategoryForm() {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState<string>(CATEGORY_COLORS[0]);
-  const [error, setError] = useState<string | null>(null);
 
   const submit = () => {
     if (!name.trim()) return;
-    setError(null);
     startTransition(async () => {
       const result = await addCategory({ name: name.trim(), color });
       if (result.ok) {
         setName('');
         setColor(CATEGORY_COLORS[0]);
         setOpen(false);
+        toast.success('Category added');
         router.refresh();
       } else {
-        setError(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -318,7 +308,6 @@ function AddCategoryForm() {
           onClick={() => {
             setOpen(false);
             setName('');
-            setError(null);
           }}
           disabled={pending}
           className="text-sm"
@@ -326,11 +315,6 @@ function AddCategoryForm() {
           Cancel
         </Button>
       </div>
-      {error ? (
-        <span className="text-xs text-accent-700" role="alert">
-          {error}
-        </span>
-      ) : null}
     </div>
   );
 }

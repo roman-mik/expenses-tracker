@@ -7,6 +7,7 @@ import { formatMoney } from '@/lib/format';
 import { remaining, safeDaily } from '@/lib/kapa-math';
 import type { Currency } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 
 const MIN = 20_000;
 const MAX = 300_000;
@@ -28,12 +29,12 @@ export function SetCapForm({
   initialNudgePct: number;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [cap, setCapValue] = useState(
     Math.min(Math.max(initialCap || MIN, MIN), MAX)
   );
   const [nudgeEnabled, setNudgeEnabled] = useState(initialNudgeEnabled);
-  const [error, setError] = useState<string | null>(null);
 
   // Same pure math the API uses, so consequences match the home screen exactly.
   const rem = remaining(cap, spent);
@@ -41,7 +42,6 @@ export function SetCapForm({
   const perWeek = perDay * 7;
 
   const save = () => {
-    setError(null);
     startTransition(async () => {
       const result = await setCap({
         monthlyCap: cap,
@@ -49,9 +49,10 @@ export function SetCapForm({
         nudgePct: initialNudgePct,
       });
       if (result.ok) {
+        toast.success('Cap updated');
         router.push('/');
       } else {
-        setError(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -105,8 +106,6 @@ export function SetCapForm({
           className="size-5 accent-accent"
         />
       </label>
-
-      {error ? <p className="text-sm text-accent-700">{error}</p> : null}
 
       <Button type="button" onClick={save} disabled={pending} className="py-4">
         {pending ? 'Saving…' : 'Save cap'}

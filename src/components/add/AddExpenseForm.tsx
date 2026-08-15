@@ -11,6 +11,7 @@ import {
   type Expense,
 } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] as const;
 
@@ -28,15 +29,17 @@ export function AddExpenseForm({
 }) {
   const editing = expense !== undefined;
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [digits, setDigits] = useState(() =>
-    expense ? String(expense.amountMinor / 10 ** CURRENCY_EXPONENT[currency]) : ''
+    expense
+      ? String(expense.amountMinor / 10 ** CURRENCY_EXPONENT[currency])
+      : ''
   );
   const [categoryId, setCategoryId] = useState<string | null>(
     expense?.categoryId ?? null
   );
   const [note, setNote] = useState(expense?.note ?? '');
-  const [error, setError] = useState<string | null>(null);
 
   // The keypad enters whole major units (the design has no decimals); convert
   // to minor units for storage.
@@ -52,7 +55,6 @@ export function AddExpenseForm({
 
   const submit = () => {
     if (!canSubmit) return;
-    setError(null);
     startTransition(async () => {
       // On edit, send explicit `null` (not `undefined`) so deselecting the
       // category or clearing the note actually clears it — `undefined` means
@@ -69,9 +71,10 @@ export function AddExpenseForm({
             note: note.trim() || undefined,
           });
       if (result.ok) {
+        toast.success(editing ? 'Changes saved' : 'Expense added');
         router.push(editing ? '/history' : '/');
       } else {
-        setError(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -86,7 +89,9 @@ export function AddExpenseForm({
           </span>
           <span className="font-semibold text-ink/55">{currency}</span>
         </div>
-        <p className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink/55'}`}>
+        <p
+          className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink/55'}`}
+        >
           {formatMoney(leftAfter, currency)} left after this
         </p>
       </div>
@@ -136,9 +141,12 @@ export function AddExpenseForm({
         className="rounded-md bg-surface px-4 py-3 text-ink placeholder:text-ink/40 outline-none focus-visible:ring-2 focus-visible:ring-accent"
       />
 
-      {error ? <p className="text-sm text-accent-700">{error}</p> : null}
-
-      <Button type="button" onClick={submit} disabled={!canSubmit} className="py-4">
+      <Button
+        type="button"
+        onClick={submit}
+        disabled={!canSubmit}
+        className="py-4"
+      >
         {pending ? 'Saving…' : editing ? 'Save changes' : 'Add expense'}
       </Button>
     </div>
