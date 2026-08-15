@@ -1,6 +1,16 @@
 @import 'tailwindcss';
 
 /*
+  Category swatches (CategoryManager, HistoryList, CategoryBreakdown) build
+  `var(--color-${category.color})` from a runtime string, so Tailwind's static
+  class scanner never sees a literal `bg-accent-500`-style utility for most of
+  these tokens and drops their --color-* custom property from the compiled
+  CSS. Force them to stay in the theme output. Keep this list in sync with
+  CATEGORY_COLORS in src/lib/category-colors.ts.
+*/
+@source inline("bg-{sand-500,sand-700,accent-400,accent-500,accent-700,sage-400,sage-500,sage-700}");
+
+/*
   Organic — design-system tokens ported from the Kapa design project.
   Tailwind v4 reads @theme to generate utilities: bg-bg, text-ink,
   bg-accent-500, font-heading, rounded-lg, shadow-md, etc.
