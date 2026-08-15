@@ -61,7 +61,8 @@ export async function updateExpense(
       id,
       parsed.data
     );
-    if (!updated) return { ok: false, error: "That expense couldn't be found." };
+    if (!updated)
+      return { ok: false, error: "That expense couldn't be found." };
   } catch {
     return { ok: false, error: "Couldn't save that just now — try again." };
   }
@@ -81,7 +82,8 @@ export async function deleteExpense(id: string): Promise<ActionResult> {
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     const removed = await deleteExpenseRow(supabase, householdId, id);
-    if (!removed) return { ok: false, error: "That expense couldn't be found." };
+    if (!removed)
+      return { ok: false, error: "That expense couldn't be found." };
   } catch {
     return { ok: false, error: "Couldn't remove that just now — try again." };
   }

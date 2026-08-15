@@ -21,8 +21,9 @@ export function NudgeBanner({
   return (
     <div className="rounded-lg border border-accent/30 bg-accent/8 px-5 py-4">
       <p className="text-sm text-ink/80">
-        <strong className="text-accent-700">{spentPct}% used</strong> — heads up,
-        you&rsquo;re getting close. {formatMoney(remaining, currency)} left, so about{' '}
+        <strong className="text-accent-700">{spentPct}% used</strong> — heads
+        up, you&rsquo;re getting close. {formatMoney(remaining, currency)} left,
+        so about{' '}
         <strong className="text-ink">
           {formatMoney(Math.round(safeDaily), currency)}
         </strong>{' '}

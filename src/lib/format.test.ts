@@ -19,6 +19,8 @@ describe('formatMoney', () => {
   });
 
   it('appends the ISO code when asked', () => {
-    expect(formatMoney(65000, 'RSD', { withCurrency: true })).toBe('65.000 RSD');
+    expect(formatMoney(65000, 'RSD', { withCurrency: true })).toBe(
+      '65.000 RSD'
+    );
   });
 });

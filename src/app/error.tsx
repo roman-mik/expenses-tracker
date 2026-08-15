@@ -28,8 +28,8 @@ export default function Error({
           Something slipped
         </h1>
         <p className="mt-2 text-[var(--color-ink)]/70">
-          That didn&apos;t go through. It&apos;s on us, not you — give it another
-          try.
+          That didn&apos;t go through. It&apos;s on us, not you — give it
+          another try.
         </p>
       </header>
 
