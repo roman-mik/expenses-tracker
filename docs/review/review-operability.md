@@ -95,6 +95,8 @@ Alert config: one rule, "notify on a new issue" + "notify when an issue occurs m
 
 #### A3. No backups. This is the finding to fix first.
 
+**Status: workflow shipped and restore-drilled locally; production secrets/repo still need manual setup** — see `REVIEW.md` P0 item 2 and `README.md` § Backups & restore for the drill results and exact verified commands. One correction to this finding's predicted restore failures: none of them reproduced. `supabase db dump --data-only` (current CLI, 2.114.0) opens the dump with `SET session_replication_role = replica`, which disables every trigger — including `on_auth_user_created` — and all FK-checking triggers for the duration of the load. The "the trigger will fire and seed duplicate households" and "FK ordering fights" concerns below were reasonable to expect a priori but don't hold against the tool as it exists today; verified by an actual dump → wipe → restore of the local stack, not by reading the CLI source.
+
 **Severity: Critical** (ABSENT)
 
 Current recovery story if the DB is corrupted, dropped, or a bad migration destroys expense history: **there is none.** Supabase free tier has no PITR and no downloadable daily backups (those start on Pro). There is no `pg_dump` anywhere in the repo, no scheduled job, no export path in the app. If migration `0005` contains a mistyped `delete from public.expenses`, the data is gone in the same second, permanently, with no undo. The blast radius is a year of two people's financial history — the exact thing the app exists to accumulate.

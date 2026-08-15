@@ -36,6 +36,52 @@ against `GET /api/keepalive`, which does one trivial read to keep the project wa
 exposed. Requires `CRON_SECRET` to be set (see the table above); without it the route 401s and
 the cron does nothing useful, so set it before relying on this.
 
+## Backups & restore
+
+Supabase's free tier has no PITR and no downloadable daily backups (those start on Pro) — there
+is no copy of the data anywhere but the one live project unless this workflow is set up and
+working. `.github/workflows/backup.yml` dumps schema + data daily via `supabase db dump`,
+encrypts with `gpg`, and pushes to a private `kapa-backups` repo (plus a 90-day GitHub Actions
+artifact as a second copy). See the comment at the top of that file for the three secrets it
+needs and the one-time setup.
+
+**An untested backup is a belief about a backup, not a backup.** To restore:
+
+```bash
+# 1. Decrypt and unpack the newest dump
+gpg --decrypt --passphrase "$BACKUP_PASSPHRASE" -o kapa.tar.gz kapa-<date>.tar.gz.gpg
+tar xzf kapa.tar.gz   # → schema.sql, data.sql
+
+# 2. Restore into a database that already has this repo's migrations applied —
+#    NOT the raw schema.sql if the target already has a schema (see below).
+#    Local: supabase start && supabase db reset   (applies supabase/migrations/*)
+#    Fresh Supabase Cloud project: supabase db push --db-url "$NEW_PROJECT_DB_URL"
+
+# 3. Load the data on top
+psql "$DB_URL" -f data.sql
+
+# 4. Verify: sign in, confirm the current month's total matches what you expect.
+```
+
+Two things worth knowing, confirmed by an actual restore drill against the local stack (2026-08,
+`supabase` CLI 2.114.0) rather than assumed:
+
+- **`data.sql` is directly restorable as-is** — `supabase db dump --data-only` opens with
+  `SET session_replication_role = replica`, which disables every trigger (including
+  `on_auth_user_created` and `expenses_freeze`) and FK-checking trigger for the duration of the
+  load. The predicted failure modes — the new-user trigger firing and seeding a duplicate
+  household, FK insert-ordering fights — did **not** reproduce; the tool already handles both.
+- **Restore onto a schema, not into nothing.** `schema.sql` from `supabase db dump` (no
+  `--data-only`) is there for reference/disaster recovery of the schema itself, but the normal
+  path is to stand up a target that already has this repo's migrations applied (step 2 above) and
+  load only `data.sql` on top — that's what was actually drilled and confirmed working.
+- `auth.users` **is** included in the dump (verified by inspecting `data.sql` — a `pg_dump`
+  flag/schema omission was the review's stated risk here, but the CLI includes it by default).
+
+Re-run this drill after any migration that changes triggers or constraints on a table the dump
+touches, and after any `supabase` CLI major-version bump — the trigger-disabling behavior above is
+a CLI implementation detail, not a documented contract.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `format:check`, `lint`, `typecheck`, `test`, and `build` on every
