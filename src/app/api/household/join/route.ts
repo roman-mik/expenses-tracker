@@ -9,7 +9,10 @@ import { joinHousehold } from '@/lib/mutations/household';
  * (a genuine DB/network failure) should surface as a 500, not be swallowed
  * into a 400 as "your code was wrong".
  */
-const KNOWN_JOIN_ERRORS = ['Not authenticated', 'Invalid or expired invite code'];
+const KNOWN_JOIN_ERRORS = [
+  'Not authenticated',
+  'Invalid or expired invite code',
+];
 
 /** Redeem an invite code — the caller's data merges into that household. */
 export async function POST(request: Request) {

@@ -42,7 +42,11 @@ export function Button(props: LinkButtonProps | NativeButtonProps) {
   if (rest.href !== undefined) {
     const { href, ...linkRest } = rest as LinkButtonProps;
     return (
-      <Link href={href} className={classesFor(variant, className)} {...linkRest}>
+      <Link
+        href={href}
+        className={classesFor(variant, className)}
+        {...linkRest}
+      >
         {children}
       </Link>
     );

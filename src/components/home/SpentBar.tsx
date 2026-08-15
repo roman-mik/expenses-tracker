@@ -32,7 +32,9 @@ export function SpentBar({
       </div>
       <div className="flex justify-between text-sm text-ink/60">
         <span>
-          <strong className="text-accent-700">{formatMoney(spent, currency)}</strong>{' '}
+          <strong className="text-accent-700">
+            {formatMoney(spent, currency)}
+          </strong>{' '}
           spent
         </span>
         <span>of {formatMoney(cap, currency)}</span>

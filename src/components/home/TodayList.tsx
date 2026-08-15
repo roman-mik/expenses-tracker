@@ -35,16 +35,16 @@ export function TodayList({
               <span
                 aria-hidden
                 className="size-2.5 rounded-full"
-                style={{ backgroundColor: `var(--color-${category?.color ?? 'sand-500'})` }}
+                style={{
+                  backgroundColor: `var(--color-${category?.color ?? 'sand-500'})`,
+                }}
               />
               <span className="text-ink/80">
                 {category?.name ?? 'Uncategorized'}
                 {e.note ? (
                   <span className="text-ink/45"> · {e.note}</span>
                 ) : null}
-                {who ? (
-                  <span className="text-ink/45"> · {who}</span>
-                ) : null}
+                {who ? <span className="text-ink/45"> · {who}</span> : null}
               </span>
             </span>
             <span className="font-medium tabular-nums">

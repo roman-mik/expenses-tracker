@@ -18,8 +18,8 @@ export function PaceLine({
   if (paceGap > 0) {
     return (
       <p className="text-sm text-sage-700">
-        Nicely paced — you&rsquo;re {formatMoney(paceGap, currency)} under an even
-        month. Nothing to fix today.
+        Nicely paced — you&rsquo;re {formatMoney(paceGap, currency)} under an
+        even month. Nothing to fix today.
       </p>
     );
   }
@@ -32,8 +32,6 @@ export function PaceLine({
     );
   }
   return (
-    <p className="text-sm text-ink/60">
-      Right on an even pace for the month.
-    </p>
+    <p className="text-sm text-ink/60">Right on an even pace for the month.</p>
   );
 }

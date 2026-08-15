@@ -5,12 +5,7 @@ import { useRouter } from 'next/navigation';
 import { deleteExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import { attributionLabel } from '@/lib/attribution';
-import type {
-  Category,
-  Currency,
-  Expense,
-  HouseholdMember,
-} from '@/lib/types';
+import type { Category, Currency, Expense, HouseholdMember } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
 import { PencilIcon, TrashIcon } from '@/components/ui/icons';
@@ -64,7 +59,9 @@ export function HistoryList({
               <ExpenseRow
                 key={e.id}
                 expense={e}
-                category={e.categoryId ? categoryMap.get(e.categoryId) : undefined}
+                category={
+                  e.categoryId ? categoryMap.get(e.categoryId) : undefined
+                }
                 who={
                   shared
                     ? attributionLabel(
@@ -120,15 +117,15 @@ function ExpenseRow({
           <span
             aria-hidden
             className="size-2.5 shrink-0 self-start mt-1.5 rounded-full"
-            style={{ backgroundColor: `var(--color-${category?.color ?? 'sand-500'})` }}
+            style={{
+              backgroundColor: `var(--color-${category?.color ?? 'sand-500'})`,
+            }}
           />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-ink/80">
               {category?.name ?? 'Uncategorized'}
             </span>
-            {meta ? (
-              <span className="text-xs text-ink/45">{meta}</span>
-            ) : null}
+            {meta ? <span className="text-xs text-ink/45">{meta}</span> : null}
           </span>
         </span>
 

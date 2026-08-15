@@ -56,9 +56,7 @@ export async function getHouseholdMembers(
     .in('id', ids);
   if (pErr) throw new Error(pErr.message);
 
-  const nameById = new Map(
-    (profiles ?? []).map((p) => [p.id, p.display_name])
-  );
+  const nameById = new Map((profiles ?? []).map((p) => [p.id, p.display_name]));
 
   return members.map((m) => ({
     userId: m.user_id,
