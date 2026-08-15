@@ -74,6 +74,9 @@ export default async function Home() {
                 <GearIcon />
                 Set cap
               </Button>
+              <Button href="/settings" variant="pill">
+                Settings
+              </Button>
             </nav>
           </header>
 

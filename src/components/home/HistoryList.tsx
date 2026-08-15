@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { deleteExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
+import { attributionLabel } from '@/lib/attribution';
 import type {
   Category,
   Currency,
@@ -11,6 +12,7 @@ import type {
   HouseholdMember,
 } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { PencilIcon, TrashIcon } from '@/components/ui/icons';
 
 /** A day's worth of expenses, pre-grouped and labelled on the server. */
@@ -20,16 +22,6 @@ export interface ExpenseGroup {
   expenses: Expense[];
   /** Day total — null when the day mixes currencies (can't be summed). */
   total: { amountMinor: number; currency: Currency } | null;
-}
-
-/** Short attribution label: "you" for the viewer, else the member's name. */
-function attributionLabel(
-  addedBy: string,
-  currentUserId: string,
-  member: HouseholdMember | undefined
-): string {
-  if (addedBy === currentUserId) return 'you';
-  return member?.displayName?.trim() || 'partner';
 }
 
 export function HistoryList({
@@ -101,21 +93,21 @@ function ExpenseRow({
   who: string | null;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const meta = [e.note, who].filter(Boolean).join(' · ');
 
   const remove = () => {
-    setError(null);
     startTransition(async () => {
       const result = await deleteExpense(e.id);
       if (result.ok) {
         // The action revalidated the server data; refresh to drop the row.
+        toast.success('Expense removed');
         router.refresh();
       } else {
-        setError(result.error);
+        toast.error(result.error);
         setConfirming(false);
       }
     });
@@ -184,12 +176,6 @@ function ExpenseRow({
           </span>
         )}
       </div>
-
-      {error ? (
-        <span className="text-right text-xs text-accent-700" role="alert">
-          {error}
-        </span>
-      ) : null}
     </li>
   );
 }

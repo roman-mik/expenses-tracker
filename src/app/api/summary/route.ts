@@ -1,27 +1,26 @@
 import { NextRequest } from 'next/server';
-import { getHouseholdId, verifySession } from '@/lib/auth/dal';
-import { createClient } from '@/lib/supabase/server';
-import { badRequest, json, unauthorized } from '@/lib/api/http';
+import { badRequest, json, requireHousehold } from '@/lib/api/http';
 import { monthParamSchema } from '@/lib/validation';
 import { getSummary } from '@/lib/queries/summary';
 
 export async function GET(request: NextRequest) {
-  const user = await verifySession();
-  if (!user) return unauthorized();
+  const ctx = await requireHousehold();
+  if ('response' in ctx) return ctx.response;
 
   const monthParsed = monthParamSchema.safeParse(
     request.nextUrl.searchParams.get('month')
   );
   if (!monthParsed.success) return badRequest(monthParsed.error.flatten());
 
-  const supabase = await createClient();
   try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const summary = await getSummary(supabase, householdId, monthParsed.data);
+    const summary = await getSummary(
+      ctx.supabase,
+      ctx.householdId,
+      monthParsed.data
+    );
     return json(summary);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return json({ error: message }, { status: 500 });
+    console.error('GET /api/summary failed', error);
+    return json({ error: 'Failed to load the summary' }, { status: 500 });
   }
 }

@@ -1,15 +1,6 @@
 import { formatMoney } from '@/lib/format';
+import { attributionLabel } from '@/lib/attribution';
 import type { Category, Expense, HouseholdMember } from '@/lib/types';
-
-/** Short attribution label: "you" for the viewer, else the member's name. */
-function attributionLabel(
-  addedBy: string,
-  currentUserId: string,
-  member: HouseholdMember | undefined
-): string {
-  if (addedBy === currentUserId) return 'you';
-  return member?.displayName?.trim() || 'partner';
-}
 
 export function TodayList({
   expenses,
