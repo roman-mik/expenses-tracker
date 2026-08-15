@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 
 const DISMISSED_KEY = 'kapa:install-prompt-dismissed';
@@ -61,6 +62,7 @@ function useInstallFacts() {
  * visitor has dismissed it.
  */
 export function InstallPrompt() {
+  const t = useTranslations('PWA');
   const isClient = useIsClient();
   const { standalone, isIOS, dismissed, setDismissed } = useInstallFacts();
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(
@@ -98,21 +100,19 @@ export function InstallPrompt() {
   return (
     <div className="rounded-lg border border-sand-300 bg-surface px-5 py-4 flex flex-col gap-3">
       <div>
-        <p className="font-semibold text-ink">Add Kapa to your home screen</p>
+        <p className="font-semibold text-ink">{t('installTitle')}</p>
         <p className="text-sm text-ink/70">
-          {isIOS
-            ? 'Tap the share icon, then "Add to Home Screen" — Kapa opens like an app, no browser bar.'
-            : 'Two taps for every expense, right from your home screen.'}
+          {isIOS ? t('installIOS') : t('installAndroid')}
         </p>
       </div>
       <div className="flex gap-3">
         {deferred && (
           <Button variant="primary" onClick={install} className="text-sm">
-            Install
+            {t('install')}
           </Button>
         )}
         <Button variant="ghost" onClick={dismiss} className="text-sm">
-          Not now
+          {t('notNow')}
         </Button>
       </div>
     </div>

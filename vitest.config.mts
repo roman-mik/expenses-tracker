@@ -14,6 +14,7 @@ export default defineConfig({
           name: 'node',
           environment: 'node',
           include: ['src/**/*.test.ts'],
+          setupFiles: ['./src/test/setup-intl-server.ts'],
         },
       },
       {

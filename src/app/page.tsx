@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
@@ -56,6 +57,7 @@ export default async function Home() {
   const isNudge =
     !isOver && summary.nudgeEnabled && summary.spentPct >= summary.nudgePct;
   const barState = isOver ? 'over' : isNudge ? 'nudge' : 'healthy';
+  const t = await getTranslations('Home');
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
@@ -74,7 +76,7 @@ export default async function Home() {
 
           <section className="rounded-lg bg-surface shadow-md p-7 flex flex-col gap-5">
             <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-              {isOver ? 'Over budget by' : 'Left to spend'}
+              {isOver ? t('overBudgetBy') : t('leftToSpend')}
             </span>
             <div className="flex items-baseline gap-2">
               <span
@@ -100,14 +102,18 @@ export default async function Home() {
 
             <div className="-mt-2 -mr-2 flex justify-end">
               <Button href="/cap" variant="ghost" className="text-sm">
-                Adjust cap →
+                {t('adjustCap')}
               </Button>
             </div>
 
             <div className="flex gap-6 text-sm">
               <span className="text-ink/70">
-                <strong className="text-ink">{summary.daysLeft}</strong> days
-                until reset
+                {t.rich('daysUntilReset', {
+                  count: summary.daysLeft,
+                  strong: (chunks) => (
+                    <strong className="text-ink">{chunks}</strong>
+                  ),
+                })}
               </span>
               {!isOver && (
                 <span className="text-ink/70">
@@ -117,7 +123,7 @@ export default async function Home() {
                       summary.currency
                     )}
                   </strong>{' '}
-                  safe a day
+                  {t('safeADay')}
                 </span>
               )}
             </div>
@@ -147,16 +153,16 @@ export default async function Home() {
           </section>
 
           <Button href="/add" variant="primary" className="py-4 text-center">
-            + Add expense
+            {t('addExpense')}
           </Button>
 
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-                Today
+                {t('today')}
               </h2>
               <Button href="/history" variant="ghost" className="text-sm">
-                View all →
+                {t('viewAll')}
               </Button>
             </div>
             <TodayList

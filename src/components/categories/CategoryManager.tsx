@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import type { Category } from '@/lib/types';
 import { CATEGORY_COLORS } from '@/lib/category-colors';
 import {
@@ -66,6 +67,8 @@ function CategoryRow({
   isFirst: boolean;
   isLast: boolean;
 }) {
+  const t = useTranslations('Categories');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -97,7 +100,7 @@ function CategoryRow({
       });
       if (result.ok) {
         setEditing(false);
-        toast.success('Category saved');
+        toast.success(t('categorySaved'));
         router.refresh();
       } else {
         toast.error(result.error);
@@ -112,7 +115,7 @@ function CategoryRow({
       const result = await editCategory(category.id, { archived });
       if (result.ok) {
         setConfirming(false);
-        toast.success(archived ? 'Category archived' : 'Category restored');
+        toast.success(archived ? t('categoryArchived') : t('categoryRestored'));
         router.refresh();
       } else {
         toast.error(result.error);
@@ -139,7 +142,7 @@ function CategoryRow({
             disabled={pending || !name.trim()}
             className="px-4 py-2 text-sm"
           >
-            {busy === 'save' ? 'Saving…' : 'Save'}
+            {busy === 'save' ? tCommon('saving') : tCommon('save')}
           </Button>
           <Button
             type="button"
@@ -152,7 +155,7 @@ function CategoryRow({
             disabled={pending}
             className="text-sm"
           >
-            Cancel
+            {tCommon('cancel')}
           </Button>
         </div>
       </li>
@@ -184,7 +187,7 @@ function CategoryRow({
             disabled={pending}
             className="text-sm"
           >
-            {busy === 'restore' ? 'Restoring…' : 'Restore'}
+            {busy === 'restore' ? t('restoring') : t('restore')}
           </Button>
         ) : (
           <>
@@ -193,7 +196,7 @@ function CategoryRow({
                 type="button"
                 onClick={() => move('up')}
                 disabled={pending || isFirst}
-                aria-label="Move up"
+                aria-label={t('moveUp')}
                 className="rounded-md px-2 py-1 text-ink/55 hover:bg-surface hover:text-ink disabled:opacity-30"
               >
                 ▲
@@ -202,7 +205,7 @@ function CategoryRow({
                 type="button"
                 onClick={() => move('down')}
                 disabled={pending || isLast}
-                aria-label="Move down"
+                aria-label={t('moveDown')}
                 className="rounded-md px-2 py-1 text-ink/55 hover:bg-surface hover:text-ink disabled:opacity-30"
               >
                 ▼
@@ -217,7 +220,7 @@ function CategoryRow({
                   disabled={pending}
                   className="rounded-md px-2 py-1 text-sm font-medium text-accent-700 hover:bg-surface disabled:opacity-50"
                 >
-                  {busy === 'archive' ? 'Archiving…' : 'Archive?'}
+                  {busy === 'archive' ? t('archiving') : t('archiveConfirm')}
                 </button>
                 <button
                   type="button"
@@ -225,14 +228,14 @@ function CategoryRow({
                   disabled={pending}
                   className="rounded-md px-2 py-1 text-sm text-ink/55 hover:bg-surface disabled:opacity-50"
                 >
-                  Cancel
+                  {tCommon('cancel')}
                 </button>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => setConfirming(true)}
-                aria-label="Archive category"
+                aria-label={t('archiveAria')}
                 className="shrink-0 rounded-md px-2 py-1 text-ink/55 transition-colors hover:bg-surface hover:text-accent-700"
               >
                 <TrashIcon />
@@ -246,6 +249,8 @@ function CategoryRow({
 }
 
 function AddCategoryForm() {
+  const t = useTranslations('Categories');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -261,7 +266,7 @@ function AddCategoryForm() {
         setName('');
         setColor(CATEGORY_COLORS[0]);
         setOpen(false);
-        toast.success('Category added');
+        toast.success(t('categoryAdded'));
         router.refresh();
       } else {
         toast.error(result.error);
@@ -277,7 +282,7 @@ function AddCategoryForm() {
         onClick={() => setOpen(true)}
         className="w-full py-3"
       >
-        + Add category
+        {t('addCategory')}
       </Button>
     );
   }
@@ -287,7 +292,7 @@ function AddCategoryForm() {
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Category name"
+        placeholder={t('namePlaceholder')}
         maxLength={60}
         className="rounded-lg bg-bg px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40"
         autoFocus
@@ -300,7 +305,7 @@ function AddCategoryForm() {
           disabled={pending || !name.trim()}
           className="px-4 py-2 text-sm"
         >
-          {pending ? 'Adding…' : 'Add'}
+          {pending ? t('adding') : t('add')}
         </Button>
         <Button
           type="button"
@@ -312,7 +317,7 @@ function AddCategoryForm() {
           disabled={pending}
           className="text-sm"
         >
-          Cancel
+          {tCommon('cancel')}
         </Button>
       </div>
     </div>
@@ -320,6 +325,7 @@ function AddCategoryForm() {
 }
 
 export function CategoryManager({ categories }: { categories: Category[] }) {
+  const t = useTranslations('Categories');
   const active = categories
     .filter((c) => !c.archived)
     .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -331,10 +337,10 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
         <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-          Categories
+          {t('sectionTitle')}
         </h2>
         {active.length === 0 ? (
-          <p className="text-sm text-ink/45">No categories yet.</p>
+          <p className="text-sm text-ink/45">{t('noCategoriesYet')}</p>
         ) : (
           <ul className="flex flex-col divide-y divide-sand-300/60">
             {active.map((c, i) => (
@@ -353,12 +359,9 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
       {archived.length > 0 ? (
         <section className="flex flex-col gap-3">
           <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-            Archived
+            {t('archivedTitle')}
           </h2>
-          <p className="text-sm text-ink/60">
-            Hidden from pickers, but past expenses still show their name and
-            color.
-          </p>
+          <p className="text-sm text-ink/60">{t('archivedNote')}</p>
           <ul className="flex flex-col divide-y divide-sand-300/60">
             {archived.map((c) => (
               <CategoryRow key={c.id} category={c} isFirst isLast />

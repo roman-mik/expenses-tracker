@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { deleteExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import { attributionLabel } from '@/lib/attribution';
@@ -30,16 +31,13 @@ export function HistoryList({
   members: HouseholdMember[];
   currentUserId: string;
 }) {
+  const t = useTranslations('HistoryList');
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
   const memberMap = new Map(members.map((m) => [m.userId, m]));
   const shared = members.length > 1;
 
   if (groups.length === 0) {
-    return (
-      <p className="text-sm text-ink/45">
-        Nothing logged this month yet. Add an expense to see it here.
-      </p>
-    );
+    return <p className="text-sm text-ink/45">{t('nothingLoggedThisMonth')}</p>;
   }
 
   return (
@@ -89,6 +87,8 @@ function ExpenseRow({
   category: Category | undefined;
   who: string | null;
 }) {
+  const t = useTranslations('HistoryList');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -101,7 +101,7 @@ function ExpenseRow({
       const result = await deleteExpense(e.id);
       if (result.ok) {
         // The action revalidated the server data; refresh to drop the row.
-        toast.success('Expense removed');
+        toast.success(t('expenseRemoved'));
         router.refresh();
       } else {
         toast.error(result.error);
@@ -123,7 +123,7 @@ function ExpenseRow({
           />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-ink/80">
-              {category?.name ?? 'Uncategorized'}
+              {category?.name ?? t('uncategorized')}
             </span>
             {meta ? <span className="text-xs text-ink/45">{meta}</span> : null}
           </span>
@@ -141,7 +141,7 @@ function ExpenseRow({
               disabled={pending}
               className="rounded-md px-2 py-1 text-sm font-medium text-accent-700 hover:bg-surface disabled:opacity-50"
             >
-              {pending ? 'Removing…' : 'Remove?'}
+              {pending ? t('removing') : t('removeConfirm')}
             </button>
             <button
               type="button"
@@ -149,7 +149,7 @@ function ExpenseRow({
               disabled={pending}
               className="rounded-md px-2 py-1 text-sm text-ink/55 hover:bg-surface disabled:opacity-50"
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           </span>
         ) : (
@@ -158,14 +158,14 @@ function ExpenseRow({
               href={`/edit/${e.id}`}
               variant="ghost"
               className="px-2 py-1"
-              aria-label="Edit expense"
+              aria-label={t('editAria')}
             >
               <PencilIcon />
             </Button>
             <button
               type="button"
               onClick={() => setConfirming(true)}
-              aria-label="Delete expense"
+              aria-label={t('deleteAria')}
               className="rounded-md px-2 py-1 text-ink/55 transition-colors hover:bg-surface hover:text-accent-700"
             >
               <TrashIcon />

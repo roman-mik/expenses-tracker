@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { addExpense, updateExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import {
@@ -28,6 +29,8 @@ export function AddExpenseForm({
   expense?: Expense;
 }) {
   const editing = expense !== undefined;
+  const t = useTranslations('Add');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -71,7 +74,7 @@ export function AddExpenseForm({
             note: note.trim() || undefined,
           });
       if (result.ok) {
-        toast.success(editing ? 'Changes saved' : 'Expense added');
+        toast.success(editing ? t('changesSaved') : t('expenseAdded'));
         router.push(editing ? '/history' : '/');
       } else {
         toast.error(result.error);
@@ -92,7 +95,7 @@ export function AddExpenseForm({
         <p
           className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink/55'}`}
         >
-          {formatMoney(leftAfter, currency)} left after this
+          {t('leftAfterThis', { amount: formatMoney(leftAfter, currency) })}
         </p>
       </div>
 
@@ -103,7 +106,7 @@ export function AddExpenseForm({
             {k}
           </KeypadButton>
         ))}
-        <KeypadButton onClick={backspace} aria-label="Delete">
+        <KeypadButton onClick={backspace} aria-label={t('deleteDigit')}>
           ⌫
         </KeypadButton>
         <KeypadButton onClick={() => press('0')}>0</KeypadButton>
@@ -136,7 +139,7 @@ export function AddExpenseForm({
         type="text"
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="Add a note (optional)"
+        placeholder={t('notePlaceholder')}
         maxLength={500}
         className="rounded-md bg-surface px-4 py-3 text-ink placeholder:text-ink/40 outline-none focus-visible:ring-2 focus-visible:ring-accent"
       />
@@ -147,7 +150,11 @@ export function AddExpenseForm({
         disabled={!canSubmit}
         className="py-4"
       >
-        {pending ? 'Saving…' : editing ? 'Save changes' : 'Add expense'}
+        {pending
+          ? tCommon('saving')
+          : editing
+            ? t('saveChanges')
+            : t('addExpense')}
       </Button>
     </div>
   );

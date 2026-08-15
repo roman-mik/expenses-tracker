@@ -42,6 +42,21 @@ the cron does nothing useful, so set it before relying on this.
 push to `main` and every PR. `npm run typecheck` is `next typegen && tsc --noEmit` — the `typegen`
 step regenerates Next's route-level types so `tsc` works standalone, without a prior `next build`.
 
+## Adding a language
+
+UI language is per-user (`profiles.locale`), not per-URL — there's no `/en`/`/ru` prefix. Resolution
+order: the `KAPA_LOCALE` cookie → `Accept-Language` → `en` default (see `src/i18n/request.ts`).
+Users change it on `/settings`.
+
+To add a locale:
+
+1. Add it to `locales` in `src/i18n/routing.ts` and the `profiles.locale` check constraint
+   (new migration under `supabase/migrations/`).
+2. Add a `messages/<locale>.json` with the same keys as `messages/en.json` — `npm test` fails if
+   the key sets ever drift (`src/test/messages.test.ts`).
+3. Add the label to `Settings.localeXx` in every message file and to the `localeLabel` map in
+   `src/components/settings/LocaleForm.tsx`.
+
 ## Design system
 
 The "Organic" tokens (cream / terracotta / sage, Caprasimo + Figtree) live in `src/app/globals.css` under Tailwind v4's `@theme`. Utilities: `bg-bg`, `bg-surface`, `text-ink`, `bg-accent`, `text-sage-700`, `rounded-lg`, `shadow-md`, `font-heading`.

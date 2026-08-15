@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -12,24 +13,24 @@ interface Props {
  * Hand-rolled CSS bars (no charting dependency — PLAN.md §2 explicitly allows
  * this) showing the month's daily spend against the safe-daily reference line.
  */
-export function DailySpendChart({
+export async function DailySpendChart({
   days,
   safeDaily,
   todayKey,
   currency,
 }: Props) {
+  const t = await getTranslations('DailySpendChart');
   const max = Math.max(safeDaily, ...days.map((d) => d.amountMinor), 1);
   const linePct = Math.min(100, (safeDaily / max) * 100);
 
-  const summary = `Daily spend for the month, safe pace ${formatMoney(
-    Math.round(safeDaily),
-    currency
-  )} a day.`;
+  const summary = t('ariaSummary', {
+    amount: formatMoney(Math.round(safeDaily), currency),
+  });
 
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
-        Daily spend
+        {t('dailySpend')}
       </h2>
 
       <div
@@ -43,7 +44,7 @@ export function DailySpendChart({
           style={{ bottom: `${linePct}%` }}
         >
           <span className="absolute -top-4 right-0 text-[10px] font-medium text-sage-700">
-            safe/day
+            {t('safePerDay')}
           </span>
         </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useOffline } from 'next/offline';
+import { useTranslations } from 'next-intl';
 
 /**
  * Shown app-wide (mounted in the root layout) whenever `next.config.ts`'s
@@ -9,6 +10,7 @@ import { useOffline } from 'next/offline';
  * Server Actions, so they quietly retry and land once the network is back.
  */
 export function OfflineBanner() {
+  const t = useTranslations('PWA');
   const isOffline = useOffline();
 
   if (!isOffline) {
@@ -20,8 +22,7 @@ export function OfflineBanner() {
       role="status"
       className="bg-accent-200 text-accent-700 px-4 py-2 text-center text-sm font-medium"
     >
-      You&rsquo;re offline. Anything you add will go through the moment
-      you&rsquo;re back.
+      {t('offline')}
     </div>
   );
 }

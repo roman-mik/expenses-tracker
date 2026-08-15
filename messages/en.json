@@ -1,0 +1,205 @@
+{
+  "Meta": {
+    "title": "Kapa — one cap, every expense in two taps",
+    "description": "A warm monthly spending-cap tracker. Always know what's left.",
+    "appleWebAppTitle": "Kapa"
+  },
+  "Common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "dismiss": "Dismiss"
+  },
+  "Nav": {
+    "menu": "Menu",
+    "main": "Main",
+    "setCap": "Set cap",
+    "categories": "Categories",
+    "household": "Household",
+    "settings": "Settings"
+  },
+  "Errors": {
+    "notSignedIn": "Not signed in.",
+    "saveFailed": "Couldn't save that just now — try again.",
+    "reorderFailed": "Couldn't reorder that just now — try again.",
+    "removeFailed": "Couldn't remove that just now — try again.",
+    "checkCap": "Please check the cap.",
+    "checkName": "Please check that name.",
+    "checkNameColor": "Please check the name and color.",
+    "checkAmount": "Please check the amount.",
+    "categoryNotFound": "That category couldn't be found.",
+    "expenseNotFound": "That expense couldn't be found.",
+    "checkLocale": "Please pick a supported language."
+  },
+  "Home": {
+    "overBudgetBy": "Over budget by",
+    "leftToSpend": "Left to spend",
+    "adjustCap": "Adjust cap →",
+    "daysUntilReset": "<strong>{count}</strong> {count, plural, one {day} other {days}} until reset",
+    "safeADay": "safe a day",
+    "addExpense": "+ Add expense",
+    "today": "Today",
+    "viewAll": "View all →"
+  },
+  "SpentBar": {
+    "spent": "spent",
+    "of": "of {amount}"
+  },
+  "NudgeBanner": {
+    "message": "<pct>{spentPct}% used</pct> — heads up, you're getting close. {remaining} left, so about <daily>{safeDaily}</daily> a day carries you comfortably to the reset."
+  },
+  "PaceLine": {
+    "underPace": "Nicely paced — you're {amount} under an even month. Nothing to fix today.",
+    "overPace": "A touch ahead of pace — about {amount} over an even month. Easy to ease back.",
+    "onPace": "Right on an even pace for the month."
+  },
+  "RecoveryPlan": {
+    "overBy": "You're over by <strong>{amount}</strong> this month. It happens — {daysLeft, plural, =0 {the reset} one {in # day the reset} other {in # days the reset}} wipes the slate clean.",
+    "evenOutOffer": "Want to even out? Start next month at <strong>{amount}</strong> and you're right back on track — or keep your usual cap and enjoy the fresh start.",
+    "noMathNeeded": "No math to do — the 1st starts you fresh at your full cap. Just ease off till then."
+  },
+  "ProjectionCard": {
+    "atThisRate": "At this rate, month-end lands near"
+  },
+  "TodayList": {
+    "nothingLoggedToday": "Nothing logged today. A quiet day is a good day.",
+    "uncategorized": "Uncategorized"
+  },
+  "DailySpendChart": {
+    "dailySpend": "Daily spend",
+    "safePerDay": "safe/day",
+    "ariaSummary": "Daily spend for the month, safe pace {amount} a day."
+  },
+  "History": {
+    "title": "This month",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "all": "All",
+    "uncategorized": "Uncategorized",
+    "otherCurrenciesNote": "Expenses in other currencies aren't included above."
+  },
+  "HistoryList": {
+    "nothingLoggedThisMonth": "Nothing logged this month yet. Add an expense to see it here.",
+    "uncategorized": "Uncategorized",
+    "removing": "Removing…",
+    "removeConfirm": "Remove?",
+    "editAria": "Edit expense",
+    "deleteAria": "Delete expense",
+    "expenseRemoved": "Expense removed"
+  },
+  "Add": {
+    "titleNew": "Add expense",
+    "titleEdit": "Edit expense",
+    "deleteDigit": "Delete",
+    "notePlaceholder": "Add a note (optional)",
+    "leftAfterThis": "{amount} left after this",
+    "saveChanges": "Save changes",
+    "addExpense": "Add expense",
+    "changesSaved": "Changes saved",
+    "expenseAdded": "Expense added"
+  },
+  "Cap": {
+    "title": "Set cap",
+    "monthlyCap": "Monthly cap",
+    "monthlyCapAria": "Monthly cap",
+    "safeADay": "Safe a day",
+    "safeAWeek": "Safe a week",
+    "alreadySpent": "Already spent this month",
+    "nudgeMe": "Nudge me at {pct}%",
+    "saveCap": "Save cap",
+    "capUpdated": "Cap updated"
+  },
+  "Categories": {
+    "title": "Categories",
+    "sectionTitle": "Categories",
+    "noCategoriesYet": "No categories yet.",
+    "addCategory": "+ Add category",
+    "namePlaceholder": "Category name",
+    "adding": "Adding…",
+    "add": "Add",
+    "archivedTitle": "Archived",
+    "archivedNote": "Hidden from pickers, but past expenses still show their name and color.",
+    "restore": "Restore",
+    "restoring": "Restoring…",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "archiveConfirm": "Archive?",
+    "archiving": "Archiving…",
+    "archiveAria": "Archive category",
+    "categorySaved": "Category saved",
+    "categoryArchived": "Category archived",
+    "categoryRestored": "Category restored",
+    "categoryAdded": "Category added"
+  },
+  "Household": {
+    "title": "Household",
+    "sharingThisCap": "Sharing this cap",
+    "justYou": "Just you",
+    "you": "You",
+    "member": "Member",
+    "youSuffix": "you",
+    "inviteSomeone": "Invite someone",
+    "inviteDescription": "Share this code with your partner. When they enter it, their budget merges into yours and you share one cap.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "generateCode": "Generate invite code",
+    "generateNewCode": "Generate a new code",
+    "generating": "Generating…",
+    "joinHousehold": "Join a household",
+    "joinDescription": "Got a code from someone? Enter it to share their cap. Your existing expenses come with you.",
+    "codePlaceholder": "ABCD1234",
+    "joining": "Joining…",
+    "join": "Join",
+    "couldNotCreateCode": "Could not create a code",
+    "somethingWentWrong": "Something went wrong",
+    "invalidCode": "Invalid code",
+    "couldNotJoin": "Could not join",
+    "joinedHousehold": "Joined the household"
+  },
+  "Settings": {
+    "title": "Settings",
+    "yourName": "Your name",
+    "namePlaceholder": "How should we attribute your expenses?",
+    "nameHelp": "Shown to anyone sharing your cap, so they know who added what.",
+    "saveName": "Save name",
+    "nameSaved": "Name saved",
+    "language": "Language",
+    "languageHelp": "Changes the words on screen — amounts still show in your household's currency.",
+    "saveLanguage": "Save language",
+    "languageSaved": "Language saved",
+    "localeEn": "English",
+    "localeRu": "Русский",
+    "signOut": "Sign out"
+  },
+  "Login": {
+    "title": "Kapa",
+    "subtitle": "Sign in to your cap.",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Password",
+    "signingIn": "Signing in…",
+    "signIn": "Sign in",
+    "closedError": "Sign-ups are closed right now — ask for an invite.",
+    "missingCodeError": "That sign-in link was incomplete. Try signing in below."
+  },
+  "PWA": {
+    "installTitle": "Add Kapa to your home screen",
+    "installIOS": "Tap the share icon, then \"Add to Home Screen\" — Kapa opens like an app, no browser bar.",
+    "installAndroid": "Two taps for every expense, right from your home screen.",
+    "install": "Install",
+    "notNow": "Not now",
+    "offline": "You're offline. Anything you add will go through the moment you're back."
+  },
+  "NotFound": {
+    "title": "Nothing here",
+    "body": "This page wandered off. Let's get you back to your cap.",
+    "backToKapa": "Back to Kapa"
+  },
+  "ErrorPage": {
+    "title": "Something slipped",
+    "body": "That didn't go through. It's on us, not you — give it another try.",
+    "tryAgain": "Try again",
+    "backToKapa": "Back to Kapa",
+    "reference": "Reference: {digest}"
+  }
+}

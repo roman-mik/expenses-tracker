@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import {
   MenuIcon,
@@ -13,11 +14,11 @@ import {
 const MENU_ID = 'app-menu';
 
 const links = [
-  { href: '/cap', label: 'Set cap', icon: TargetIcon },
-  { href: '/categories', label: 'Categories', icon: TagIcon },
-  { href: '/household', label: 'Household', icon: UsersIcon },
-  { href: '/settings', label: 'Settings', icon: GearIcon },
-];
+  { href: '/cap', labelKey: 'setCap', icon: TargetIcon },
+  { href: '/categories', labelKey: 'categories', icon: TagIcon },
+  { href: '/household', labelKey: 'household', icon: UsersIcon },
+  { href: '/settings', labelKey: 'settings', icon: GearIcon },
+] as const;
 
 /**
  * Home's top bar: the wordmark plus a single menu button covering the four
@@ -36,6 +37,7 @@ const links = [
  * listeners.
  */
 export function AppHeader() {
+  const t = useTranslations('Nav');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
 
@@ -65,7 +67,7 @@ export function AppHeader() {
         className="w-11 px-0"
         popoverTarget={MENU_ID}
         aria-haspopup="true"
-        aria-label="Menu"
+        aria-label={t('menu')}
       >
         <MenuIcon />
       </Button>
@@ -74,10 +76,10 @@ export function AppHeader() {
         ref={panelRef}
         id={MENU_ID}
         popover="auto"
-        aria-label="Main"
+        aria-label={t('main')}
         className="fixed flex w-56 flex-col gap-1 rounded-lg border border-sand-300 bg-surface p-2 shadow-lg"
       >
-        {links.map(({ href, label, icon: Icon }, i) => (
+        {links.map(({ href, labelKey, icon: Icon }, i) => (
           <Button
             key={href}
             href={href}
@@ -86,7 +88,7 @@ export function AppHeader() {
             autoFocus={i === 0}
           >
             <Icon className="text-ink/70" />
-            {label}
+            {t(labelKey)}
           </Button>
         ))}
       </nav>

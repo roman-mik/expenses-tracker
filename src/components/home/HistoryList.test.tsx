@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithIntl as render } from '@/test/intl';
 import { HistoryList, type ExpenseGroup } from './HistoryList';
 import { expense as expenseFactory, category, member } from '@/test/factories';
 

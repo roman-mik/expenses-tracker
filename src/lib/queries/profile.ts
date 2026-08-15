@@ -13,7 +13,7 @@ export async function getProfile(
 ): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, display_name')
+    .select('id, display_name, locale')
     .eq('id', userId)
     .maybeSingle();
 

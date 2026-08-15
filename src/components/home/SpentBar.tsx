@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -9,7 +10,7 @@ const FILL: Record<BarState, string> = {
   over: 'bg-accent-700',
 };
 
-export function SpentBar({
+export async function SpentBar({
   spent,
   cap,
   spentPct,
@@ -22,6 +23,7 @@ export function SpentBar({
   currency: Currency;
   state?: BarState;
 }) {
+  const t = await getTranslations('SpentBar');
   return (
     <div className="flex flex-col gap-2">
       <div className="h-4 rounded-full bg-sand-300 overflow-hidden">
@@ -35,9 +37,9 @@ export function SpentBar({
           <strong className="text-accent-700">
             {formatMoney(spent, currency)}
           </strong>{' '}
-          spent
+          {t('spent')}
         </span>
-        <span>of {formatMoney(cap, currency)}</span>
+        <span>{t('of', { amount: formatMoney(cap, currency) })}</span>
       </div>
     </div>
   );

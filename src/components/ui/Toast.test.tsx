@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
+import { renderWithIntl as render } from '@/test/intl';
 import { ToastProvider, useToast } from './Toast';
 
 function Trigger() {
