@@ -10,7 +10,7 @@
 
 These shape the whole plan. If one is wrong, tell me and I'll adjust.
 
-1. **Multi-user with accounts.** Anyone can sign up; each user sees only their own data (Supabase Auth + Row-Level Security). This is the most future-proof choice for the eventual mobile app. *(Alternative: single-user personal app — simpler, but harder to grow.)*
+1. **Multi-user with accounts, invite-only.** Sign-up is gated by an `allowed_emails` allowlist (`supabase/migrations/0002_optional_allowlist.sql`) — this is a private app, not open registration. Each user sees only their own household's data (Supabase Auth + Row-Level Security). Households grow via invite code (§3), not public sign-up. This is the most future-proof choice for the eventual mobile app while staying private.
 2. **API-first backend.** Business logic lives behind Next.js Route Handlers (`/api/*`) returning JSON, so the future React Native/Expo app consumes the exact same endpoints. *(Alternative: server-render everything now, extract an API later.)*
 3. **PWA first for mobile.** Ship an installable Progressive Web App so users can add it to their home screen — a native build (Expo) comes only once the web app is proven.
 4. **Currency & locale.** RSD with Serbian number formatting (`sr-RS`), matching the design. Multi-currency is out of scope for v1 but the schema leaves room for it.
@@ -25,12 +25,16 @@ These shape the whole plan. If one is wrong, tell me and I'll adjust.
 | Derived value | Formula (verbatim from the design) |
 |---|---|
 | Remaining | `max(cap − spent, 0)` |
-| Safe daily | `remaining / max(daysLeft, 1)` |
-| Elapsed days | `max(daysInMonth − daysLeft + 1, 1)` |
+| Elapsed days | `daysInMonth − daysLeft` (first day → 1, last day → daysInMonth) |
+| Safe daily | `remaining / max(daysLeft + 1, 1)` — today is still spendable |
 | Even pace | `cap × (elapsed / daysInMonth)` |
 | Pace gap | `evenPace − spent` (positive = under pace, warm copy; negative = ahead of pace, gentle nudge) |
 | Month projection | `(spent / elapsed) × daysInMonth` — "if today were the whole month" |
 | Spent % | `min(100, round(spent / cap × 100))` |
+| Overspend | `max(spent − cap, 0)` |
+| Recovery cap | a reduced *next-month* cap suggestion once over, computed from `overspend` |
+
+**`daysLeft` convention (implemented in `lib/kapa-math.ts`, see its header comment):** `daysLeft` counts whole days remaining in the month *excluding* today, so it ranges `0..daysInMonth-1` and matches the UI's "N days until reset" countdown. This is why elapsed/safe-daily above differ from a naive reading — a single `+1` formula can't satisfy both the first-day (`elapsed = 1`) and last-day (`daysLeft = 0`) edge cases at once, so the `+1` lives on `safeDaily`'s denominator instead of on `elapsedDays`. This is the source of truth; it is exhaustively unit-tested in `lib/kapa-math.test.ts`.
 
 **Design principle carried into the build:** never scold. Nearing the cap only shifts color and speaks gently; going over recalculates a *lower* safe-daily "recovery plan" instead of blocking. Copy is warm.
 
@@ -39,7 +43,7 @@ These shape the whole plan. If one is wrong, tell me and I'll adjust.
 - **Add expense** — amount keypad → category chips → optional note. Shows live "left after this" preview.
 - **Set cap** — slider (40k–200k range in design, 20k–300k in props), live consequences (safe daily / weekly / vs. your average), last-month + 3-month-avg reference chips, "nudge me at 80%" toggle.
 - **History** — grouped by day, category filter chips, month-to-date category breakdown bar.
-- **Web overview** — wider layout: daily-spend bar chart with safe-daily reference line, quick-add, category breakdown, month-end projection.
+- **Web overview** — not a separate route: the `lg:` breakpoint of Home (`src/app/page.tsx`) adds a second column (`hidden lg:flex`) with a hand-rolled daily-spend bar chart (`DailySpendChart.tsx`, safe-daily reference line, no charting dependency) and the month-end projection card.
 
 ### Design system ("Organic")
 Cream ground `#f5ead8`, terracotta accent `#c67139`/`#8c491a`, sage "you're fine" voice `#8fa073`. Fonts: **Caprasimo** (figures/headings) + **Figtree** (UI). Pull the tokens straight from the design project's `styles.css`.
@@ -53,11 +57,11 @@ Cream ground `#f5ead8`, terracotta accent `#c67139`/`#8c491a`, sage "you're fine
 | Framework | **Next.js (App Router)** — BE + web in one repo | Route Handlers give us the shared JSON API for mobile |
 | Hosting | **Vercel** (Hobby) | Free; auto-deploys from GitHub; serverless functions for the API |
 | Database + Auth | **Supabase** (Free) | Postgres + Auth + Row-Level Security; 500MB DB, 50k MAU — plenty to start |
-| DB access | **Supabase JS client** server-side (or Drizzle ORM for typed queries) | RLS enforces per-user isolation even if a query is wrong |
-| Styling | **Tailwind CSS** + design tokens from `styles.css` | Fast, matches the Organic system |
-| Charts | **Recharts** or hand-rolled bars (design uses simple CSS bars) | Avoid heavy deps for the daily-spend chart |
-| Forms/validation | **Zod** (shared client + server schemas) | One source of truth for expense/cap validation |
-| State/data fetching | **TanStack Query** (or Next server components + actions) | Cache + optimistic "add expense" for the two-tap feel |
+| DB access | **Supabase JS client** server-side | RLS enforces per-user isolation even if a query is wrong |
+| Styling | **Tailwind CSS v4** via `@theme` in `src/app/globals.css` (no `tailwind.config.*`) + design tokens | Fast, matches the Organic system |
+| Charts | **Hand-rolled CSS bars** (`src/components/home/DailySpendChart.tsx`) | Avoids a charting dependency for the daily-spend chart; Recharts was considered but not needed |
+| Forms/validation | **Zod** (`src/lib/validation.ts`, server-side) | One source of truth for expense/cap validation |
+| State/data fetching | **Next Server Components + Server Actions** (`src/app/actions/*`), `useTransition` for the optimistic "add expense" feel | TanStack Query was considered but wasn't needed — reads go straight through `src/lib/queries/*` in Server Components |
 | PWA | Next 16's `app/manifest.ts` + the experimental `useOffline` hook/config | Installable to the home screen; navigations, prefetches, and Server Actions auto-retry once the connection returns. No third-party dep — `next-pwa` predates this repo's Next 16 pin and isn't used. |
 
 **Money guardrail:** everything above stays on free tiers indefinitely for a personal/small-user app. The only things that could ever cost money — custom domain, Supabase paid tier past 500MB/50k MAU, Vercel Pro for team features — are all avoidable at this stage.
@@ -89,10 +93,14 @@ household_invites                                 -- invite-code join flow
   created_at    timestamptz
   expires_at    timestamptz null                  -- null = no expiry (v1)
 
-profiles
+profiles                                          -- currency/timezone live on households, not here
   id            uuid  PK → auth.users.id
   display_name  text                              -- shown for expense attribution
   created_at    timestamptz
+
+allowed_emails                                    -- private/invite-only gate (§0.1)
+  email         text  PK                          -- checked by a BEFORE INSERT trigger on auth.users;
+                                                    -- sign-up raises 'Sign-ups are currently closed' if absent
 
 categories
   id            uuid  PK
@@ -141,6 +149,8 @@ expenses
 
 Keep it thin and RESTish. Auth via Supabase session (web) / bearer token (mobile).
 
+**Dual path (as shipped, not as originally imagined):** the web app does **not** consume `/api/*` for its own reads/writes. Reads go straight through `src/lib/queries/*` inside Server Components; writes go through Server Actions (`src/app/actions/{cap,categories,expenses}.ts`), giving `useTransition`-based optimistic UI without a client data-fetching library. The `/api/*` routes below are maintained in parallel as the contract for the future Expo app (§5) — today the only web caller of `/api/*` is `HouseholdPanel` (invite/join, via `fetch`).
+
 | Method | Route | Purpose |
 |---|---|---|
 | `GET` | `/api/summary?month=YYYY-MM` | The whole home screen in one call: cap, spent, remaining, safeDaily, daysLeft, pace line, projection, category breakdown |
@@ -148,12 +158,14 @@ Keep it thin and RESTish. Auth via Supabase session (web) / bearer token (mobile
 | `POST` | `/api/expenses` | Add expense `{ amount, category_id, note?, spent_at? }` |
 | `PATCH`/`DELETE` | `/api/expenses/:id` | Edit / remove |
 | `GET`/`PUT` | `/api/cap` | Read / set `{ monthly_cap, nudge_enabled, nudge_pct }` |
-| `GET`/`POST`/`PATCH` | `/api/categories` | List / add / rename / reorder / archive |
+| `GET`/`POST`/`PATCH` | `/api/categories` | List / add / rename / reorder / archive (archive-only — no `DELETE`) |
 | `GET` | `/api/household` | Members (with display names + roles), active invite code, current user id |
 | `POST` | `/api/household/invite` | Mint a fresh invite code for the caller's household |
 | `POST` | `/api/household/join` | Redeem `{ code }` → merge into that household (via the `join_household` RPC) |
 
 Every request resolves the caller's household once via `getHouseholdId(userId)` (`lib/auth/dal.ts`, `cache()`-wrapped) and passes `householdId` to the query/mutation layer; `user.id` is still passed to writes for attribution.
+
+Every household-scoped route resolves the caller via `requireHousehold()` (`lib/api/http.ts`), so "not signed in" and "no household" both come back as a uniform 401 across every route — this used to be inconsistent (some routes threw a raw error → 500 with leaked Postgres text) until Phase 6 unified it.
 
 **RLS (membership-based).** Data tables use `is_household_member(household_id)`; `profiles` also allows co-members via `same_household(id)` (attribution). These are `SECURITY DEFINER` helpers so a membership check inside a policy doesn't recurse on `household_members`. Cross-household work (the join merge) runs inside the `join_household` definer RPC.
 
@@ -192,10 +204,38 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 - [x] Empty states, loading skeletons, error toasts, warm microcopy pass.
 - [x] Basic analytics (Vercel Analytics + Speed Insights).
 
-### Phase 5 — Mobile (later, separate effort)
+### Phase 5 — Mobile (postponed, separate effort)
+
+**Status: postponed.** PWA (Phase 4) covers mobile for now; native is revisited later.
+
 - [ ] Expo (React Native) app hitting the same `/api/*` endpoints.
 - [ ] Share `lib/kapa-math.ts` + Zod schemas via a small internal package or copied module.
 - [ ] Native push notifications for the nudge.
+
+### Phase 6 — Hardening (found by a 2026-08-15 audit against this doc)
+
+Shipped across four independent branches/PRs (`phase6/correctness`, `phase6/tooling`, `phase6/tests`, `phase6/ops`), each cut fresh off `main` rather than stacked.
+
+**Correctness / user-visible**
+- [x] **Sign-out**: `/settings` now posts to `src/app/auth/signout/route.ts`, linked from the home nav.
+- [x] **`display_name` is settable** via a form on `/settings` (`src/lib/{queries,mutations}/profile.ts`, `src/app/actions/profile.ts`) — attribution in `TodayList`/`HistoryList`/`HouseholdPanel` now shows real names once set.
+- [x] `src/app/login/page.tsx` is now a server component that reads `?error=` (`missing_code`/`closed`) and renders warm copy via `LoginForm`.
+- [x] `HistoryList` delete failures now go through `useToast()`, matching every other mutation surface.
+- [x] `PageLoadingShell` takes a `backHref` prop; `/edit/[id]`'s skeleton now points to `/history`.
+- [x] The "no household" API response is unified via `requireHousehold()` (`lib/api/http.ts`) — see §4.
+
+**Tooling**
+- [x] `eslint.config.mjs` ignores `supabase/.temp/**` and `graphify-out/**` — `npm run lint` is 0 errors.
+- [x] `typecheck` script added (`next typegen && tsc --noEmit`).
+- [x] `.github/workflows/ci.yml`: `format:check` → `lint` → `typecheck` → `test` → `build`, on every push to `main` and every PR.
+
+**Coverage**
+- [x] Tests now cover `src/lib/queries/*`, `src/lib/mutations/*`, every `/api/*` route, every Server Action, and the auth DAL, via an in-memory fake Supabase client (`src/test/fake-supabase.ts`) plus 5 component tests. 53 → 184 passing tests.
+- [ ] **Deferred:** `join_household` (`supabase/migrations/0003_households.sql`) — still the highest-risk untested code in the repo. No local Supabase stack exists to test it against (no `supabase/config.toml`, Docker not running, and the linked CLI project is the live hosted one — a DB-level test today would run against production). Needs `supabase init` + pgTAP in CI (Docker is available there) before this can close.
+
+**Ops**
+- [x] `vercel.json` schedules a daily cron against `GET /api/keepalive`, which does one trivial read behind a `CRON_SECRET` bearer check to keep the Supabase project warm.
+- [x] README reconciled to `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the code and `.env.local.example` already used it; only the README was stale), plus the new `typecheck`/CI docs.
 
 ---
 
@@ -213,7 +253,7 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 7. Open questions — resolved
 
-1. **Auth method** — **email + password** (f2da965 switched off magic-link; see `src/app/login/page.tsx`).
+1. **Auth method** — **email + password** (f2da965 switched off magic-link; see `src/app/login/page.tsx`). Sign-up is invite-only via the `allowed_emails` allowlist (§0.1) — there is deliberately no public sign-up page.
 2. **Single cap vs. per-category caps** — one global cap per household, confirmed. History shows category *breakdown*, not per-category limits.
 3. **Timezone/month boundary** — per-household, defaulting to `Europe/Belgrade` (`households.timezone`, `supabase/migrations/0003_households.sql`); not hardcoded, but not currently user-editable from the UI.
 4. **Currency** — RSD-only for v1, household-level, no FX conversion. Schema leaves room for more.
@@ -223,4 +263,4 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 8. Next step
 
-Phases 0–4 are shipped. Phase 5 (mobile, Expo) is a later, separate effort — see the roadmap above.
+Phases 0–4 are shipped and verified. Phase 6 (hardening) is done except one deliberately deferred item — pgTAP tests for `join_household`, blocked on a local Supabase stack (see Phase 6 → Coverage). Phase 5 (mobile, Expo) is postponed.
