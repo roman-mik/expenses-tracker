@@ -5,7 +5,11 @@
  */
 import { NextResponse } from 'next/server';
 import type { ZodType } from 'zod';
-import { getHouseholdId, verifySession, type SessionUser } from '@/lib/auth/dal';
+import {
+  getHouseholdId,
+  verifySession,
+  type SessionUser,
+} from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 
