@@ -35,6 +35,11 @@ export function HistoryList({
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
   const memberMap = new Map(members.map((m) => [m.userId, m]));
   const shared = members.length > 1;
+  const attributionLabels = {
+    you: t('you'),
+    partner: t('partner'),
+    formerMember: t('formerMember'),
+  };
 
   if (groups.length === 0) {
     return <p className="text-sm text-ink/45">{t('nothingLoggedThisMonth')}</p>;
@@ -65,7 +70,8 @@ export function HistoryList({
                     ? attributionLabel(
                         e.addedBy,
                         currentUserId,
-                        memberMap.get(e.addedBy)
+                        e.addedBy ? memberMap.get(e.addedBy) : undefined,
+                        attributionLabels
                       )
                     : null
                 }

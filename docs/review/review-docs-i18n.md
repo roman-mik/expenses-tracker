@@ -173,6 +173,9 @@ So a Russian-UI user sees: Russian chrome, Russian weekday names ("пн, 15 ав
 The mixed date-vs-money behaviour is coherent under one reading (dates are personal, money is household) but that reading is written down nowhere — `PLAN.md:243` mentions only `format.ts`, not `date.ts`. Fix: one sentence in the ADR for decision #4 above, plus a comment at `format.ts:22` saying `sr-RS` is a *household* property that deliberately does not follow the UI locale, and will need to become `households.locale` if non-RSD currencies ship. Right now `sr-RS` is a string literal with no marker that it's a policy rather than a default.
 
 #### `lib/attribution.ts` returns English display strings from domain code
+
+**Status: fixed** — `attributionLabel` now takes the `labels` parameter exactly as sketched below, with `en`/`ru` keys added to the `TodayList`/`HistoryList` namespaces. Landed alongside the unrelated `0007_expense_attribution.sql` migration (P0 item 5) since that work touched the same function to add a `formerMember` branch.
+
 **Severity: Medium** — the one confirmed user-visible leak, and an architectural mistake, not a missed key
 
 ```ts

@@ -63,7 +63,7 @@ export interface Expense {
   currency: Currency;
   note: string | null;
   spentAt: string; // ISO timestamp
-  addedBy: string; // user_id of the member who logged it (attribution)
+  addedBy: string | null; // user_id of the member who logged it; null once that member's account is deleted (attribution.ts renders a neutral label)
 }
 
 /** Per-currency spend bucket for currencies other than the profile's active one. */

@@ -19,13 +19,23 @@ export async function TodayList({
   if (expenses.length === 0) {
     return <p className="text-sm text-ink/45">{t('nothingLoggedToday')}</p>;
   }
+  const attributionLabels = {
+    you: t('you'),
+    partner: t('partner'),
+    formerMember: t('formerMember'),
+  };
 
   return (
     <ul className="flex flex-col divide-y divide-sand-300/60">
       {expenses.map((e) => {
         const category = e.categoryId ? categoryMap.get(e.categoryId) : null;
         const who = memberMap
-          ? attributionLabel(e.addedBy, currentUserId, memberMap.get(e.addedBy))
+          ? attributionLabel(
+              e.addedBy,
+              currentUserId,
+              e.addedBy ? memberMap.get(e.addedBy) : undefined,
+              attributionLabels
+            )
           : null;
         return (
           <li key={e.id} className="flex items-center justify-between py-3">

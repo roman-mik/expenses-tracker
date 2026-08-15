@@ -126,7 +126,7 @@ export type Database = {
           id: string;
           note: string | null;
           spent_at: string;
-          user_id: string;
+          user_id: string | null;
         };
         Insert: {
           amount_minor: number;
@@ -137,7 +137,7 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
-          user_id: string;
+          user_id?: string | null;
         };
         Update: {
           amount_minor?: number;
@@ -148,7 +148,7 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
-          user_id?: string;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -276,6 +276,7 @@ export type Database = {
     };
     Functions: {
       current_household_id: { Args: never; Returns: string };
+      delete_account: { Args: never; Returns: undefined };
       is_household_member: { Args: { hid: string }; Returns: boolean };
       join_household: { Args: { invite_code: string }; Returns: string };
       same_household: { Args: { other: string }; Returns: boolean };

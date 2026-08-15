@@ -105,6 +105,8 @@ alter table public.household_invites
 
 ### Direct PostgREST access defeats every app-layer control, including the `expenses_update` gap
 
+**Status: fixed, using this doc's own second option** — `0007_expense_attribution.sql` ships the trigger, not the `user_id = auth.uid()` policy check from the first option (which this doc itself flags as breaking cross-member editing per `src/app/api/expenses/[id]/route.ts:24-25`). One difference from the sketch below: the shipped trigger `raise exception`s on a blocked change rather than silently coercing (`new.user_id := old.user_id`) — a client attempting the forbidden PATCH gets an error it can surface, not a 200 that quietly did nothing. The trigger also had to special-case the `on delete set null` FK action from the `expenses.user_id` cascade fix (that FK action is itself a real UPDATE the trigger sees) — see `REVIEW.md` P0 item 5 for how.
+
 **Severity:** Medium · **Exploitability:** Practical (for a co-member)
 
 **Evidence.** `src/lib/supabase/client.ts:4-8` ships the anon key to the browser; the JWT lives in a JS-readable cookie. The app's own update paths are clean — `src/lib/mutations/expenses.ts:64-68` and `src/app/api/expenses/[id]/route.ts:18-22` both build `patch` from four explicitly named fields, so `household_id`, `user_id`, `created_at` and `currency` are unreachable through the API (the `currency` comment at `src/lib/validation.ts:5-7` is honoured: it is stamped server-side from the household at `src/lib/mutations/expenses.ts:29`). But the `expenses_update` policy (`0003:232`) is `using (is_household_member(household_id)) with check (is_household_member(household_id))` — no `user_id = auth.uid()`, unlike the insert policy one line above.

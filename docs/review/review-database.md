@@ -88,6 +88,8 @@ Then either (a) revoke `currency` from the `households_update` policy via a colu
 
 ### `expenses.user_id` can be re-pointed at any user on UPDATE
 
+**Status: fixed, differently than proposed** — see `docs/review/review-security.md`'s note on the same finding (its §5b already recommended the trigger over the `same_household(user_id)` check below, which is what shipped). `0007_expense_attribution.sql`.
+
 **Severity: Medium**
 
 `expenses_insert` correctly forces truthful attribution — `... and user_id = auth.uid()` (`0003_households.sql:231`). `expenses_update` does not (`:232`): its `WITH CHECK` only re-tests `is_household_member(household_id)`. Any member can therefore `PATCH /rest/v1/expenses?id=eq.<id> {"user_id":"<any uuid in auth.users>"}` and attribute a purchase to their partner, or to a user in a completely unrelated household — the FK at `0001_phase1_init.sql:45` only requires the id to exist in `auth.users`. That row then appears in the household but its `user_id` resolves to no member, and `getHouseholdMembers` (`src/lib/queries/household.ts:59-65`) yields `displayName: null` for it.
@@ -119,6 +121,8 @@ alter table public.expenses
 ```
 
 ### `on delete cascade` from `auth.users` destroys shared household history
+
+**Status: fixed** — `0007_expense_attribution.sql`. Went with review-operability.md's ordering (drop constraint, then drop NOT NULL, then re-add with `on delete set null`) rather than this doc's reverse order; same end state. The orphaned-empty-household concern noted below (`after delete on household_members` trigger) is not addressed by this migration — `join_household()` already handles its own empty-household case (0003 §9), but a user leaving via `delete_account()` without going through `join_household` can still leave an empty household behind. Not blocking for P0; worth a follow-up.
 
 **Severity: Medium**
 

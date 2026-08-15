@@ -220,6 +220,8 @@ Minimum guard, as a runbook step rather than automation: dump → `supabase migr
 
 #### B1. Deleting a user deletes their expenses out of the shared household — confirmed
 
+**Status: fixed** — `supabase/migrations/0007_expense_attribution.sql` applies the migration below verbatim (constraint-first ordering), plus the `delete_account()` RPC also below. `getHouseholdMembers` (`src/lib/queries/household.ts:40`) didn't need a UI change for the null case — it only ever lists *current* `household_members` rows, so a former member's `user_id` is naturally absent from the map; `src/lib/attribution.ts` was updated to render a translated "former member" label when `addedBy` is null, rather than falling through to the generic co-member fallback.
+
 **Severity: Critical**
 
 Confirmed exactly as suspected. `supabase/migrations/0001_phase1_init.sql:45`:

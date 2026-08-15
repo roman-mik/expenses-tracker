@@ -64,7 +64,10 @@
   },
   "TodayList": {
     "nothingLoggedToday": "Nothing logged today. A quiet day is a good day.",
-    "uncategorized": "Uncategorized"
+    "uncategorized": "Uncategorized",
+    "you": "you",
+    "partner": "partner",
+    "formerMember": "former member"
   },
   "DailySpendChart": {
     "dailySpend": "Daily spend",
@@ -86,7 +89,10 @@
     "removeConfirm": "Remove?",
     "editAria": "Edit expense",
     "deleteAria": "Delete expense",
-    "expenseRemoved": "Expense removed"
+    "expenseRemoved": "Expense removed",
+    "you": "you",
+    "partner": "partner",
+    "formerMember": "former member"
   },
   "Add": {
     "titleNew": "Add expense",

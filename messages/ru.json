@@ -64,7 +64,10 @@
   },
   "TodayList": {
     "nothingLoggedToday": "Сегодня ничего не потрачено. Тихий день — хороший день.",
-    "uncategorized": "Без категории"
+    "uncategorized": "Без категории",
+    "you": "вы",
+    "partner": "партнёр",
+    "formerMember": "бывший участник"
   },
   "DailySpendChart": {
     "dailySpend": "Расходы по дням",
@@ -86,7 +89,10 @@
     "removeConfirm": "Удалить?",
     "editAria": "Изменить расход",
     "deleteAria": "Удалить расход",
-    "expenseRemoved": "Расход удалён"
+    "expenseRemoved": "Расход удалён",
+    "you": "вы",
+    "partner": "партнёр",
+    "formerMember": "бывший участник"
   },
   "Add": {
     "titleNew": "Новый расход",
