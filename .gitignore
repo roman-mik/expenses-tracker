@@ -44,6 +44,9 @@ supabase/.branches/
 # graphify (local knowledge-graph build artifacts)
 graphify-out/
 
+# claude code (personal/local overrides, not shared config)
+.claude/settings.local.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
