@@ -237,6 +237,27 @@ Shipped across four independent branches/PRs (`phase6/correctness`, `phase6/tool
 - [x] `vercel.json` schedules a daily cron against `GET /api/keepalive`, which does one trivial read behind a `CRON_SECRET` bearer check to keep the Supabase project warm.
 - [x] README reconciled to `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the code and `.env.local.example` already used it; only the README was stale), plus the new `typecheck`/CI docs.
 
+### Phase 7 — Localization
+
+- [ ] **i18n**: `next-intl`, English default/fallback, Russian second, Serbian stretch. Locale lives on `profiles.locale` (per-user, not per-household) — currency/number formatting (`sr-RS`) stays tied to the household regardless of UI language.
+
+---
+
+## 5.1 Backlog candidates (not yet planned)
+
+Ideas worth doing eventually, but need more product thinking before they get a phase and a data model. Notes below are the open questions to resolve before scoping, not a committed design.
+
+- **Budget rollover** — carry unspent (or overspent) cap into next month instead of a hard reset each month. Wanted: a visible "pool" with history, and symmetric carry-over (surplus *and* overspend both roll forward). Needs resolving:
+  - The cap is currently a single *current* value per household (`budget_settings.monthly_cap`, no history) — rollover requires making it month-aware, likely a new per-month ledger table. Worth deciding how much of that infra is justified before Phase 5/6-sized effort.
+  - How rollover interacts with the existing over-cap **recovery plan** copy (§1) — same-month guidance vs. an actual next-month number; risk of the two messages contradicting each other.
+  - Whether rollover can compound indefinitely or should cap/decay somehow (a household that's been under-cap for a year — does the pool just keep growing?).
+  - UI: does the pool get its own screen, or fold into History/Set Cap?
+- **Recurring expenses** — predefine recurring items (rent, subscriptions) that show as a "pending" preview near their due date and get confirmed into a real expense rather than auto-posting. Needs resolving:
+  - How far ahead a preview should surface, and where it's shown (Home? a dedicated list?).
+  - What happens to an unconfirmed recurring item once its due date passes — carries over, expires, or nags?
+  - Edit/pause/delete semantics for a recurring definition once expenses have already been generated from it.
+  - Multi-currency household edge case (recurring item stamped in which currency?).
+
 ---
 
 ## 6. Free-tier limits to keep an eye on
