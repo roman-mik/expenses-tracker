@@ -23,7 +23,7 @@ const variants: Record<ButtonVariant, string> = {
   primary: 'bg-accent-600 text-white px-5 shadow-md hover:bg-accent-700',
   secondary: 'border border-sand-400 text-ink px-5 hover:bg-surface',
   pill: 'bg-surface text-ink border border-sand-300 px-4 text-sm shadow-sm hover:bg-sand-200',
-  ghost: 'text-ink/70 px-3 font-medium hover:text-ink hover:bg-surface',
+  ghost: 'text-ink-muted px-3 font-medium hover:text-ink hover:bg-surface',
 };
 
 function classesFor(variant: ButtonVariant, className?: string) {

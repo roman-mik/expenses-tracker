@@ -49,7 +49,7 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
-export function GearIcon({ className = 'text-ink/70' }: IconProps) {
+export function GearIcon({ className = 'text-ink-muted' }: IconProps) {
   return (
     <Svg size={15} className={className}>
       <circle cx="12" cy="12" r="3" />

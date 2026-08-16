@@ -128,7 +128,7 @@ export default async function Home() {
 
             {isNoCap ? (
               <>
-                <p className="text-sm text-ink/70">{t('noCapYet')}</p>
+                <p className="text-sm text-ink-muted">{t('noCapYet')}</p>
                 <Button href="/cap" variant="primary" className="self-start">
                   {t('setYourCap')}
                 </Button>
@@ -142,7 +142,7 @@ export default async function Home() {
                 </div>
 
                 <div className="flex gap-6 text-sm">
-                  <span className="text-ink/70">
+                  <span className="text-ink-muted">
                     {t.rich('daysUntilReset', {
                       count: summary.daysLeft,
                       strong: (chunks) => (
@@ -151,7 +151,7 @@ export default async function Home() {
                     })}
                   </span>
                   {!isOver && (
-                    <span className="text-ink/70">
+                    <span className="text-ink-muted">
                       <strong className="text-ink">
                         {formatMoney(summary.safeDaily, summary.currency)}
                       </strong>{' '}
