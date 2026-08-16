@@ -4,13 +4,18 @@ A warm monthly spending-cap tracker. One cap, every expense in two taps, always 
 
 Built with **Next.js** (App Router) + **Supabase** (Postgres/Auth) + **Tailwind v4**, deployed on **Vercel**. See [`PLAN.md`](./PLAN.md) for the full roadmap.
 
+This is a **pnpm + Turborepo workspace**: the app lives in `apps/web`, shared code (currently just
+a placeholder) in `packages/ui`, and `supabase/` stays at the repo root since it's the backend for
+every app in the workspace. Root-level `pnpm run <script>` commands (below) fan out to the
+workspace via Turborepo — run them from the repo root, not from inside `apps/web`.
+
 ## Local development
 
 ```bash
-npm install
+pnpm install
 supabase start                     # boots local Postgres/Auth/Studio in Docker
 supabase db reset                  # applies supabase/migrations/* to it
-npm run gen:types                  # regenerates src/lib/supabase/database.types.ts from that schema
+pnpm run gen:types                  # regenerates src/lib/supabase/database.types.ts from that schema
 ```
 
 `supabase start` prints the local `API URL` and keys — copy them into `.env.local`:
@@ -19,7 +24,7 @@ npm run gen:types                  # regenerates src/lib/supabase/database.types
 cp .env.local.example .env.local
 # NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 # NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<the PUBLISHABLE_KEY supabase start printed>
-npm run dev                        # http://localhost:3000
+pnpm run dev                        # http://localhost:3000
 ```
 
 (`supabase status` reprints the same values later, if the terminal with the original `start` output is gone.)
@@ -134,13 +139,13 @@ to avoid float rounding errors on the way out.
 ## CI
 
 `.github/workflows/ci.yml` runs `format:check`, `lint`, `typecheck`, `test`, and `build` on every
-push to `main` and every PR. `npm run typecheck` is `next typegen && tsc --noEmit` — the `typegen`
+push to `main` and every PR. `pnpm run typecheck` is `next typegen && tsc --noEmit` — the `typegen`
 step regenerates Next's route-level types so `tsc` works standalone, without a prior `next build`.
 
-Between `supabase start` and `supabase stop`, CI also runs `npm run test:db` (pgTAP, against real
-Postgres as the BYPASSRLS superuser) and `npm run test:integration` (application code —
+Between `supabase start` and `supabase stop`, CI also runs `pnpm run test:db` (pgTAP, against real
+Postgres as the BYPASSRLS superuser) and `pnpm run test:integration` (application code —
 `lib/queries/*`/`lib/mutations/*` — run unchanged against that same database, but through a real
-per-user JWT, so RLS actually applies). `npm test` alone (`vitest run --project node --project
+per-user JWT, so RLS actually applies). `pnpm test` alone (`vitest run --project node --project
 jsdom`) skips both and stays fast — it doesn't need Supabase running at all.
 
 ## Adding a language
@@ -153,7 +158,7 @@ To add a locale:
 
 1. Add it to `locales` in `src/i18n/routing.ts` and the `profiles.locale` check constraint
    (new migration under `supabase/migrations/`).
-2. Add a `messages/<locale>.json` with the same keys as `messages/en.json` — `npm test` fails if
+2. Add a `messages/<locale>.json` with the same keys as `messages/en.json` — `pnpm test` fails if
    the key sets ever drift (`src/test/messages.test.ts`).
 3. Add the label to `Settings.localeXx` in every message file and to the `localeLabel` map in
    `src/components/settings/LocaleForm.tsx`.

@@ -1,51 +1,25 @@
 {
-  "name": "tracker",
+  "name": "kapa",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:integration": "turbo test:integration",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run --project node --project jsdom",
-    "test:watch": "vitest",
-    "test:integration": "vitest run --project integration",
     "test:db": "supabase test db",
-    "gen:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
+    "gen:types": "supabase gen types typescript --local > apps/web/src/lib/supabase/database.types.ts"
   },
   "engines": {
     "node": "24.x"
   },
-  "dependencies": {
-    "@supabase/ssr": "0.12.4",
-    "@supabase/supabase-js": "2.112.3",
-    "@vercel/analytics": "2.0.1",
-    "@vercel/speed-insights": "2.0.0",
-    "next": "16.3.0",
-    "next-intl": "4.13.6",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "zod": "4.4.3"
-  },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.3",
-    "@testing-library/jest-dom": "7.0.1",
-    "@testing-library/react": "16.3.2",
-    "@testing-library/user-event": "14.6.4",
-    "@types/node": "26.2.0",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "@vitejs/plugin-react": "6.0.5",
-    "eslint": "9.39.5",
-    "eslint-config-next": "16.3.0",
-    "eslint-config-prettier": "10.1.8",
-    "jsdom": "30.0.1",
     "prettier": "3.9.6",
-    "tailwindcss": "4.3.3",
-    "typescript": "5.9.3",
-    "vitest": "4.1.10"
-  }
+    "turbo": "2.10.10"
+  },
+  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621"
 }
