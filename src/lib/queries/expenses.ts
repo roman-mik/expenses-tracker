@@ -42,6 +42,27 @@ export async function listExpenses(
 }
 
 /**
+ * The household's entire expense history, oldest first — the CSV export
+ * (`GET /api/export`). Deliberately no month filter, unlike `listExpenses`.
+ * `id` is a secondary sort key so two expenses at the same instant still come
+ * back in a stable, repeatable order.
+ */
+export async function listAllExpenses(
+  supabase: SupabaseServerClient,
+  householdId: string
+): Promise<Expense[]> {
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('id, category_id, amount_minor, currency, note, spent_at, user_id')
+    .eq('household_id', householdId)
+    .order('spent_at', { ascending: true })
+    .order('id', { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return (data as ExpenseRow[]).map(toExpense);
+}
+
+/**
  * Fetch a single expense scoped to the household (for the edit screen).
  * Returns `null` if the id isn't in this household — the caller renders 404.
  */
