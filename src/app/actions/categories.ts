@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { categoryCreateSchema, categoryUpdateSchema } from '@/lib/validation';
@@ -9,6 +10,7 @@ import {
   updateCategory,
   moveCategory as moveCategoryRow,
 } from '@/lib/mutations/categories';
+import { reportError } from '@/lib/observability';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -17,20 +19,21 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
  * the session here regardless of any client-side gating.
  */
 export async function addCategory(input: unknown): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   const parsed = categoryCreateSchema.safeParse(input);
-  if (!parsed.success)
-    return { ok: false, error: 'Please check the name and color.' };
+  if (!parsed.success) return { ok: false, error: t('checkNameColor') };
 
   try {
     const householdId = await getHouseholdId(user.id);
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await createCategory(supabase, householdId, parsed.data);
-  } catch {
-    return { ok: false, error: "Couldn't save that just now — try again." };
+  } catch (error) {
+    reportError('addCategory', error);
+    return { ok: false, error: t('saveFailed') };
   }
 
   revalidatePath('/');
@@ -47,12 +50,12 @@ export async function editCategory(
   id: string,
   input: unknown
 ): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   const parsed = categoryUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    return { ok: false, error: 'Please check the name and color.' };
+  if (!parsed.success) return { ok: false, error: t('checkNameColor') };
 
   try {
     const householdId = await getHouseholdId(user.id);
@@ -64,10 +67,10 @@ export async function editCategory(
       id,
       parsed.data
     );
-    if (!updated)
-      return { ok: false, error: "That category couldn't be found." };
-  } catch {
-    return { ok: false, error: "Couldn't save that just now — try again." };
+    if (!updated) return { ok: false, error: t('categoryNotFound') };
+  } catch (error) {
+    reportError('editCategory', error);
+    return { ok: false, error: t('saveFailed') };
   }
 
   revalidatePath('/');
@@ -81,16 +84,18 @@ export async function moveCategory(
   id: string,
   direction: 'up' | 'down'
 ): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
   const user = await verifySession();
-  if (!user) return { ok: false, error: 'Not signed in.' };
+  if (!user) return { ok: false, error: t('notSignedIn') };
 
   try {
     const householdId = await getHouseholdId(user.id);
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await moveCategoryRow(supabase, householdId, id, direction);
-  } catch {
-    return { ok: false, error: "Couldn't reorder that just now — try again." };
+  } catch (error) {
+    reportError('moveCategory', error);
+    return { ok: false, error: t('reorderFailed') };
   }
 
   revalidatePath('/');

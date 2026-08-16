@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -16,7 +17,7 @@ import type { Currency } from '@/lib/types';
 // cap — otherwise the "even out in one month" target reads as a punishment.
 const MIN_SUGGESTION_FRACTION = 0.5;
 
-export function RecoveryPlan({
+export async function RecoveryPlan({
   cap,
   overspend,
   recoveryCap,
@@ -29,36 +30,29 @@ export function RecoveryPlan({
   daysLeft: number;
   currency: Currency;
 }) {
-  const suggestReducedCap = recoveryCap >= cap * MIN_SUGGESTION_FRACTION;
+  const t = await getTranslations('RecoveryPlan');
+  const suggestReducedCap =
+    cap > 0 && recoveryCap >= cap * MIN_SUGGESTION_FRACTION;
   return (
     <div className="rounded-lg border border-accent/40 bg-accent/8 px-5 py-4 flex flex-col gap-2">
       <p className="text-sm text-ink/85">
-        You&rsquo;re over by{' '}
-        <strong className="text-accent-700">
-          {formatMoney(overspend, currency)}
-        </strong>{' '}
-        this month. It happens — {daysLeft === 0 ? 'the' : `in ${daysLeft} `}
-        {daysLeft === 0
-          ? 'reset'
-          : daysLeft === 1
-            ? 'day the reset'
-            : 'days the reset'}{' '}
-        wipes the slate clean.
+        {t.rich('overBy', {
+          amount: formatMoney(overspend, currency),
+          daysLeft,
+          strong: (chunks) => (
+            <strong className="text-accent-700">{chunks}</strong>
+          ),
+        })}
       </p>
       {suggestReducedCap ? (
         <p className="text-sm text-sage-700">
-          Want to even out? Start next month at{' '}
-          <strong className="text-ink">
-            {formatMoney(recoveryCap, currency)}
-          </strong>{' '}
-          and you&rsquo;re right back on track — or keep your usual cap and
-          enjoy the fresh start.
+          {t.rich('evenOutOffer', {
+            amount: formatMoney(recoveryCap, currency),
+            strong: (chunks) => <strong className="text-ink">{chunks}</strong>,
+          })}
         </p>
       ) : (
-        <p className="text-sm text-sage-700">
-          No math to do — the 1st starts you fresh at your full cap. Just ease
-          off till then.
-        </p>
+        <p className="text-sm text-sage-700">{t('noMathNeeded')}</p>
       )}
     </div>
   );

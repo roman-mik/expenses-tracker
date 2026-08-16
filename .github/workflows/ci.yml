@@ -21,9 +21,17 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: supabase start
+      - run: npm run test:db
+      - run: npm run test:integration
+      - run: supabase stop
       - run: npm run build

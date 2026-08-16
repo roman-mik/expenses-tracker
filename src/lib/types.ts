@@ -9,6 +9,8 @@
  * for arithmetic in kapa-math, which stays integer-based.
  */
 
+import type { Locale } from '@/i18n/routing';
+
 export type Currency = 'RSD' | 'EUR' | 'USD';
 
 /** Minor units of some currency (integer). Branded to prevent mixing with plain numbers. */
@@ -23,6 +25,7 @@ export const CURRENCY_EXPONENT: Record<Currency, number> = {
 export interface Profile {
   id: string;
   displayName: string | null;
+  locale: Locale;
 }
 
 /** A household — the unit that owns the cap, categories and the expense pool. */
@@ -60,7 +63,11 @@ export interface Expense {
   currency: Currency;
   note: string | null;
   spentAt: string; // ISO timestamp
-  addedBy: string; // user_id of the member who logged it (attribution)
+  addedBy: string | null; // user_id of the member who logged it; null once that member's account is deleted (attribution.ts renders a neutral label)
+  /** ISO timestamp, server-set on every write. The optimistic-concurrency
+   * token: callers editing/deleting must present the value they last read,
+   * or the write is rejected as a conflict (see mutations/expenses.ts). */
+  updatedAt: string;
 }
 
 /** Per-currency spend bucket for currencies other than the profile's active one. */
@@ -78,6 +85,8 @@ export interface Summary {
   safeDaily: number;
   daysLeft: number;
   elapsedDays: number;
+  /** Days fully completed before today — the pace baseline. See kapa-math.ts. */
+  completedDays: number;
   evenPace: number;
   paceGap: number;
   projection: number;

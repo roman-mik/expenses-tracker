@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { deleteExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import { attributionLabel } from '@/lib/attribution';
@@ -30,15 +30,19 @@ export function HistoryList({
   members: HouseholdMember[];
   currentUserId: string;
 }) {
+  const t = useTranslations('HistoryList');
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
   const memberMap = new Map(members.map((m) => [m.userId, m]));
   const shared = members.length > 1;
+  const attributionLabels = {
+    you: t('you'),
+    partner: t('partner'),
+    formerMember: t('formerMember'),
+  };
 
   if (groups.length === 0) {
     return (
-      <p className="text-sm text-ink/45">
-        Nothing logged this month yet. Add an expense to see it here.
-      </p>
+      <p className="text-sm text-ink-muted">{t('nothingLoggedThisMonth')}</p>
     );
   }
 
@@ -46,7 +50,7 @@ export function HistoryList({
     <div className="flex flex-col gap-6">
       {groups.map((group) => (
         <section key={group.key} className="flex flex-col gap-2">
-          <div className="flex items-baseline justify-between text-xs font-semibold tracking-wider uppercase text-ink/50">
+          <div className="flex items-baseline justify-between text-xs font-semibold tracking-wider uppercase text-ink-muted">
             <h2>{group.label}</h2>
             {group.total ? (
               <span className="tabular-nums">
@@ -67,7 +71,8 @@ export function HistoryList({
                     ? attributionLabel(
                         e.addedBy,
                         currentUserId,
-                        memberMap.get(e.addedBy)
+                        e.addedBy ? memberMap.get(e.addedBy) : undefined,
+                        attributionLabels
                       )
                     : null
                 }
@@ -89,7 +94,8 @@ function ExpenseRow({
   category: Category | undefined;
   who: string | null;
 }) {
-  const router = useRouter();
+  const t = useTranslations('HistoryList');
+  const tCommon = useTranslations('Common');
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
@@ -98,11 +104,11 @@ function ExpenseRow({
 
   const remove = () => {
     startTransition(async () => {
-      const result = await deleteExpense(e.id);
+      const result = await deleteExpense(e.id, e.updatedAt);
       if (result.ok) {
-        // The action revalidated the server data; refresh to drop the row.
-        toast.success('Expense removed');
-        router.refresh();
+        // The action's response already carries the fresh RSC tree that
+        // drops this row — no separate refresh() needed.
+        toast.success(t('expenseRemoved'));
       } else {
         toast.error(result.error);
         setConfirming(false);
@@ -123,9 +129,11 @@ function ExpenseRow({
           />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-ink/80">
-              {category?.name ?? 'Uncategorized'}
+              {category?.name ?? t('uncategorized')}
             </span>
-            {meta ? <span className="text-xs text-ink/45">{meta}</span> : null}
+            {meta ? (
+              <span className="text-xs text-ink-muted">{meta}</span>
+            ) : null}
           </span>
         </span>
 
@@ -141,15 +149,15 @@ function ExpenseRow({
               disabled={pending}
               className="rounded-md px-2 py-1 text-sm font-medium text-accent-700 hover:bg-surface disabled:opacity-50"
             >
-              {pending ? 'Removing…' : 'Remove?'}
+              {pending ? t('removing') : t('removeConfirm')}
             </button>
             <button
               type="button"
               onClick={() => setConfirming(false)}
               disabled={pending}
-              className="rounded-md px-2 py-1 text-sm text-ink/55 hover:bg-surface disabled:opacity-50"
+              className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-surface disabled:opacity-50"
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           </span>
         ) : (
@@ -158,15 +166,15 @@ function ExpenseRow({
               href={`/edit/${e.id}`}
               variant="ghost"
               className="px-2 py-1"
-              aria-label="Edit expense"
+              aria-label={t('editAria')}
             >
               <PencilIcon />
             </Button>
             <button
               type="button"
               onClick={() => setConfirming(true)}
-              aria-label="Delete expense"
-              className="rounded-md px-2 py-1 text-ink/55 transition-colors hover:bg-surface hover:text-accent-700"
+              aria-label={t('deleteAria')}
+              className="rounded-md px-2 py-1 text-ink-muted transition-colors hover:bg-surface hover:text-accent-700"
             >
               <TrashIcon />
             </button>

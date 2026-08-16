@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Category, Currency } from '@/lib/types';
 
@@ -9,7 +10,7 @@ interface Props {
 }
 
 /** Whole-month category breakdown bar, unaffected by the `/history` category filter. */
-export function CategoryBreakdown({
+export async function CategoryBreakdown({
   breakdown,
   categories,
   currency,
@@ -18,6 +19,7 @@ export function CategoryBreakdown({
   const total = breakdown.reduce((sum, b) => sum + b.spent, 0);
   if (total === 0) return null;
 
+  const t = await getTranslations('History');
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
 
   return (
@@ -53,9 +55,9 @@ export function CategoryBreakdown({
                 style={{ backgroundColor: `var(--color-${color})` }}
               />
               <span className="flex-1 text-ink/80">
-                {category?.name ?? 'Uncategorized'}
+                {category?.name ?? t('uncategorized')}
               </span>
-              <span className="tabular-nums text-ink/60">{pct}%</span>
+              <span className="tabular-nums text-ink-muted">{pct}%</span>
               <span className="tabular-nums">
                 {formatMoney(spent, currency)}
               </span>
@@ -65,9 +67,7 @@ export function CategoryBreakdown({
       </ul>
 
       {hasOtherCurrencies ? (
-        <p className="text-xs text-ink/50">
-          Expenses in other currencies aren&apos;t included above.
-        </p>
+        <p className="text-xs text-ink-muted">{t('otherCurrenciesNote')}</p>
       ) : null}
     </div>
   );

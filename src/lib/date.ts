@@ -46,3 +46,28 @@ export function dailyTotals(
     amountMinor,
   }));
 }
+
+/**
+ * Human day label ("Today", "Yesterday", else a locale-formatted weekday/day/
+ * month). `today`/`yesterday` are passed in translated (this module stays
+ * framework-agnostic — no next-intl import) since only those two cases have
+ * warm copy; every other day falls back to `Intl.DateTimeFormat`.
+ */
+export function dayLabel(
+  dateKey: string,
+  todayKey: string,
+  yesterdayKey: string,
+  spentAt: string,
+  timeZone: string,
+  locale: string,
+  labels: { today: string; yesterday: string }
+): string {
+  if (dateKey === todayKey) return labels.today;
+  if (dateKey === yesterdayKey) return labels.yesterday;
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone,
+  }).format(new Date(spentAt));
+}

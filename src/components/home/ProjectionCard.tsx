@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { formatMoney } from '@/lib/format';
 import type { Currency } from '@/lib/types';
 
@@ -8,7 +9,7 @@ import type { Currency } from '@/lib/types';
  */
 const MIN_ELAPSED_DAYS = 3;
 
-export function ProjectionCard({
+export async function ProjectionCard({
   projection,
   cap,
   elapsedDays,
@@ -21,10 +22,11 @@ export function ProjectionCard({
 }) {
   if (elapsedDays < MIN_ELAPSED_DAYS) return null;
 
+  const t = await getTranslations('ProjectionCard');
   const over = projection > cap;
   return (
     <div className="flex items-baseline justify-between text-sm">
-      <span className="text-ink/60">At this rate, month-end lands near</span>
+      <span className="text-ink-muted">{t('atThisRate')}</span>
       <span
         className={`font-heading text-base ${over ? 'text-accent-700' : 'text-sage-700'}`}
       >

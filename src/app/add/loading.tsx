@@ -1,8 +1,10 @@
+import { getTranslations } from 'next-intl/server';
 import { PageLoadingShell } from '@/components/ui/PageLoadingShell';
 
-export default function AddExpenseLoading() {
+export default async function AddExpenseLoading() {
+  const t = await getTranslations('Add');
   return (
-    <PageLoadingShell title="Add expense">
+    <PageLoadingShell title={t('titleNew')}>
       <div className="h-14 w-full rounded-lg bg-sand-200" />
       <div className="flex gap-3">
         <div className="h-10 w-20 rounded-lg bg-sand-200" />

@@ -1,12 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithIntl as render } from '@/test/intl';
 import { HistoryList, type ExpenseGroup } from './HistoryList';
 import { expense as expenseFactory, category, member } from '@/test/factories';
-
-const mockRefresh = vi.fn();
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: mockRefresh }),
-}));
 
 const mockDeleteExpense = vi.fn();
 vi.mock('@/app/actions/expenses', () => ({
@@ -81,12 +77,16 @@ describe('HistoryList', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete expense' }));
     fireEvent.click(screen.getByRole('button', { name: 'Remove?' }));
 
-    await waitFor(() => expect(mockDeleteExpense).toHaveBeenCalledWith('e1'));
+    await waitFor(() =>
+      expect(mockDeleteExpense).toHaveBeenCalledWith(
+        'e1',
+        '2026-08-01T00:00:00.000Z'
+      )
+    );
     expect(mockToastSuccess).toHaveBeenCalledWith('Expense removed');
-    expect(mockRefresh).toHaveBeenCalled();
   });
 
-  it('shows an error toast and does not refresh when delete fails', async () => {
+  it('shows an error toast and re-opens the confirm state when delete fails', async () => {
     mockDeleteExpense.mockResolvedValue({ ok: false, error: 'Network error' });
     render(
       <HistoryList
@@ -103,6 +103,5 @@ describe('HistoryList', () => {
     await waitFor(() =>
       expect(mockToastError).toHaveBeenCalledWith('Network error')
     );
-    expect(mockRefresh).not.toHaveBeenCalled();
   });
 });

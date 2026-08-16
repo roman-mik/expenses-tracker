@@ -14,7 +14,7 @@
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 
 export type Row = Record<string, unknown>;
-type PGError = { message: string } | null;
+type PGError = { message: string; code?: string } | null;
 type PGResult<T> = { data: T; error: PGError };
 
 /** Table name -> row array. Mutate directly in tests via `db.seed(...)`. */
@@ -83,7 +83,7 @@ type Mode = 'select' | 'insert' | 'update' | 'delete' | 'upsert';
 
 class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
   private filters: Filter[] = [];
-  private orderCol?: { col: string; ascending: boolean };
+  private orderCols: { col: string; ascending: boolean }[] = [];
   private limitN?: number;
   private mode: Mode = 'select';
   private payload?: Row | Row[];
@@ -114,8 +114,9 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
     this.filters.push((r) => String(r[col]) < val);
     return this;
   }
+  /** Matches PostgREST: repeated .order() calls add secondary sort keys. */
   order(col: string, opts?: { ascending?: boolean }) {
-    this.orderCol = { col, ascending: opts?.ascending ?? true };
+    this.orderCols.push({ col, ascending: opts?.ascending ?? true });
     return this;
   }
   limit(n: number) {
@@ -160,13 +161,14 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
 
   private applyOrderLimit(rows: Row[]): Row[] {
     let out = rows;
-    if (this.orderCol) {
-      const { col, ascending } = this.orderCol;
+    if (this.orderCols.length > 0) {
       out = [...out].sort((a, b) => {
-        const av = a[col] as string | number;
-        const bv = b[col] as string | number;
-        if (av < bv) return ascending ? -1 : 1;
-        if (av > bv) return ascending ? 1 : -1;
+        for (const { col, ascending } of this.orderCols) {
+          const av = a[col] as string | number;
+          const bv = b[col] as string | number;
+          if (av < bv) return ascending ? -1 : 1;
+          if (av > bv) return ascending ? 1 : -1;
+        }
         return 0;
       });
     }

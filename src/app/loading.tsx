@@ -9,10 +9,7 @@ export default function HomeLoading() {
       <div className="w-full max-w-xl flex flex-col gap-8 animate-pulse">
         <header className="flex items-center justify-between">
           <span className="font-heading text-2xl">Kapa</span>
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-24 rounded-lg bg-sand-200" />
-            <div className="h-9 w-24 rounded-lg bg-sand-200" />
-          </div>
+          <div className="h-11 w-11 rounded-lg bg-sand-200" />
         </header>
 
         <section className="rounded-lg bg-surface shadow-md p-7 flex flex-col gap-5">

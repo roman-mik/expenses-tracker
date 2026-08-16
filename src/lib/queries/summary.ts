@@ -7,6 +7,7 @@ import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Currency, CurrencyBucket, Summary } from '@/lib/types';
 import { getHousehold } from '@/lib/queries/household';
 import {
+  completedDays,
   daysInMonth,
   daysLeft,
   elapsedDays,
@@ -80,8 +81,9 @@ export async function getSummary(
   const D = daysInMonth(month);
   const left = daysLeft(month, now, timeZone);
   const elapsed = elapsedDays(D, left);
+  const completed = completedDays(D, left);
   const rem = remaining(cap, spent);
-  const pace = evenPace(cap, elapsed, D);
+  const pace = evenPace(cap, completed, D);
 
   return {
     currency,
@@ -91,6 +93,7 @@ export async function getSummary(
     safeDaily: safeDaily(rem, left),
     daysLeft: left,
     elapsedDays: elapsed,
+    completedDays: completed,
     evenPace: pace,
     paceGap: paceGap(pace, spent),
     projection: projection(spent, elapsed, D),

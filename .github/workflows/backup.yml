@@ -1,0 +1,68 @@
+name: Backup
+
+# Daily encrypted dump of the production database, pushed to a private
+# backup repo. Supabase's free tier has no PITR and no downloadable backups
+# (those start on the Pro plan) — this is the only copy of a year of two
+# people's spending history that exists outside the one live project.
+#
+# Setup (do this once):
+#   1. Create a private repo for backups, e.g. roman-mik/kapa-backups.
+#   2. Repo secrets (Settings → Secrets and variables → Actions):
+#        SUPABASE_DB_URL     — Settings → Database → Connection string
+#                               (session pooler, percent-encoded, port 5432)
+#        BACKUP_PASSPHRASE   — any long random string (a password manager
+#                               generated one); losing this makes every dump
+#                               unrecoverable, so store it somewhere durable
+#                               and separate from this repo
+#        BACKUP_REPO_TOKEN   — a fine-grained PAT scoped to Contents:write
+#                               on the backup repo only
+#   3. Confirm GitHub's default "notify me of workflow failures" setting is
+#      on for this repo (Settings → Notifications) — a failing backup job
+#      that nobody notices is the exact failure mode this workflow exists
+#      to prevent.
+#   4. Run this workflow once via workflow_dispatch and do a restore drill
+#      (see README.md § Backups & restore) before trusting it.
+
+on:
+  schedule: [{ cron: '0 3 * * *' }] # 03:00 UTC daily
+  workflow_dispatch: # so a restore drill can be run any time
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+
+      - name: Dump schema + data
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          supabase db dump --db-url "$DB_URL" -f schema.sql
+          supabase db dump --db-url "$DB_URL" --data-only -f data.sql
+
+      - name: Encrypt
+        env:
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          tar czf kapa.tar.gz schema.sql data.sql
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+              --passphrase "$PASSPHRASE" -o "kapa-$(date -u +%F).tar.gz.gpg" kapa.tar.gz
+          rm -f kapa.tar.gz schema.sql data.sql
+
+      - name: Push to private backup repo
+        env:
+          TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+        run: |
+          git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/roman-mik/kapa-backups.git" out
+          mv kapa-*.tar.gz.gpg out/
+          cd out
+          git config user.email "actions@github.com"
+          git config user.name "backup-bot"
+          git add -A
+          git commit -m "backup $(date -u +%F)"
+          git push
+
+      - name: Also keep a 90-day artifact (belt and suspenders)
+        uses: actions/upload-artifact@v4
+        with: { name: kapa-backup, path: '*.gpg', retention-days: 90 }

@@ -1,6 +1,16 @@
 @import 'tailwindcss';
 
 /*
+  Category swatches (CategoryManager, HistoryList, CategoryBreakdown) build
+  `var(--color-${category.color})` from a runtime string, so Tailwind's static
+  class scanner never sees a literal `bg-accent-500`-style utility for most of
+  these tokens and drops their --color-* custom property from the compiled
+  CSS. Force them to stay in the theme output. Keep this list in sync with
+  CATEGORY_COLORS in src/lib/category-colors.ts.
+*/
+@source inline("bg-{sand-500,sand-700,accent-400,accent-500,accent-700,sage-400,sage-500,sage-700}");
+
+/*
   Organic — design-system tokens ported from the Kapa design project.
   Tailwind v4 reads @theme to generate utilities: bg-bg, text-ink,
   bg-accent-500, font-heading, rounded-lg, shadow-md, etc.
@@ -14,6 +24,13 @@
   --color-bg: #f5ead8;
   --color-surface: #ebddc5;
   --color-ink: #201e1d;
+
+  /* Secondary-text tones. Solid hexes, not `text-ink/NN` opacity — opacity
+     blends toward whichever ground sits behind it, so its contrast ratio
+     isn't fixed; these are chosen to clear 4.5:1 (ink-muted) or stay
+     decorative-only (ink-subtle) against BOTH --color-bg and --color-surface. */
+  --color-ink-muted: #645c50; /* ~5.5:1 on bg, ~4.9:1 on surface — same value as sand-700 */
+  --color-ink-subtle: #82796a; /* ~3.6:1 on bg, ~3.2:1 on surface — decorative only, same as sand-600 */
 
   /* Neutral / sand ramp */
   --color-sand-100: #f9f4ed;
@@ -75,6 +92,37 @@ h6 {
   font-family: var(--font-heading);
   line-height: 1.12;
   letter-spacing: -0.015em;
+}
+
+/* @layer base keeps these below Tailwind's utilities, so classes like
+   border-sand-300/shadow-lg on a popover panel still win the cascade. */
+@layer base {
+  [popover] {
+    margin: 0;
+    padding: 0;
+    border: none;
+    /* The UA stylesheet sets `inset: 0` on [popover]; reset it so a
+       positioned panel's own top/right utility classes fully control its
+       placement instead of inheriting a stray `left: 0` / `bottom: 0`. */
+    inset: auto;
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 0.12s ease,
+      translate 0.12s ease,
+      display 0.12s allow-discrete,
+      overlay 0.12s allow-discrete;
+  }
+
+  [popover]:popover-open {
+    opacity: 1;
+    translate: 0 0;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
 }
 
 :focus-visible {

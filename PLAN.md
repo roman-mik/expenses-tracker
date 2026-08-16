@@ -96,6 +96,7 @@ household_invites                                 -- invite-code join flow
 profiles                                          -- currency/timezone live on households, not here
   id            uuid  PK → auth.users.id
   display_name  text                              -- shown for expense attribution
+  locale        text  default 'en'                -- UI language (Phase 7), 'en' | 'ru'
   created_at    timestamptz
 
 allowed_emails                                    -- private/invite-only gate (§0.1)
@@ -146,6 +147,8 @@ expenses
 ---
 
 ## 4. API surface (Next.js Route Handlers → reused by mobile)
+
+**Status: this REST layer was deleted** (`docs/review/review-api-contract.md`'s "delete it" recommendation, P2 item 17). Bearer auth never actually worked — `requireHousehold()` took no request object, so it structurally could not read an `Authorization` header — and the only web caller (`HouseholdPanel`'s two `fetch` calls) has moved to Server Actions (`src/app/actions/household.ts`). What's left: `/api/keepalive` (cron) and `/api/export` (CSV, §6). The table below is kept as a historical record of the surface that existed; if a mobile client is ever built, the plan is `supabase-js` talking directly to Postgres through `lib/queries/*`/`lib/mutations/*`, which already take a generically-typed `SupabaseClient<Database>` (`src/lib/supabase/types.ts`) rather than the cookie-bound server client, so no rewrite is needed for that seam to work.
 
 Keep it thin and RESTish. Auth via Supabase session (web) / bearer token (mobile).
 
@@ -231,11 +234,33 @@ Shipped across four independent branches/PRs (`phase6/correctness`, `phase6/tool
 
 **Coverage**
 - [x] Tests now cover `src/lib/queries/*`, `src/lib/mutations/*`, every `/api/*` route, every Server Action, and the auth DAL, via an in-memory fake Supabase client (`src/test/fake-supabase.ts`) plus 5 component tests. 53 → 184 passing tests.
-- [ ] **Deferred:** `join_household` (`supabase/migrations/0003_households.sql`) — still the highest-risk untested code in the repo. No local Supabase stack exists to test it against (no `supabase/config.toml`, Docker not running, and the linked CLI project is the live hosted one — a DB-level test today would run against production). Needs `supabase init` + pgTAP in CI (Docker is available there) before this can close.
+- [x] `join_household` (`supabase/migrations/0003_households.sql`) — pgTAP suite (`supabase/tests/database/join_household.sql`, 13 assertions) covers the merge/remap, empty-household cleanup, a still-populated household surviving, the re-join no-op, and the auth/invite error paths. Runs locally via `npm run test:db` (`supabase test db`) and in CI (`.github/workflows/ci.yml` now runs `supabase start` before it, `supabase stop` after).
 
 **Ops**
 - [x] `vercel.json` schedules a daily cron against `GET /api/keepalive`, which does one trivial read behind a `CRON_SECRET` bearer check to keep the Supabase project warm.
 - [x] README reconciled to `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the code and `.env.local.example` already used it; only the README was stale), plus the new `typecheck`/CI docs.
+
+### Phase 7 — Localization
+
+- [x] **i18n**: `next-intl` (no `[locale]` URL segment — locale travels via a `KAPA_LOCALE` cookie, resolved cookie → `Accept-Language` → `en` default in `src/i18n/request.ts`). English default/fallback, Russian shipped complete; Serbian remains a stretch item, not started. Locale lives on `profiles.locale` (per-user, not per-household, `supabase/migrations/0004_profile_locale.sql`) — currency/number formatting (`sr-RS`) stays tied to the household regardless of UI language (`lib/format.ts` untouched). Switcher lives on `/settings` (`LocaleForm.tsx`); `src/test/messages.test.ts` keeps `en.json`/`ru.json` keys from drifting.
+  - Deliberately left English: `/api/*` route error strings (the future Expo client's own concern, per §4/§5), `global-error.tsx` (renders outside the root layout, no provider), `manifest.ts` (one manifest per build), and Zod messages in `lib/validation.ts` (never surfaced — actions map to their own copy).
+
+---
+
+## 5.1 Backlog candidates (not yet planned)
+
+Ideas worth doing eventually, but need more product thinking before they get a phase and a data model. Notes below are the open questions to resolve before scoping, not a committed design.
+
+- **Budget rollover** — carry unspent (or overspent) cap into next month instead of a hard reset each month. Wanted: a visible "pool" with history, and symmetric carry-over (surplus *and* overspend both roll forward). Needs resolving:
+  - The cap is currently a single *current* value per household (`budget_settings.monthly_cap`, no history) — rollover requires making it month-aware, likely a new per-month ledger table. Worth deciding how much of that infra is justified before Phase 5/6-sized effort.
+  - How rollover interacts with the existing over-cap **recovery plan** copy (§1) — same-month guidance vs. an actual next-month number; risk of the two messages contradicting each other.
+  - Whether rollover can compound indefinitely or should cap/decay somehow (a household that's been under-cap for a year — does the pool just keep growing?).
+  - UI: does the pool get its own screen, or fold into History/Set Cap?
+- **Recurring expenses** — predefine recurring items (rent, subscriptions) that show as a "pending" preview near their due date and get confirmed into a real expense rather than auto-posting. Needs resolving:
+  - How far ahead a preview should surface, and where it's shown (Home? a dedicated list?).
+  - What happens to an unconfirmed recurring item once its due date passes — carries over, expires, or nags?
+  - Edit/pause/delete semantics for a recurring definition once expenses have already been generated from it.
+  - Multi-currency household edge case (recurring item stamped in which currency?).
 
 ---
 
@@ -263,4 +288,4 @@ None of these block launch. The one to design around: **Supabase free projects p
 
 ## 8. Next step
 
-Phases 0–4 are shipped and verified. Phase 6 (hardening) is done except one deliberately deferred item — pgTAP tests for `join_household`, blocked on a local Supabase stack (see Phase 6 → Coverage). Phase 5 (mobile, Expo) is postponed.
+Phases 0–4 are shipped and verified. Phase 6 (hardening) is fully done — the pgTAP suite for `join_household` shipped 2026-08-15. Phase 7 (i18n: English + Russian) is shipped; Serbian remains an unstarted stretch item. Phase 5 (mobile, Expo) is postponed.

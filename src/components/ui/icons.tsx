@@ -57,3 +57,43 @@ export function GearIcon({ className = 'text-ink/70' }: IconProps) {
     </Svg>
   );
 }
+
+export function MenuIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M3 6h18" />
+      <path d="M3 12h18" />
+      <path d="M3 18h18" />
+    </Svg>
+  );
+}
+
+export function TargetIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1" />
+    </Svg>
+  );
+}
+
+export function TagIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M12.6 2H4a2 2 0 0 0-2 2v8.6a2 2 0 0 0 .59 1.41l9 9a2 2 0 0 0 2.82 0l7.6-7.6a2 2 0 0 0 0-2.82l-9-9A2 2 0 0 0 12.6 2Z" />
+      <circle cx="7.5" cy="7.5" r="1.25" />
+    </Svg>
+  );
+}
+
+export function UsersIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </Svg>
+  );
+}

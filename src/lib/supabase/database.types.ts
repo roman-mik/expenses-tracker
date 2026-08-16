@@ -7,6 +7,31 @@ export type Json =
   | Json[];
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       allowed_emails: {
@@ -101,7 +126,8 @@ export type Database = {
           id: string;
           note: string | null;
           spent_at: string;
-          user_id: string;
+          updated_at: string;
+          user_id: string | null;
         };
         Insert: {
           amount_minor: number;
@@ -112,7 +138,8 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
-          user_id: string;
+          updated_at?: string;
+          user_id?: string | null;
         };
         Update: {
           amount_minor?: number;
@@ -123,7 +150,8 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
-          user_id?: string;
+          updated_at?: string;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -149,6 +177,7 @@ export type Database = {
           created_by: string;
           expires_at: string | null;
           household_id: string;
+          redeemed_at: string | null;
         };
         Insert: {
           code: string;
@@ -156,6 +185,7 @@ export type Database = {
           created_by: string;
           expires_at?: string | null;
           household_id: string;
+          redeemed_at?: string | null;
         };
         Update: {
           code?: string;
@@ -163,6 +193,7 @@ export type Database = {
           created_by?: string;
           expires_at?: string | null;
           household_id?: string;
+          redeemed_at?: string | null;
         };
         Relationships: [
           {
@@ -224,21 +255,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      join_attempts: {
+        Row: {
+          attempted_at: string;
+          user_id: string;
+        };
+        Insert: {
+          attempted_at?: string;
+          user_id: string;
+        };
+        Update: {
+          attempted_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
           display_name: string | null;
           id: string;
+          locale: string;
         };
         Insert: {
           created_at?: string;
           display_name?: string | null;
           id: string;
+          locale?: string;
         };
         Update: {
           created_at?: string;
           display_name?: string | null;
           id?: string;
+          locale?: string;
         };
         Relationships: [];
       };
@@ -247,22 +296,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      current_household_id: {
-        Args: Record<PropertyKey, never>;
-        Returns: string;
-      };
-      is_household_member: {
-        Args: { hid: string };
-        Returns: boolean;
-      };
-      same_household: {
-        Args: { other: string };
-        Returns: boolean;
-      };
-      join_household: {
-        Args: { invite_code: string };
-        Returns: string;
-      };
+      current_household_id: { Args: never; Returns: string };
+      delete_account: { Args: never; Returns: undefined };
+      is_household_member: { Args: { hid: string }; Returns: boolean };
+      join_household: { Args: { invite_code: string }; Returns: string };
+      leave_household: { Args: never; Returns: string };
+      same_household: { Args: { other: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;
@@ -391,6 +430,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

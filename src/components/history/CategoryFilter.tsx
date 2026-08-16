@@ -1,18 +1,22 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import type { Category } from '@/lib/types';
 
 /** Server-rendered `?category=` chip picker — works without client JS. */
-export function CategoryFilter({
+export async function CategoryFilter({
   categories,
   activeCategoryId,
 }: {
   categories: Category[];
   activeCategoryId: string | null;
 }) {
+  const t = await getTranslations('History');
+  // accent-600, not accent — white text on --color-accent is ~3.6:1, below
+  // the 4.5:1 AA threshold; accent-600 clears it at ~4.6:1 (see Button.tsx).
   const chipClass = (active: boolean) =>
     `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
       active
-        ? 'bg-accent text-white'
+        ? 'bg-accent-600 text-white'
         : 'bg-surface text-ink/70 hover:bg-sand-300'
     }`;
 
@@ -23,7 +27,7 @@ export function CategoryFilter({
         aria-current={activeCategoryId === null ? 'page' : undefined}
         className={chipClass(activeCategoryId === null)}
       >
-        All
+        {t('all')}
       </Link>
       {categories
         .filter((c) => !c.archived)

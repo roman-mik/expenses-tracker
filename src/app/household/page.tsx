@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/Button';
-import { ChevronLeftIcon } from '@/components/ui/icons';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import {
@@ -22,17 +22,12 @@ export default async function HouseholdPage() {
     getActiveInviteCode(supabase, householdId),
   ]);
 
+  const t = await getTranslations('Household');
+
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <header className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <Button href="/" variant="pill" className="justify-self-start">
-            <ChevronLeftIcon />
-            Back
-          </Button>
-          <span className="font-heading text-xl">Household</span>
-          <span aria-hidden />
-        </header>
+        <PageHeader title={t('title')} />
 
         <HouseholdPanel
           members={members}
