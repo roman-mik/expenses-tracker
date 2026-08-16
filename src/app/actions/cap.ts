@@ -6,6 +6,7 @@ import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { capUpdateSchema } from '@/lib/validation';
 import { upsertCap } from '@/lib/mutations/cap';
+import { reportError } from '@/lib/observability';
 import type { ActionResult } from './expenses';
 
 /**
@@ -25,7 +26,8 @@ export async function setCap(input: unknown): Promise<ActionResult> {
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await upsertCap(supabase, householdId, parsed.data);
-  } catch {
+  } catch (error) {
+    reportError('setCap', error);
     return { ok: false, error: t('saveFailed') };
   }
 

@@ -10,6 +10,7 @@ import {
   deleteExpense as deleteExpenseRow,
   updateExpense as updateExpenseRow,
 } from '@/lib/mutations/expenses';
+import { reportError } from '@/lib/observability';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -30,7 +31,8 @@ export async function addExpense(input: unknown): Promise<ActionResult> {
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await createExpense(supabase, householdId, user.id, parsed.data);
-  } catch {
+  } catch (error) {
+    reportError('addExpense', error);
     return { ok: false, error: t('saveFailed') };
   }
 
@@ -65,7 +67,8 @@ export async function updateExpense(
       parsed.data
     );
     if (!updated) return { ok: false, error: t('expenseNotFound') };
-  } catch {
+  } catch (error) {
+    reportError('updateExpense', error);
     return { ok: false, error: t('saveFailed') };
   }
 
@@ -86,7 +89,8 @@ export async function deleteExpense(id: string): Promise<ActionResult> {
     const supabase = await createClient();
     const removed = await deleteExpenseRow(supabase, householdId, id);
     if (!removed) return { ok: false, error: t('expenseNotFound') };
-  } catch {
+  } catch (error) {
+    reportError('deleteExpense', error);
     return { ok: false, error: t('removeFailed') };
   }
 
