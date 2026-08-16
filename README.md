@@ -95,6 +95,14 @@ Re-run this drill after any migration that changes triggers or constraints on a 
 touches, and after any `supabase` CLI major-version bump — the trigger-disabling behavior above is
 a CLI implementation detail, not a documented contract.
 
+## Export your data
+
+`GET /api/export` (linked from `/settings`) downloads the household's entire expense history as
+CSV — the only user-accessible backup, and the only copy of the data outside the one Supabase
+project until the automated backup above is set up. Amounts are in minor units, the same integer
+the app stores (e.g. cents for a 2-decimal currency, whole units for RSD) — not the display value —
+to avoid float rounding errors on the way out.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `format:check`, `lint`, `typecheck`, `test`, and `build` on every

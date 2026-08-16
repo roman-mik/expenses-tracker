@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { deleteExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
@@ -97,7 +96,6 @@ function ExpenseRow({
 }) {
   const t = useTranslations('HistoryList');
   const tCommon = useTranslations('Common');
-  const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
@@ -108,9 +106,9 @@ function ExpenseRow({
     startTransition(async () => {
       const result = await deleteExpense(e.id, e.updatedAt);
       if (result.ok) {
-        // The action revalidated the server data; refresh to drop the row.
+        // The action's response already carries the fresh RSC tree that
+        // drops this row — no separate refresh() needed.
         toast.success(t('expenseRemoved'));
-        router.refresh();
       } else {
         toast.error(result.error);
         setConfirming(false);

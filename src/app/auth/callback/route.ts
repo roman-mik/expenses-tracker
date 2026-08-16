@@ -5,8 +5,9 @@ import { LOCALE_COOKIE } from '@/i18n/request';
 
 /**
  * OAuth / magic-link callback. Exchanges the `code` for a session cookie.
- * `LoginForm` (password sign-in) never reaches this route — it seeds the
- * locale cookie itself via `syncLocaleCookie()` instead.
+ * `LoginForm` (password sign-in) never reaches this route — its own
+ * `signIn` Server Action (`src/app/actions/auth.ts`) seeds the locale
+ * cookie itself.
  *
  * This is also where "registration closed" is enforced end-to-end: when public
  * sign-ups are disabled in Supabase, a non-provisioned user's exchange fails, so

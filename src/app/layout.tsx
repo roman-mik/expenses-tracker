@@ -3,10 +3,38 @@ import { Caprasimo, Figtree } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { OfflineBanner } from '@/components/pwa/OfflineBanner';
 import { ToastProvider } from '@/components/ui/Toast';
 import './globals.css';
+
+// Server components keep full access to every namespace via getTranslations;
+// this only scopes what's serialized into the client bundle/HTML. The list is
+// every namespace a 'use client' component reaches via useTranslations(<ns>)
+// — grep for that call across src/components and src/app before adding a
+// new client component that needs a namespace not already here.
+const CLIENT_MESSAGE_NAMESPACES = [
+  'Common',
+  'Settings',
+  'HistoryList',
+  'Login',
+  'Nav',
+  'PWA',
+  'Cap',
+  'Categories',
+  'Add',
+  'Household',
+  'ErrorPage',
+] as const;
+
+function pick<T extends object, K extends keyof T>(
+  obj: T,
+  keys: readonly K[]
+): Pick<T, K> {
+  return Object.fromEntries(
+    keys.filter((k) => k in obj).map((k) => [k, obj[k]])
+  ) as Pick<T, K>;
+}
 
 const figtree = Figtree({
   variable: '--font-body',
@@ -44,6 +72,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
     <html
@@ -51,7 +80,9 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
       className={`${figtree.variable} ${caprasimo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-body">
-        <NextIntlClientProvider>
+        <NextIntlClientProvider
+          messages={pick(messages, CLIENT_MESSAGE_NAMESPACES)}
+        >
           <OfflineBanner />
           <ToastProvider>{children}</ToastProvider>
         </NextIntlClientProvider>
