@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
-import { syncLocaleCookie } from '@/app/actions/profile';
+import { signIn as signInAction } from '@/app/actions/auth';
 
 type Status =
   { kind: 'idle' } | { kind: 'signing' } | { kind: 'error'; message: string };
@@ -18,20 +17,15 @@ export function LoginForm({ initialError }: { initialError?: string }) {
   );
 
   const router = useRouter();
-  const supabase = createClient();
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setStatus({ kind: 'signing' });
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      setStatus({ kind: 'error', message: error.message });
+    const result = await signInAction(email, password);
+    if (!result.ok) {
+      setStatus({ kind: 'error', message: result.error });
       return;
     }
-    await syncLocaleCookie();
     // refresh() re-runs server components so they see the freshly-set session.
     router.push('/');
     router.refresh();
