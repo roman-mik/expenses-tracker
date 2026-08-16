@@ -214,6 +214,13 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 - [ ] Expo (React Native) app hitting the same `/api/*` endpoints.
 - [ ] Share `lib/kapa-math.ts` + Zod schemas via a small internal package or copied module.
 - [ ] Native push notifications for the nudge.
+- [x] **Styling direction decided (2026-08-17): tokens shared, components not.**
+  `@kapa/ui` is a zero-dependency TypeScript token package
+  (`packages/ui/src/tokens.ts`) generating a Tailwind `theme.css` for
+  `apps/web`; a universal component library (Tamagui was tried and reverted
+  — see `docs/tokens-only-migration.md`) is explicitly out. When this phase
+  unpostpones, `apps/mobile` imports the same token module and writes its
+  own components against a native styling engine.
 
 ### Phase 6 — Hardening (found by a 2026-08-15 audit against this doc)
 
