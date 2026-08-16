@@ -183,6 +183,9 @@
     "languageSaved": "Language saved",
     "localeEn": "English",
     "localeRu": "Русский",
+    "exportTitle": "Export your data",
+    "exportDescription": "Download every expense you've ever logged as a CSV. Amounts are in minor units (e.g. cents) to avoid rounding errors.",
+    "exportButton": "Download CSV",
     "signOut": "Sign out"
   },
   "Login": {
