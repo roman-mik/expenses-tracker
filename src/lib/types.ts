@@ -64,6 +64,10 @@ export interface Expense {
   note: string | null;
   spentAt: string; // ISO timestamp
   addedBy: string | null; // user_id of the member who logged it; null once that member's account is deleted (attribution.ts renders a neutral label)
+  /** ISO timestamp, server-set on every write. The optimistic-concurrency
+   * token: callers editing/deleting must present the value they last read,
+   * or the write is rejected as a conflict (see mutations/expenses.ts). */
+  updatedAt: string;
 }
 
 /** Per-currency spend bucket for currencies other than the profile's active one. */

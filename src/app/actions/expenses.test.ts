@@ -54,15 +54,51 @@ describe('addExpense', () => {
   });
 });
 
+const UPDATED_AT = '2026-08-01T00:00:00.000Z';
+
 describe('updateExpense', () => {
   it('reports a friendly error when the expense is not found', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
     mockedGetHouseholdId.mockResolvedValue('h1');
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
-    const result = await updateExpense('missing', { amountMinor: 200 });
+    const result = await updateExpense(
+      'missing',
+      { amountMinor: 200 },
+      UPDATED_AT
+    );
     expect(result).toEqual({
       ok: false,
       error: "That expense couldn't be found.",
+    });
+  });
+
+  it('reports a distinct error when someone else edited it first', async () => {
+    mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    mockedGetHouseholdId.mockResolvedValue('h1');
+    const { client, db } = fakeSupabase();
+    db.seed('expenses', [
+      {
+        id: 'e1',
+        household_id: 'h1',
+        category_id: null,
+        amount_minor: 100,
+        currency: 'RSD',
+        note: null,
+        spent_at: '2026-08-01T00:00:00.000Z',
+        user_id: 'u1',
+        updated_at: '2026-08-02T00:00:00.000Z',
+      },
+    ]);
+    mockedCreateClient.mockResolvedValue(client);
+    const result = await updateExpense(
+      'e1',
+      { amountMinor: 200 },
+      UPDATED_AT // stale
+    );
+    expect(result).toEqual({
+      ok: false,
+      error:
+        'Someone else just changed this expense — reload to see the latest.',
     });
   });
 });
@@ -70,7 +106,7 @@ describe('updateExpense', () => {
 describe('deleteExpense', () => {
   it('rejects when signed out', async () => {
     mockedVerifySession.mockResolvedValue(null);
-    expect(await deleteExpense('e1')).toEqual({
+    expect(await deleteExpense('e1', UPDATED_AT)).toEqual({
       ok: false,
       error: 'Not signed in.',
     });
@@ -80,7 +116,7 @@ describe('deleteExpense', () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
     mockedGetHouseholdId.mockResolvedValue('h1');
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
-    const result = await deleteExpense('missing');
+    const result = await deleteExpense('missing', UPDATED_AT);
     expect(result).toEqual({
       ok: false,
       error: "That expense couldn't be found.",
@@ -101,10 +137,11 @@ describe('deleteExpense', () => {
         note: null,
         spent_at: '2026-08-01T00:00:00.000Z',
         user_id: 'u1',
+        updated_at: UPDATED_AT,
       },
     ]);
     mockedCreateClient.mockResolvedValue(client);
-    expect(await deleteExpense('e1')).toEqual({ ok: true });
+    expect(await deleteExpense('e1', UPDATED_AT)).toEqual({ ok: true });
     expect(db.rows('expenses')).toHaveLength(0);
   });
 });

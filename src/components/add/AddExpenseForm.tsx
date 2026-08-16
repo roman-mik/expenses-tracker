@@ -63,11 +63,15 @@ export function AddExpenseForm({
       // category or clearing the note actually clears it — `undefined` means
       // "leave unchanged" in the update path.
       const result = expense
-        ? await updateExpense(expense.id, {
-            amountMinor,
-            categoryId: categoryId ?? null,
-            note: note.trim() || null,
-          })
+        ? await updateExpense(
+            expense.id,
+            {
+              amountMinor,
+              categoryId: categoryId ?? null,
+              note: note.trim() || null,
+            },
+            expense.updatedAt
+          )
         : await addExpense({
             amountMinor,
             categoryId: categoryId ?? undefined,

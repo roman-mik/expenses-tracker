@@ -30,6 +30,7 @@
     "checkAmount": "Please check the amount.",
     "categoryNotFound": "That category couldn't be found.",
     "expenseNotFound": "That expense couldn't be found.",
+    "expenseChanged": "Someone else just changed this expense — reload to see the latest.",
     "checkLocale": "Please pick a supported language."
   },
   "Home": {

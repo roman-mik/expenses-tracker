@@ -126,6 +126,7 @@ export type Database = {
           id: string;
           note: string | null;
           spent_at: string;
+          updated_at: string;
           user_id: string | null;
         };
         Insert: {
@@ -137,6 +138,7 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
+          updated_at?: string;
           user_id?: string | null;
         };
         Update: {
@@ -148,6 +150,7 @@ export type Database = {
           id?: string;
           note?: string | null;
           spent_at?: string;
+          updated_at?: string;
           user_id?: string | null;
         };
         Relationships: [
@@ -174,6 +177,7 @@ export type Database = {
           created_by: string;
           expires_at: string | null;
           household_id: string;
+          redeemed_at: string | null;
         };
         Insert: {
           code: string;
@@ -181,6 +185,7 @@ export type Database = {
           created_by: string;
           expires_at?: string | null;
           household_id: string;
+          redeemed_at?: string | null;
         };
         Update: {
           code?: string;
@@ -188,6 +193,7 @@ export type Database = {
           created_by?: string;
           expires_at?: string | null;
           household_id?: string;
+          redeemed_at?: string | null;
         };
         Relationships: [
           {
@@ -246,6 +252,21 @@ export type Database = {
           currency?: string;
           id?: string;
           timezone?: string;
+        };
+        Relationships: [];
+      };
+      join_attempts: {
+        Row: {
+          attempted_at: string;
+          user_id: string;
+        };
+        Insert: {
+          attempted_at?: string;
+          user_id: string;
+        };
+        Update: {
+          attempted_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };

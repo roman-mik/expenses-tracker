@@ -82,7 +82,12 @@ describe('HistoryList', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete expense' }));
     fireEvent.click(screen.getByRole('button', { name: 'Remove?' }));
 
-    await waitFor(() => expect(mockDeleteExpense).toHaveBeenCalledWith('e1'));
+    await waitFor(() =>
+      expect(mockDeleteExpense).toHaveBeenCalledWith(
+        'e1',
+        '2026-08-01T00:00:00.000Z'
+      )
+    );
     expect(mockToastSuccess).toHaveBeenCalledWith('Expense removed');
     expect(mockRefresh).toHaveBeenCalled();
   });

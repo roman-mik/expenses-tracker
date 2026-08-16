@@ -75,11 +75,10 @@ describe('cross-household write isolation', () => {
       bob.client,
       bob.householdId,
       created.id,
-      {
-        note: 'tampered',
-      }
+      { note: 'tampered' },
+      created.updatedAt
     );
-    expect(result).toBeNull();
+    expect(result).toEqual({ ok: false, reason: 'not_found' });
 
     const untouched = (
       await listExpenses(alice.client, alice.householdId)
@@ -95,9 +94,13 @@ describe('cross-household write isolation', () => {
       { amountMinor: 300 }
     );
 
-    expect(await deleteExpense(bob.client, bob.householdId, created.id)).toBe(
-      false
+    const result = await deleteExpense(
+      bob.client,
+      bob.householdId,
+      created.id,
+      created.updatedAt
     );
+    expect(result).toEqual({ ok: false, reason: 'not_found' });
 
     expect(
       (await listExpenses(alice.client, alice.householdId)).some(

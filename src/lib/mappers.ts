@@ -75,5 +75,6 @@ export function toExpense(row: ExpenseRow): Expense {
     note: row.note,
     spentAt: row.spent_at,
     addedBy: row.user_id,
+    updatedAt: row.updated_at,
   };
 }

@@ -106,7 +106,7 @@ function ExpenseRow({
 
   const remove = () => {
     startTransition(async () => {
-      const result = await deleteExpense(e.id);
+      const result = await deleteExpense(e.id, e.updatedAt);
       if (result.ok) {
         // The action revalidated the server data; refresh to drop the row.
         toast.success(t('expenseRemoved'));
