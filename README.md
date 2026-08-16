@@ -18,6 +18,10 @@ supabase db reset                  # applies supabase/migrations/* to it
 pnpm run gen:types                  # regenerates src/lib/supabase/database.types.ts from that schema
 ```
 
+Re-run `gen:types` and commit the result after any migration — CI regenerates and diffs it
+on every PR touching `supabase/**` or `apps/web/src/lib/supabase/**`, so a stale commit
+fails the build.
+
 `supabase start` prints the local `API URL` and keys — copy them into `.env.local`:
 
 ```bash
@@ -143,10 +147,12 @@ push to `main` and every PR. `pnpm run typecheck` is `next typegen && tsc --noEm
 step regenerates Next's route-level types so `tsc` works standalone, without a prior `next build`.
 
 Between `supabase start` and `supabase stop`, CI also runs `pnpm run test:db` (pgTAP, against real
-Postgres as the BYPASSRLS superuser) and `pnpm run test:integration` (application code —
+Postgres as the BYPASSRLS superuser), `pnpm run test:integration` (application code —
 `lib/queries/*`/`lib/mutations/*` — run unchanged against that same database, but through a real
-per-user JWT, so RLS actually applies). `pnpm test` alone (`vitest run --project node --project
-jsdom`) skips both and stays fast — it doesn't need Supabase running at all.
+per-user JWT, so RLS actually applies), and `pnpm run gen:types` followed by `git diff --exit-code`
+on `database.types.ts`, so a migration that lands without regenerating the committed types fails
+the build. `pnpm test` alone (`vitest run --project node --project jsdom`) skips all of that and
+stays fast — it doesn't need Supabase running at all.
 
 ## Adding a language
 
