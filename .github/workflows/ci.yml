@@ -37,3 +37,31 @@ jobs:
       - run: pnpm run test:integration
       - run: supabase stop
       - run: pnpm run build
+
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
+      - run: npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: npx vercel build --prod --token="$VERCEL_TOKEN"
+      - run: npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

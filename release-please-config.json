@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": true,
+  "packages": {
+    "apps/web": {
+      "release-type": "node",
+      "package-name": "@kapa/web",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/ui": {
+      "release-type": "node",
+      "package-name": "@kapa/ui",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
