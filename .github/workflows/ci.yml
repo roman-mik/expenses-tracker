@@ -62,6 +62,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
         working-directory: .
-      - run: npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - run: npx vercel build --prod --token="$VERCEL_TOKEN"
-      - run: npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+      - run: npx vercel pull --yes --environment=production
+      - run: npx vercel build --prod
+      - run: npx vercel deploy --prebuilt --prod
