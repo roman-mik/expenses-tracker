@@ -23,6 +23,7 @@ const CSP = [
 ].join('; ');
 
 const nextConfig: NextConfig = {
+  transpilePackages: ['@kapa/ui'],
   experimental: {
     // Detects lost connectivity and retries blocked navigations/prefetches/
     // Server Actions once the network returns; also exposes the

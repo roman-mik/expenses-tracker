@@ -1,0 +1,47 @@
+{
+  "name": "@kapa/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run --project node --project jsdom",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --project integration"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "@kapa/ui": "workspace:*",
+    "@supabase/ssr": "0.12.4",
+    "@supabase/supabase-js": "2.112.3",
+    "@vercel/analytics": "2.0.1",
+    "@vercel/speed-insights": "2.0.0",
+    "next": "16.3.0",
+    "next-intl": "4.13.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.4",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.0",
+    "eslint-config-prettier": "10.1.8",
+    "jsdom": "30.0.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

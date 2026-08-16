@@ -1,7 +1,9 @@
 .next
+.turbo
 node_modules
 build
 dist
 public
 *.MD
 .claude
+pnpm-lock.yaml

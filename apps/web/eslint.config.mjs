@@ -14,9 +14,6 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
-    // Gitignored local CLI/tooling state, not real source.
-    'supabase/.temp/**',
-    'graphify-out/**',
   ]),
 ]);
 
