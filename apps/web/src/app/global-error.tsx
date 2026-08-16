@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { track } from '@vercel/analytics';
+import { color } from '@kapa/ui';
 
 // Root-layout-level error boundary — catches crashes error.tsx can't (a
 // throw in layout.tsx itself, e.g. a font/metadata failure). Must render its
@@ -36,10 +37,10 @@ export default function GlobalError({
           }}
         >
           <header>
-            <h1 style={{ fontSize: '2rem', color: '#c67139' }}>
+            <h1 style={{ fontSize: '2rem', color: color.accent }}>
               Something slipped
             </h1>
-            <p style={{ marginTop: '0.5rem', color: '#201e1d', opacity: 0.7 }}>
+            <p style={{ marginTop: '0.5rem', color: color.ink, opacity: 0.7 }}>
               That didn&apos;t go through. It&apos;s on us, not you — give it
               another try.
             </p>
@@ -53,7 +54,7 @@ export default function GlobalError({
               onClick={() => reset()}
               style={{
                 borderRadius: '16px',
-                background: '#c67139',
+                background: color.accent,
                 padding: '0.75rem 1rem',
                 fontWeight: 500,
                 color: 'white',
@@ -65,7 +66,7 @@ export default function GlobalError({
           </div>
 
           {error.digest && (
-            <p style={{ fontSize: '0.75rem', color: '#201e1d', opacity: 0.4 }}>
+            <p style={{ fontSize: '0.75rem', color: color.ink, opacity: 0.4 }}>
               Reference: {error.digest}
             </p>
           )}
