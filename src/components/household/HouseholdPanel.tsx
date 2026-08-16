@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import type { HouseholdMember } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
+import {
+  joinHousehold as joinHouseholdAction,
+  mintInvite as mintInviteAction,
+} from '@/app/actions/household';
 
 export function HouseholdPanel({
   members,
@@ -17,30 +20,26 @@ export function HouseholdPanel({
   currentUserId: string;
 }) {
   const t = useTranslations('Household');
-  const router = useRouter();
   const toast = useToast();
   const [code, setCode] = useState(invite);
   const [joinCode, setJoinCode] = useState('');
-  const [busy, setBusy] = useState<null | 'invite' | 'join'>(null);
+  const [, startTransition] = useTransition();
+  const [pending, setPending] = useState<null | 'invite' | 'join'>(null);
   const [copied, setCopied] = useState(false);
 
   const shared = members.length > 1;
 
-  async function mintInvite() {
-    setBusy('invite');
-    try {
-      const res = await fetch('/api/household/invite', { method: 'POST' });
-      const body = await res.json();
-      // The route's error text is always English and not user-actionable —
-      // show the translated fallback rather than leaking it untranslated.
-      if (!res.ok) throw new Error(t('couldNotCreateCode'));
-      setCode(body.code as string);
-      router.refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : t('somethingWentWrong'));
-    } finally {
-      setBusy(null);
-    }
+  function mintInvite() {
+    setPending('invite');
+    startTransition(async () => {
+      const result = await mintInviteAction();
+      if (result.ok) {
+        setCode(result.code ?? null);
+      } else {
+        toast.error(result.error);
+      }
+      setPending(null);
+    });
   }
 
   async function copyCode() {
@@ -54,42 +53,20 @@ export function HouseholdPanel({
     }
   }
 
-  // `body.details` is the stable error code join_household's caller throws
-  // (see JoinHouseholdException) — never raw SQL/RPC text, so it's mapped to
-  // translated copy here rather than shown to the user directly.
-  const JOIN_ERROR_KEYS = {
-    'invalid-code': 'invalidCode',
-    'too-many-attempts': 'tooManyAttempts',
-    'has-other-members': 'hasOtherMembers',
-    'currency-mismatch': 'currencyMismatch',
-  } as const;
-
-  async function submitJoin(e: React.FormEvent) {
+  function submitJoin(e: React.FormEvent) {
     e.preventDefault();
     if (!joinCode.trim()) return;
-    setBusy('join');
-    try {
-      const res = await fetch('/api/household/join', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ code: joinCode.trim() }),
-      });
-      const body = await res.json();
-      if (!res.ok) {
-        const key =
-          typeof body?.details === 'string'
-            ? JOIN_ERROR_KEYS[body.details as keyof typeof JOIN_ERROR_KEYS]
-            : undefined;
-        throw new Error(t(key ?? 'couldNotJoin'));
+    setPending('join');
+    startTransition(async () => {
+      const result = await joinHouseholdAction({ code: joinCode.trim() });
+      if (result.ok) {
+        setJoinCode('');
+        toast.success(t('joinedHousehold'));
+      } else {
+        toast.error(result.error);
       }
-      setJoinCode('');
-      toast.success(t('joinedHousehold'));
-      router.refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : t('couldNotJoin'));
-    } finally {
-      setBusy(null);
-    }
+      setPending(null);
+    });
   }
 
   return (
@@ -144,10 +121,10 @@ export function HouseholdPanel({
         <Button
           type="button"
           onClick={mintInvite}
-          disabled={busy === 'invite'}
+          disabled={pending === 'invite'}
           className="py-3"
         >
-          {busy === 'invite'
+          {pending === 'invite'
             ? t('generating')
             : code
               ? t('generateNewCode')
@@ -177,11 +154,11 @@ export function HouseholdPanel({
           </label>
           <Button
             type="submit"
-            disabled={busy === 'join' || !joinCode.trim()}
+            disabled={pending === 'join' || !joinCode.trim()}
             variant="secondary"
             className="text-sm"
           >
-            {busy === 'join' ? t('joining') : t('join')}
+            {pending === 'join' ? t('joining') : t('join')}
           </Button>
         </form>
       </section>

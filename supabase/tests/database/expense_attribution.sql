@@ -26,7 +26,7 @@ end $$ language plpgsql;
 grant execute on function tests.login_as(uuid) to authenticated;
 grant execute on function tests.logout() to authenticated;
 
-select plan(9);
+select plan(10);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures — alice and bob share alice's household.
@@ -82,6 +82,23 @@ select throws_like(
 select lives_ok(
   format($$ update public.expenses set amount_minor = 950, note = 'corrected' where id = %L $$, :'expense_id'),
   'a co-member can still edit amount/note on a shared expense');
+
+select tests.logout();
+
+-- ---------------------------------------------------------------------------
+-- Currency stamping (0009) — a client-supplied currency is overwritten from
+-- the household on insert, not trusted from the request.
+-- ---------------------------------------------------------------------------
+
+select tests.login_as(:'bob_id');
+
+insert into public.expenses (household_id, user_id, amount_minor, currency, note)
+  values (:'household'::uuid, :'bob_id', 500, 'EUR', 'currency spoof attempt')
+  returning currency as spoofed_currency \gset
+
+select is(
+  :'spoofed_currency'::text, 'RSD'::text,
+  'a client-supplied currency is overwritten from the household on insert');
 
 select tests.logout();
 
