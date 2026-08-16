@@ -27,6 +27,19 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts'],
         },
       },
+      {
+        resolve: { alias },
+        test: {
+          name: 'integration',
+          environment: 'node',
+          include: ['src/**/*.itest.ts'],
+          // Every file shares one running local Postgres — no isolated
+          // per-test database — so tests within and across files must not
+          // race each other.
+          fileParallelism: false,
+          testTimeout: 20_000,
+        },
+      },
     ],
   },
 });

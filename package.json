@@ -10,8 +10,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
+    "test": "vitest run --project node --project jsdom",
     "test:watch": "vitest",
+    "test:integration": "vitest run --project integration",
     "test:db": "supabase test db",
     "gen:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
