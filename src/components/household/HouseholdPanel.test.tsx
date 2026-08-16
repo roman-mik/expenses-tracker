@@ -105,4 +105,55 @@ describe('HouseholdPanel', () => {
       expect.objectContaining({ body: JSON.stringify({ code: 'ABCD1234' }) })
     );
   });
+
+  it('shows translated copy for a stable join error code, not raw server text', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        error: 'Invalid request',
+        details: 'has-other-members',
+      }),
+    });
+    render(
+      <HouseholdPanel
+        members={[member({ userId: 'u1' })]}
+        invite={null}
+        currentUserId="u1"
+      />
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('ABCD1234'), {
+      target: { value: 'abcd1234' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith(
+        "You'd need to leave your current household first — it has other members"
+      )
+    );
+  });
+
+  it('falls back to a generic message for an unrecognized error code', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: 'Invalid request', details: 'weird' }),
+    });
+    render(
+      <HouseholdPanel
+        members={[member({ userId: 'u1' })]}
+        invite={null}
+        currentUserId="u1"
+      />
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('ABCD1234'), {
+      target: { value: 'abcd1234' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith('Could not join')
+    );
+  });
 });

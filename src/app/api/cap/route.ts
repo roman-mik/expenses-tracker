@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { capUpdateSchema } from '@/lib/validation';
 import { json, parseBody, requireHousehold } from '@/lib/api/http';
 import { getCap } from '@/lib/queries/cap';
@@ -9,7 +10,9 @@ export async function GET() {
 
   try {
     const cap = await getCap(ctx.supabase, ctx.householdId);
-    if (!cap) return json(null, { status: 204 });
+    // A 204 must not carry a body — the Fetch spec forbids it, and
+    // NextResponse.json(null, { status: 204 }) throws.
+    if (!cap) return new NextResponse(null, { status: 204 });
     return json(cap);
   } catch (error) {
     console.error('GET /api/cap failed', error);

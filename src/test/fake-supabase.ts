@@ -14,7 +14,7 @@
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 
 export type Row = Record<string, unknown>;
-type PGError = { message: string } | null;
+type PGError = { message: string; code?: string } | null;
 type PGResult<T> = { data: T; error: PGError };
 
 /** Table name -> row array. Mutate directly in tests via `db.seed(...)`. */

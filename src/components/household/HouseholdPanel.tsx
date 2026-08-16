@@ -31,7 +31,9 @@ export function HouseholdPanel({
     try {
       const res = await fetch('/api/household/invite', { method: 'POST' });
       const body = await res.json();
-      if (!res.ok) throw new Error(body?.error ?? t('couldNotCreateCode'));
+      // The route's error text is always English and not user-actionable —
+      // show the translated fallback rather than leaking it untranslated.
+      if (!res.ok) throw new Error(t('couldNotCreateCode'));
       setCode(body.code as string);
       router.refresh();
     } catch (e) {
@@ -52,6 +54,16 @@ export function HouseholdPanel({
     }
   }
 
+  // `body.details` is the stable error code join_household's caller throws
+  // (see JoinHouseholdException) — never raw SQL/RPC text, so it's mapped to
+  // translated copy here rather than shown to the user directly.
+  const JOIN_ERROR_KEYS = {
+    'invalid-code': 'invalidCode',
+    'too-many-attempts': 'tooManyAttempts',
+    'has-other-members': 'hasOtherMembers',
+    'currency-mismatch': 'currencyMismatch',
+  } as const;
+
   async function submitJoin(e: React.FormEvent) {
     e.preventDefault();
     if (!joinCode.trim()) return;
@@ -64,11 +76,11 @@ export function HouseholdPanel({
       });
       const body = await res.json();
       if (!res.ok) {
-        throw new Error(
+        const key =
           typeof body?.details === 'string'
-            ? body.details
-            : (body?.error ?? t('invalidCode'))
-        );
+            ? JOIN_ERROR_KEYS[body.details as keyof typeof JOIN_ERROR_KEYS]
+            : undefined;
+        throw new Error(t(key ?? 'couldNotJoin'));
       }
       setJoinCode('');
       toast.success(t('joinedHousehold'));

@@ -43,17 +43,13 @@ describe('GET /api/cap', () => {
     expect(res.status).toBe(500);
   });
 
-  // Documents an existing bug, not desired behavior: `json(null, { status: 204 })`
-  // (cap/route.ts) throws — the Fetch Response spec forbids a body on a 204 —
-  // so this falls into the route's own catch block and surfaces as a 500
-  // instead of the intended empty 204. Left as a discovered-but-out-of-scope
-  // finding for this PR; update this test if/when that's fixed.
-  it('500s when no cap has been set yet (204-with-body throws)', async () => {
+  it('204s with an empty body when no cap has been set yet', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
     mockedGetHouseholdId.mockResolvedValue('h1');
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     const res = await GET();
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe('');
   });
 
   it('returns the cap on the happy path', async () => {
