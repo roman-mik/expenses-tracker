@@ -39,13 +39,10 @@ describe('POST /api/household/join', () => {
     expect(res.status).toBe(400);
   });
 
-  it('400s when the RPC rejects the code', async () => {
+  it('400s with details "invalid-code" when the RPC returns null (bad/expired/redeemed code)', async () => {
     mockedVerifySession.mockResolvedValue({ id: 'u1' });
     const { client, db } = fakeSupabase();
-    db.onRpc('join_household', () => ({
-      data: null,
-      error: { message: 'Invalid or expired invite code' },
-    }));
+    db.onRpc('join_household', () => ({ data: null, error: null }));
     mockedCreateClient.mockResolvedValue(client);
     const res = await POST(
       new Request('http://x', {
@@ -54,6 +51,51 @@ describe('POST /api/household/join', () => {
       })
     );
     expect(res.status).toBe(400);
+    expect((await res.json()).details).toBe('invalid-code');
+  });
+
+  it.each([
+    ['KAPA1', 'too-many-attempts'],
+    ['KAPA2', 'has-other-members'],
+    ['KAPA3', 'currency-mismatch'],
+  ])(
+    '400s with details %2$s when the RPC raises %1$s',
+    async (sqlstate, details) => {
+      mockedVerifySession.mockResolvedValue({ id: 'u1' });
+      const { client, db } = fakeSupabase();
+      db.onRpc('join_household', () => ({
+        data: null,
+        error: { message: 'boom', code: sqlstate },
+      }));
+      mockedCreateClient.mockResolvedValue(client);
+      const res = await POST(
+        new Request('http://x', {
+          method: 'POST',
+          body: JSON.stringify({ code: 'ABCD1234' }),
+        })
+      );
+      expect(res.status).toBe(400);
+      expect((await res.json()).details).toBe(details);
+    }
+  );
+
+  it('500s on an unrecognized RPC error, without leaking the raw message', async () => {
+    mockedVerifySession.mockResolvedValue({ id: 'u1' });
+    const { client, db } = fakeSupabase();
+    db.onRpc('join_household', () => ({
+      data: null,
+      error: { message: 'connection reset' },
+    }));
+    mockedCreateClient.mockResolvedValue(client);
+    const res = await POST(
+      new Request('http://x', {
+        method: 'POST',
+        body: JSON.stringify({ code: 'ABCD1234' }),
+      })
+    );
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(JSON.stringify(body)).not.toContain('connection reset');
   });
 
   it('joins on the happy path', async () => {

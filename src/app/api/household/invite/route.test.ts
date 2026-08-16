@@ -39,6 +39,8 @@ describe('POST /api/household/invite', () => {
     mockedCreateClient.mockResolvedValue(fakeSupabase().client);
     const res = await POST();
     expect(res.status).toBe(201);
-    expect((await res.json()).code).toMatch(/^[0-9A-F]{8}$/);
+    // Crockford base32, 10 chars, no I/L/O/U — matches
+    // household_invites_code_format in 0008_invite_hardening.sql.
+    expect((await res.json()).code).toMatch(/^[0-9A-HJKMNP-TV-Z]{10}$/);
   });
 });

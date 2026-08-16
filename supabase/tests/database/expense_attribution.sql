@@ -46,10 +46,10 @@ values
 select household_id as household from public.household_members where user_id = :'alice_id' \gset
 
 insert into public.household_invites (code, household_id, created_by)
-  values ('ATTR-CODE', :'household'::uuid, :'alice_id');
+  values ('CCCCDDDD01', :'household'::uuid, :'alice_id');
 
 select tests.login_as(:'bob_id');
-select public.join_household('ATTR-CODE');
+select public.join_household('CCCCDDDD01');
 select tests.logout();
 
 insert into public.expenses (household_id, user_id, amount_minor, currency, note)

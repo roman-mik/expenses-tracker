@@ -162,7 +162,10 @@
     "join": "Join",
     "couldNotCreateCode": "Could not create a code",
     "somethingWentWrong": "Something went wrong",
-    "invalidCode": "Invalid code",
+    "invalidCode": "That code is invalid, expired, or already used",
+    "tooManyAttempts": "Too many attempts — try again in a bit",
+    "hasOtherMembers": "You'd need to leave your current household first — it has other members",
+    "currencyMismatch": "That household uses a different currency",
     "couldNotJoin": "Could not join",
     "joinedHousehold": "Joined the household"
   },
