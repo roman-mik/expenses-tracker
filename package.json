@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:db": "supabase test db",
-    "gen:types": "supabase gen types typescript --local > apps/web/src/lib/supabase/database.types.ts"
+    "gen:types": "supabase gen types typescript --local > apps/web/src/lib/supabase/database.types.ts && prettier --write apps/web/src/lib/supabase/database.types.ts"
   },
   "engines": {
     "node": "24.x"
