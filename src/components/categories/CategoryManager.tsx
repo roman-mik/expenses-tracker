@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { Category } from '@/lib/types';
 import { CATEGORY_COLORS } from '@/lib/category-colors';
@@ -69,7 +68,6 @@ function CategoryRow({
 }) {
   const t = useTranslations('Categories');
   const tCommon = useTranslations('Common');
-  const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<
@@ -84,8 +82,7 @@ function CategoryRow({
     setBusy(direction === 'up' ? 'move-up' : 'move-down');
     startTransition(async () => {
       const result = await moveCategory(category.id, direction);
-      if (result.ok) router.refresh();
-      else toast.error(result.error);
+      if (!result.ok) toast.error(result.error);
       setBusy(null);
     });
   };
@@ -101,7 +98,6 @@ function CategoryRow({
       if (result.ok) {
         setEditing(false);
         toast.success(t('categorySaved'));
-        router.refresh();
       } else {
         toast.error(result.error);
       }
@@ -116,7 +112,6 @@ function CategoryRow({
       if (result.ok) {
         setConfirming(false);
         toast.success(archived ? t('categoryArchived') : t('categoryRestored'));
-        router.refresh();
       } else {
         toast.error(result.error);
       }
@@ -254,7 +249,6 @@ function CategoryRow({
 function AddCategoryForm() {
   const t = useTranslations('Categories');
   const tCommon = useTranslations('Common');
-  const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -270,7 +264,6 @@ function AddCategoryForm() {
         setColor(CATEGORY_COLORS[0]);
         setOpen(false);
         toast.success(t('categoryAdded'));
-        router.refresh();
       } else {
         toast.error(result.error);
       }
