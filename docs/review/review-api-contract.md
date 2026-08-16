@@ -1,5 +1,7 @@
 ## API Contract
 
+**Status: the REST layer this review is about has been deleted** (REVIEW.md P2 item 17, this file's own "keep or delete" recommendation below, taken as "delete"). `src/app/api/{summary,expenses,cap,categories,household}/**` are gone; `HouseholdPanel` now calls `src/app/actions/household.ts`. `/api/keepalive` and `/api/export` remain as the two purpose-built route handlers. Everything below is preserved as the record of why.
+
 **Overall assessment.** As an internal convenience layer the `/api/*` surface is tidy: one auth preamble (`requireHousehold`), zod at every boundary, `.maybeSingle()` discipline, correct 404-vs-500 separation, and a real test file per route. As a *forward-looking client contract for an Expo app* it is not fit for purpose, and the gap is not a list of polish items — it is structural. **The current auth path cannot authenticate a bearer-token client at all** (§1): every endpoint returns 401 to a non-browser caller today. On top of that the surface is a partial mirror of the Server Actions (no profile, no category reorder, no single-expense read), the error envelope is human English prose with no machine code, `/api/expenses` has no pagination and will silently truncate at PostgREST's row cap, and **the household timezone — the single value a remote client needs most — is never exposed on any endpoint**, even though every month boundary on the server is computed from it.
 
 The good news is that fixing all of that is mostly unnecessary, because the layer itself is close to redundant. See below.
