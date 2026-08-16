@@ -65,6 +65,7 @@ export const radius = {
   sm: 8,
   md: 16,
   lg: 28,
+  xl: 40,
 } as const;
 
 // Web wants a box-shadow string; React Native wants shadowColor/Offset/

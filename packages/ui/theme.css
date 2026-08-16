@@ -60,6 +60,7 @@
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 28px;
+  --radius-xl: 40px;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px color-mix(in srgb, #2e2b25 14%, transparent);
