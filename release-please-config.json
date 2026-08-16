@@ -1,18 +1,17 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "separate-pull-requests": true,
+  "bootstrap-sha": "1b21c8cedafb4a5daa3b1dc43d99556eb46d7f14",
   "packages": {
     "apps/web": {
       "release-type": "node",
       "package-name": "@kapa/web",
-      "changelog-path": "CHANGELOG.md",
-      "bootstrap-sha": "1b21c8cedafb4a5daa3b1dc43d99556eb46d7f14"
+      "changelog-path": "CHANGELOG.md"
     },
     "packages/ui": {
       "release-type": "node",
       "package-name": "@kapa/ui",
-      "changelog-path": "CHANGELOG.md",
-      "bootstrap-sha": "1b21c8cedafb4a5daa3b1dc43d99556eb46d7f14"
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }
