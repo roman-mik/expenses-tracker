@@ -26,7 +26,7 @@ export async function ProjectionCard({
   const over = projection > cap;
   return (
     <div className="flex items-baseline justify-between text-sm">
-      <span className="text-ink/60">{t('atThisRate')}</span>
+      <span className="text-ink-muted">{t('atThisRate')}</span>
       <span
         className={`font-heading text-base ${over ? 'text-accent-700' : 'text-sage-700'}`}
       >

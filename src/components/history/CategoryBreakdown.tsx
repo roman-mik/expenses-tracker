@@ -57,7 +57,7 @@ export async function CategoryBreakdown({
               <span className="flex-1 text-ink/80">
                 {category?.name ?? t('uncategorized')}
               </span>
-              <span className="tabular-nums text-ink/60">{pct}%</span>
+              <span className="tabular-nums text-ink-muted">{pct}%</span>
               <span className="tabular-nums">
                 {formatMoney(spent, currency)}
               </span>
@@ -67,7 +67,7 @@ export async function CategoryBreakdown({
       </ul>
 
       {hasOtherCurrencies ? (
-        <p className="text-xs text-ink/50">{t('otherCurrenciesNote')}</p>
+        <p className="text-xs text-ink-muted">{t('otherCurrenciesNote')}</p>
       ) : null}
     </div>
   );

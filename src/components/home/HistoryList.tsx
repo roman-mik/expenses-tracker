@@ -42,14 +42,16 @@ export function HistoryList({
   };
 
   if (groups.length === 0) {
-    return <p className="text-sm text-ink/45">{t('nothingLoggedThisMonth')}</p>;
+    return (
+      <p className="text-sm text-ink-muted">{t('nothingLoggedThisMonth')}</p>
+    );
   }
 
   return (
     <div className="flex flex-col gap-6">
       {groups.map((group) => (
         <section key={group.key} className="flex flex-col gap-2">
-          <div className="flex items-baseline justify-between text-xs font-semibold tracking-wider uppercase text-ink/50">
+          <div className="flex items-baseline justify-between text-xs font-semibold tracking-wider uppercase text-ink-muted">
             <h2>{group.label}</h2>
             {group.total ? (
               <span className="tabular-nums">
@@ -131,7 +133,9 @@ function ExpenseRow({
             <span className="truncate text-ink/80">
               {category?.name ?? t('uncategorized')}
             </span>
-            {meta ? <span className="text-xs text-ink/45">{meta}</span> : null}
+            {meta ? (
+              <span className="text-xs text-ink-muted">{meta}</span>
+            ) : null}
           </span>
         </span>
 
@@ -153,7 +157,7 @@ function ExpenseRow({
               type="button"
               onClick={() => setConfirming(false)}
               disabled={pending}
-              className="rounded-md px-2 py-1 text-sm text-ink/55 hover:bg-surface disabled:opacity-50"
+              className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-surface disabled:opacity-50"
             >
               {tCommon('cancel')}
             </button>
@@ -172,7 +176,7 @@ function ExpenseRow({
               type="button"
               onClick={() => setConfirming(true)}
               aria-label={t('deleteAria')}
-              className="rounded-md px-2 py-1 text-ink/55 transition-colors hover:bg-surface hover:text-accent-700"
+              className="rounded-md px-2 py-1 text-ink-muted transition-colors hover:bg-surface hover:text-accent-700"
             >
               <TrashIcon />
             </button>

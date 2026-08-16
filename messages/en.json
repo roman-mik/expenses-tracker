@@ -33,6 +33,7 @@
     "checkLocale": "Please pick a supported language."
   },
   "Home": {
+    "pageTitle": "Kapa — this month's spending",
     "overBudgetBy": "Over budget by",
     "leftToSpend": "Left to spend",
     "spentThisMonth": "Spent this month",

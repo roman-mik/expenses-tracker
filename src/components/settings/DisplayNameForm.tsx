@@ -35,7 +35,7 @@ export function DisplayNameForm({
   return (
     <form onSubmit={save} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <span className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('yourName')}
         </span>
         <input
@@ -46,7 +46,7 @@ export function DisplayNameForm({
           className="rounded-lg bg-surface px-4 py-3 shadow-sm outline-none focus:ring-2 focus:ring-accent/40"
         />
       </label>
-      <p className="text-sm text-ink/60">{t('nameHelp')}</p>
+      <p className="text-sm text-ink-muted">{t('nameHelp')}</p>
       <Button type="submit" disabled={pending} className="py-3">
         {pending ? tCommon('saving') : t('saveName')}
       </Button>

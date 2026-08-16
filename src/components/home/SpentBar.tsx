@@ -32,7 +32,7 @@ export async function SpentBar({
           style={{ width: `${spentPct}%` }}
         />
       </div>
-      <div className="flex justify-between text-sm text-ink/60">
+      <div className="flex justify-between text-sm text-ink-muted">
         <span>
           <strong className="text-accent-700">
             {formatMoney(spent, currency)}

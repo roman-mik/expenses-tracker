@@ -72,6 +72,11 @@ export default async function Home() {
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
+      {/* AppHeader's "Kapa" wordmark is a <span>, and the first visible
+          heading on this page is "Today" (<h2>) — this sr-only <h1> gives
+          screen-reader users a page identity/document outline that matches
+          every other route (PageHeader renders a real <h1>). */}
+      <h1 className="sr-only">{t('pageTitle')}</h1>
       <div className="w-full max-w-xl lg:max-w-5xl lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
         <div className="flex flex-col gap-8">
           <AppHeader />
@@ -86,7 +91,7 @@ export default async function Home() {
           )}
 
           <section className="rounded-lg bg-surface shadow-md p-7 flex flex-col gap-5">
-            <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+            <span className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
               {isNoCap
                 ? t('spentThisMonth')
                 : isOver
@@ -106,7 +111,7 @@ export default async function Home() {
                   summary.currency
                 )}
               </span>
-              <span className="font-semibold text-ink/55">
+              <span className="font-semibold text-ink-muted">
                 {summary.currency}
               </span>
             </div>
@@ -189,7 +194,7 @@ export default async function Home() {
 
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+              <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
                 {t('today')}
               </h2>
               <Button href="/history" variant="ghost" className="text-sm">

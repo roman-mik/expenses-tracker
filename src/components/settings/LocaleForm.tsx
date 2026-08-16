@@ -37,7 +37,7 @@ export function LocaleForm({ initialLocale }: { initialLocale: Locale }) {
   return (
     <form onSubmit={save} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <span className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('language')}
         </span>
         <select
@@ -52,7 +52,7 @@ export function LocaleForm({ initialLocale }: { initialLocale: Locale }) {
           ))}
         </select>
       </label>
-      <p className="text-sm text-ink/60">{t('languageHelp')}</p>
+      <p className="text-sm text-ink-muted">{t('languageHelp')}</p>
       <Button type="submit" disabled={pending} className="py-3">
         {pending ? tCommon('saving') : t('saveLanguage')}
       </Button>

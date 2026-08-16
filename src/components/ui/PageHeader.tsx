@@ -23,7 +23,7 @@ export async function PageHeader({
         <ChevronLeftIcon />
         {t('back')}
       </Button>
-      <span className="font-heading text-xl">{title}</span>
+      <h1 className="font-heading text-xl">{title}</h1>
       <span aria-hidden />
     </header>
   );

@@ -63,14 +63,14 @@ export function SetCapForm({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center gap-1">
-        <span className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <span className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('monthlyCap')}
         </span>
         <div className="flex items-baseline gap-2">
           <span className="font-heading text-5xl">
             {formatMoney(cap, currency)}
           </span>
-          <span className="font-semibold text-ink/55">{currency}</span>
+          <span className="font-semibold text-ink-muted">{currency}</span>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ export function SetCapForm({
 function Consequence({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-ink/60">{label}</span>
+      <span className="text-ink-muted">{label}</span>
       <span className="font-medium tabular-nums">{value}</span>
     </div>
   );

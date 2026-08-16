@@ -17,7 +17,7 @@ export async function TodayList({
 }) {
   const t = await getTranslations('TodayList');
   if (expenses.length === 0) {
-    return <p className="text-sm text-ink/45">{t('nothingLoggedToday')}</p>;
+    return <p className="text-sm text-ink-muted">{t('nothingLoggedToday')}</p>;
   }
   const attributionLabels = {
     you: t('you'),
@@ -50,9 +50,9 @@ export async function TodayList({
               <span className="text-ink/80">
                 {category?.name ?? t('uncategorized')}
                 {e.note ? (
-                  <span className="text-ink/45"> · {e.note}</span>
+                  <span className="text-ink-muted"> · {e.note}</span>
                 ) : null}
-                {who ? <span className="text-ink/45"> · {who}</span> : null}
+                {who ? <span className="text-ink-muted"> · {who}</span> : null}
               </span>
             </span>
             <span className="font-medium tabular-nums">
