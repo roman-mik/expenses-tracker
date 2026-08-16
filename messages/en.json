@@ -169,7 +169,15 @@
     "hasOtherMembers": "You'd need to leave your current household first — it has other members",
     "currencyMismatch": "That household uses a different currency",
     "couldNotJoin": "Could not join",
-    "joinedHousehold": "Joined the household"
+    "joinedHousehold": "Joined the household",
+    "leaveSectionTitle": "Leave this household",
+    "leaveDescription": "You'll get a fresh household of your own with a full copy of everything logged so far — nothing is deleted or split. Everyone staying behind keeps their history exactly as it is too.",
+    "leaveButton": "Leave household",
+    "leaveConfirm": "Leave for good?",
+    "leaving": "Leaving…",
+    "leftHousehold": "You've left — welcome to your new household",
+    "couldNotLeave": "Could not leave",
+    "onlyMember": "You're the only member — there's nothing to leave"
   },
   "Settings": {
     "title": "Settings",
