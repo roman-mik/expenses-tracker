@@ -7,13 +7,23 @@
  * `daysLeft` convention (IMPORTANT — the whole formula suite depends on it):
  *   `daysLeft` counts whole days remaining in the month EXCLUDING today,
  *   so it ranges 0 .. D-1 and matches the product's "N days until reset"
- *   countdown. Consequently:
- *     - elapsedDays = daysInMonth - daysLeft   (first day → 1, last day → D)
+ *   countdown. Two different day-counts fall out of it, for two different
+ *   purposes — conflating them was a real bug here (a user spending exactly
+ *   the even pace was told "right on pace" AND handed a safe-daily ~4.5%
+ *   below cap/D, because the two spans summed to D+1, one day too many):
+ *     - elapsedDays = daysInMonth - daysLeft, clamped ≥ 1 (first day → 1,
+ *       last day → D). Today counts as elapsed. Used by `projection`, which
+ *       wants "spend so far ÷ days that produced it" and treats today's
+ *       partial spend as a data point.
+ *     - completedDays = daysInMonth - daysLeft - 1, clamped ≥ 0 (first day →
+ *       0, last day → D-1). Today does NOT count as completed. Used by
+ *       `evenPace`, the pace *baseline* — today hasn't happened yet from the
+ *       baseline's point of view.
  *     - safeDaily divides by max(daysLeft + 1, 1), because today is still
  *       spendable (today + the daysLeft remaining days).
- *   This intentionally drops the `+1` from PLAN.md §1's elapsed formula, which
- *   could not satisfy both the first-day (elapsed=1) and last-day (daysLeft=0)
- *   edge cases at once.
+ *   completedDays + (daysLeft + 1) === daysInMonth for every daysLeft, which
+ *   is what makes safeDaily and evenPace reconcile: a user spending exactly
+ *   evenPace always has safeDaily === floor(cap / D).
  */
 
 // ---------------------------------------------------------------------------
@@ -144,27 +154,44 @@ export function elapsedDays(
   return Math.max(daysInMonthValue - daysLeftValue, 1);
 }
 
+/**
+ * Days fully completed BEFORE today: daysInMonth - daysLeft - 1, clamped to
+ * >= 0. The pace baseline — unlike `elapsedDays`, today does not count, since
+ * today's spending isn't "behind" or "ahead" of anything yet. See the module
+ * header for why this must stay distinct from `elapsedDays`.
+ */
+export function completedDays(
+  daysInMonthValue: number,
+  daysLeftValue: number
+): number {
+  return Math.max(daysInMonthValue - daysLeftValue - 1, 0);
+}
+
 /** What's left of the cap, never negative. */
 export function remaining(cap: number, spent: number): number {
   return Math.max(cap - spent, 0);
 }
 
-/** Safe amount to spend per day for the rest of the month (today still spendable). */
+/**
+ * Safe amount to spend per day for the rest of the month (today still
+ * spendable). Floors to whole minor units — a rounded-up allowance can, when
+ * followed exactly, add up to more than what's actually remaining.
+ */
 export function safeDaily(
   remainingValue: number,
   daysLeftValue: number
 ): number {
-  return remainingValue / Math.max(daysLeftValue + 1, 1);
+  return Math.floor(remainingValue / Math.max(daysLeftValue + 1, 1));
 }
 
-/** Where spending "should" be if spread evenly across the month so far. */
+/** Where spending "should" be if spread evenly across the days completed so far. */
 export function evenPace(
   cap: number,
-  elapsed: number,
+  completed: number,
   daysInMonthValue: number
 ): number {
   if (daysInMonthValue <= 0) return 0;
-  return cap * (elapsed / daysInMonthValue);
+  return (cap * completed) / daysInMonthValue;
 }
 
 /** Positive = under pace (warm), negative = ahead of pace (gentle nudge). */

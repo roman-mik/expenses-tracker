@@ -35,6 +35,9 @@
   "Home": {
     "overBudgetBy": "Over budget by",
     "leftToSpend": "Left to spend",
+    "spentThisMonth": "Spent this month",
+    "noCapYet": "No cap set yet — set one to start tracking against it.",
+    "setYourCap": "Set your cap →",
     "adjustCap": "Adjust cap →",
     "daysUntilReset": "<strong>{count}</strong> {count, plural, one {day} other {days}} until reset",
     "safeADay": "safe a day",

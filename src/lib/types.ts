@@ -81,6 +81,8 @@ export interface Summary {
   safeDaily: number;
   daysLeft: number;
   elapsedDays: number;
+  /** Days fully completed before today — the pace baseline. See kapa-math.ts. */
+  completedDays: number;
   evenPace: number;
   paceGap: number;
   projection: number;

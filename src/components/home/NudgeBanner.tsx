@@ -26,7 +26,7 @@ export async function NudgeBanner({
         {t.rich('message', {
           spentPct,
           remaining: formatMoney(remaining, currency),
-          safeDaily: formatMoney(Math.round(safeDaily), currency),
+          safeDaily: formatMoney(safeDaily, currency),
           pct: (chunks) => (
             <strong className="text-accent-700">{chunks}</strong>
           ),
