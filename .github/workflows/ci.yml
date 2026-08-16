@@ -32,5 +32,6 @@ jobs:
       - run: npm test
       - run: supabase start
       - run: npm run test:db
+      - run: npm run test:integration
       - run: supabase stop
       - run: npm run build
