@@ -127,13 +127,16 @@ function CategoryRow({
   if (editing) {
     return (
       <li className="flex flex-col gap-3 py-3">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={60}
-          className="rounded-lg bg-surface px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40"
-          autoFocus
-        />
+        <label>
+          <span className="sr-only">{t('namePlaceholder')}</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={60}
+            className="w-full rounded-lg bg-surface px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40"
+            autoFocus
+          />
+        </label>
         <ColorPicker value={color} onChange={setColor} />
         <div className="flex items-center gap-2">
           <Button
@@ -174,7 +177,7 @@ function CategoryRow({
           type="button"
           onClick={() => setEditing(true)}
           disabled={category.archived}
-          className="min-w-0 flex-1 truncate text-left text-ink/80 disabled:text-ink/45"
+          className="min-w-0 flex-1 truncate text-left text-ink/80 disabled:text-ink-muted"
         >
           {category.name}
         </button>
@@ -197,7 +200,7 @@ function CategoryRow({
                 onClick={() => move('up')}
                 disabled={pending || isFirst}
                 aria-label={t('moveUp')}
-                className="rounded-md px-2 py-1 text-ink/55 hover:bg-surface hover:text-ink disabled:opacity-30"
+                className="rounded-md px-2 py-1 text-ink-muted hover:bg-surface hover:text-ink disabled:opacity-30"
               >
                 ▲
               </button>
@@ -206,7 +209,7 @@ function CategoryRow({
                 onClick={() => move('down')}
                 disabled={pending || isLast}
                 aria-label={t('moveDown')}
-                className="rounded-md px-2 py-1 text-ink/55 hover:bg-surface hover:text-ink disabled:opacity-30"
+                className="rounded-md px-2 py-1 text-ink-muted hover:bg-surface hover:text-ink disabled:opacity-30"
               >
                 ▼
               </button>
@@ -226,7 +229,7 @@ function CategoryRow({
                   type="button"
                   onClick={() => setConfirming(false)}
                   disabled={pending}
-                  className="rounded-md px-2 py-1 text-sm text-ink/55 hover:bg-surface disabled:opacity-50"
+                  className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-surface disabled:opacity-50"
                 >
                   {tCommon('cancel')}
                 </button>
@@ -236,7 +239,7 @@ function CategoryRow({
                 type="button"
                 onClick={() => setConfirming(true)}
                 aria-label={t('archiveAria')}
-                className="shrink-0 rounded-md px-2 py-1 text-ink/55 transition-colors hover:bg-surface hover:text-accent-700"
+                className="shrink-0 rounded-md px-2 py-1 text-ink-muted transition-colors hover:bg-surface hover:text-accent-700"
               >
                 <TrashIcon />
               </button>
@@ -289,14 +292,17 @@ function AddCategoryForm() {
 
   return (
     <div className="flex flex-col gap-3 rounded-lg bg-surface p-4">
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder={t('namePlaceholder')}
-        maxLength={60}
-        className="rounded-lg bg-bg px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40"
-        autoFocus
-      />
+      <label>
+        <span className="sr-only">{t('namePlaceholder')}</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('namePlaceholder')}
+          maxLength={60}
+          className="w-full rounded-lg bg-bg px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40"
+          autoFocus
+        />
+      </label>
       <ColorPicker value={color} onChange={setColor} />
       <div className="flex items-center gap-2">
         <Button
@@ -336,11 +342,11 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('sectionTitle')}
         </h2>
         {active.length === 0 ? (
-          <p className="text-sm text-ink/45">{t('noCategoriesYet')}</p>
+          <p className="text-sm text-ink-muted">{t('noCategoriesYet')}</p>
         ) : (
           <ul className="flex flex-col divide-y divide-sand-300/60">
             {active.map((c, i) => (
@@ -358,10 +364,10 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
 
       {archived.length > 0 ? (
         <section className="flex flex-col gap-3">
-          <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+          <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
             {t('archivedTitle')}
           </h2>
-          <p className="text-sm text-ink/60">{t('archivedNote')}</p>
+          <p className="text-sm text-ink-muted">{t('archivedNote')}</p>
           <ul className="flex flex-col divide-y divide-sand-300/60">
             {archived.map((c) => (
               <CategoryRow key={c.id} category={c} isFirst isLast />

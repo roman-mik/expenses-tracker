@@ -39,24 +39,30 @@ export function LoginForm({ initialError }: { initialError?: string }) {
 
   return (
     <form onSubmit={signIn} className="flex flex-col gap-3">
-      <input
-        type="email"
-        required
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder={t('emailPlaceholder')}
-        className="rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
-      />
-      <input
-        type="password"
-        required
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder={t('passwordPlaceholder')}
-        className="rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
-      />
+      <label className="flex flex-col gap-1.5">
+        <span className="sr-only">{t('emailPlaceholder')}</span>
+        <input
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t('emailPlaceholder')}
+          className="w-full rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
+        />
+      </label>
+      <label className="flex flex-col gap-1.5">
+        <span className="sr-only">{t('passwordPlaceholder')}</span>
+        <input
+          type="password"
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t('passwordPlaceholder')}
+          className="w-full rounded-[var(--radius-md)] border border-[var(--color-sand-300)] bg-[var(--color-surface)] px-4 py-3 outline-none focus-visible:border-[var(--color-accent)]"
+        />
+      </label>
       <button
         type="submit"
         disabled={status.kind === 'signing'}

@@ -11,10 +11,12 @@ export async function CategoryFilter({
   activeCategoryId: string | null;
 }) {
   const t = await getTranslations('History');
+  // accent-600, not accent — white text on --color-accent is ~3.6:1, below
+  // the 4.5:1 AA threshold; accent-600 clears it at ~4.6:1 (see Button.tsx).
   const chipClass = (active: boolean) =>
     `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
       active
-        ? 'bg-accent text-white'
+        ? 'bg-accent-600 text-white'
         : 'bg-surface text-ink/70 hover:bg-sand-300'
     }`;
 

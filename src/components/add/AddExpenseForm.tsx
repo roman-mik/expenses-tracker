@@ -90,10 +90,10 @@ export function AddExpenseForm({
           <span className="font-heading text-5xl">
             {formatMoney(amountMinor, currency)}
           </span>
-          <span className="font-semibold text-ink/55">{currency}</span>
+          <span className="font-semibold text-ink-muted">{currency}</span>
         </div>
         <p
-          className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink/55'}`}
+          className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink-muted'}`}
         >
           {t('leftAfterThis', { amount: formatMoney(leftAfter, currency) })}
         </p>
@@ -123,8 +123,10 @@ export function AddExpenseForm({
               type="button"
               onClick={() => setCategoryId(selected ? null : c.id)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                // accent-600, not accent — white text on --color-accent is
+                // ~3.6:1, below 4.5:1 AA; accent-600 clears it (see Button.tsx).
                 selected
-                  ? 'bg-accent text-white'
+                  ? 'bg-accent-600 text-white'
                   : 'bg-surface text-ink/70 hover:bg-sand-300'
               }`}
             >
@@ -135,14 +137,17 @@ export function AddExpenseForm({
       </div>
 
       {/* Note */}
-      <input
-        type="text"
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder={t('notePlaceholder')}
-        maxLength={500}
-        className="rounded-md bg-surface px-4 py-3 text-ink placeholder:text-ink/40 outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      />
+      <label className="flex flex-col gap-1.5">
+        <span className="sr-only">{t('notePlaceholder')}</span>
+        <input
+          type="text"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder={t('notePlaceholder')}
+          maxLength={500}
+          className="rounded-md bg-surface px-4 py-3 text-ink placeholder:text-ink/40 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        />
+      </label>
 
       <Button
         type="button"

@@ -31,5 +31,5 @@ export async function PaceLine({
       </p>
     );
   }
-  return <p className="text-sm text-ink/60">{t('onPace')}</p>;
+  return <p className="text-sm text-ink-muted">{t('onPace')}</p>;
 }

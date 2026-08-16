@@ -29,7 +29,7 @@ export async function DailySpendChart({
 
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+      <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
         {t('dailySpend')}
       </h2>
 

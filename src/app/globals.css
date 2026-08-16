@@ -25,6 +25,13 @@
   --color-surface: #ebddc5;
   --color-ink: #201e1d;
 
+  /* Secondary-text tones. Solid hexes, not `text-ink/NN` opacity — opacity
+     blends toward whichever ground sits behind it, so its contrast ratio
+     isn't fixed; these are chosen to clear 4.5:1 (ink-muted) or stay
+     decorative-only (ink-subtle) against BOTH --color-bg and --color-surface. */
+  --color-ink-muted: #645c50; /* ~5.5:1 on bg, ~4.9:1 on surface — same value as sand-700 */
+  --color-ink-subtle: #82796a; /* ~3.6:1 on bg, ~3.2:1 on surface — decorative only, same as sand-600 */
+
   /* Neutral / sand ramp */
   --color-sand-100: #f9f4ed;
   --color-sand-200: #eee7db;

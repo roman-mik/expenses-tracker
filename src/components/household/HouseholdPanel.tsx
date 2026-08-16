@@ -84,7 +84,7 @@ export function HouseholdPanel({
     <div className="flex flex-col gap-8">
       {/* Members */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {shared ? t('sharingThisCap') : t('justYou')}
         </h2>
         <ul className="flex flex-col divide-y divide-sand-300/60">
@@ -97,10 +97,10 @@ export function HouseholdPanel({
                 {m.displayName?.trim() ||
                   (m.userId === currentUserId ? t('you') : t('member'))}
                 {m.userId === currentUserId ? (
-                  <span className="text-ink/45"> · {t('youSuffix')}</span>
+                  <span className="text-ink-muted"> · {t('youSuffix')}</span>
                 ) : null}
               </span>
-              <span className="text-xs uppercase tracking-wide text-ink/45">
+              <span className="text-xs uppercase tracking-wide text-ink-muted">
                 {m.role}
               </span>
             </li>
@@ -110,10 +110,10 @@ export function HouseholdPanel({
 
       {/* Invite */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('inviteSomeone')}
         </h2>
-        <p className="text-sm text-ink/60">{t('inviteDescription')}</p>
+        <p className="text-sm text-ink-muted">{t('inviteDescription')}</p>
         {code ? (
           <div className="flex items-center gap-3">
             <code className="flex-1 rounded-lg bg-surface px-4 py-3 font-heading text-2xl tracking-widest text-center shadow-sm">
@@ -145,17 +145,24 @@ export function HouseholdPanel({
 
       {/* Join */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink/50">
+        <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
           {t('joinHousehold')}
         </h2>
-        <p className="text-sm text-ink/60">{t('joinDescription')}</p>
+        <p className="text-sm text-ink-muted">{t('joinDescription')}</p>
         <form onSubmit={submitJoin} className="flex items-center gap-3">
-          <input
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-            placeholder={t('codePlaceholder')}
-            className="flex-1 rounded-lg bg-surface px-4 py-3 tracking-widest shadow-sm outline-none focus:ring-2 focus:ring-accent/40"
-          />
+          <label className="flex-1">
+            <span className="sr-only">{t('joinHousehold')}</span>
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              placeholder={t('codePlaceholder')}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={8}
+              className="w-full rounded-lg bg-surface px-4 py-3 tracking-widest shadow-sm outline-none focus:ring-2 focus:ring-accent/40"
+            />
+          </label>
           <Button
             type="submit"
             disabled={busy === 'join' || !joinCode.trim()}
