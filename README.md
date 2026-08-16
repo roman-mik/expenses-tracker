@@ -8,9 +8,36 @@ Built with **Next.js** (App Router) + **Supabase** (Postgres/Auth) + **Tailwind 
 
 ```bash
 npm install
-cp .env.local.example .env.local   # fill in your Supabase keys
-npm run dev                         # http://localhost:3000
+supabase start                     # boots local Postgres/Auth/Studio in Docker
+supabase db reset                  # applies supabase/migrations/* to it
+npm run gen:types                  # regenerates src/lib/supabase/database.types.ts from that schema
 ```
+
+`supabase start` prints the local `API URL` and keys — copy them into `.env.local`:
+
+```bash
+cp .env.local.example .env.local
+# NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+# NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<the PUBLISHABLE_KEY supabase start printed>
+npm run dev                        # http://localhost:3000
+```
+
+(`supabase status` reprints the same values later, if the terminal with the original `start` output is gone.)
+
+**Creating the first user.** There's no self-service sign-up screen — the app is invite-only by
+design (see [Deploy](#deploy-free-tier) below) — so seed one by hand via Supabase Studio
+(`http://127.0.0.1:54323`, opened automatically by `supabase start`):
+
+1. **SQL Editor** → `insert into public.allowed_emails (email) values ('you@example.com');` — the
+   allowlist trigger (`0002_optional_allowlist.sql`) rejects any sign-up whose email isn't on this
+   list first.
+2. **Authentication → Users → Add user** → same email, a password, and check **Auto Confirm User**
+   (the app uses password auth, not magic links — `src/components/auth/LoginForm.tsx`).
+3. Sign in at `http://localhost:3000/login`. `handle_new_user()` seeds a household-of-one, a
+   default cap, and five starter categories automatically.
+
+Repeat step 1 for a second address to test the household-sharing flow (`/household` → generate an
+invite code → sign in as the second user → redeem it).
 
 ## Environment variables
 
@@ -26,9 +53,10 @@ The app runs without these (landing page only); auth and data need them.
 ## Deploy (free tier)
 
 1. **Push to GitHub** — create a repo and push this project.
-2. **Supabase** — create a free project at [supabase.com](https://supabase.com); copy the URL + publishable key.
+2. **Supabase** — create a free project at [supabase.com](https://supabase.com); copy the URL + publishable key. Run `supabase link` then `supabase db push` to apply `supabase/migrations/*` to it (this is the same schema `supabase db reset` applies locally — see [Local development](#local-development) above).
 3. **Vercel** — import the GitHub repo at [vercel.com](https://vercel.com); add the env vars above; deploy.
 4. Every push to `main` auto-deploys.
+5. **Lock down auth** — Supabase dashboard → Authentication → Providers → Email → Site URL and Additional Redirect URLs should point at the deployed domain (`https://your-app.vercel.app` and `/auth/callback`), which `auth/callback/route.ts` needs for its OAuth/magic-link/email-confirmation exchange. Then Authentication → Sign In / Providers → turn **"Allow new users to sign up" OFF** — `allowed_emails` (see [Local development](#local-development)) is a backstop, not the primary gate; this toggle is.
 
 ## Keep-alive
 
@@ -108,6 +136,12 @@ to avoid float rounding errors on the way out.
 `.github/workflows/ci.yml` runs `format:check`, `lint`, `typecheck`, `test`, and `build` on every
 push to `main` and every PR. `npm run typecheck` is `next typegen && tsc --noEmit` — the `typegen`
 step regenerates Next's route-level types so `tsc` works standalone, without a prior `next build`.
+
+Between `supabase start` and `supabase stop`, CI also runs `npm run test:db` (pgTAP, against real
+Postgres as the BYPASSRLS superuser) and `npm run test:integration` (application code —
+`lib/queries/*`/`lib/mutations/*` — run unchanged against that same database, but through a real
+per-user JWT, so RLS actually applies). `npm test` alone (`vitest run --project node --project
+jsdom`) skips both and stays fast — it doesn't need Supabase running at all.
 
 ## Adding a language
 
