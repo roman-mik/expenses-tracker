@@ -16,6 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            db:
+              - 'supabase/**'
+              - 'apps/web/src/lib/supabase/**'
+              - '**/*.itest.ts'
+
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v5
@@ -23,7 +33,8 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - uses: supabase/setup-cli@v1
+      - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
+        uses: supabase/setup-cli@v1
         with:
           version: latest
 
@@ -32,10 +43,14 @@ jobs:
       - run: pnpm run lint
       - run: pnpm run typecheck
       - run: pnpm run test
-      - run: supabase start
-      - run: pnpm run test:db
-      - run: pnpm run test:integration
-      - run: supabase stop
+      - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
+        run: supabase start
+      - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
+        run: pnpm run test:db
+      - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
+        run: pnpm run test:integration
+      - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
+        run: supabase stop
       - run: pnpm run build
 
   deploy:
