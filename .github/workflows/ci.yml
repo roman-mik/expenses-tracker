@@ -43,9 +43,6 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     environment: production
-    defaults:
-      run:
-        working-directory: apps/web
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -61,7 +58,6 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-        working-directory: .
       - run: npx vercel pull --yes --environment=production
       - run: npx vercel build --prod
       - run: npx vercel deploy --prebuilt --prod
