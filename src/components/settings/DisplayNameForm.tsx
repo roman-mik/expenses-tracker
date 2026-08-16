@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { setDisplayName } from '@/app/actions/profile';
 import { Button } from '@/components/ui/Button';
@@ -14,7 +13,6 @@ export function DisplayNameForm({
 }) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
-  const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState(initialDisplayName ?? '');
@@ -25,7 +23,6 @@ export function DisplayNameForm({
       const result = await setDisplayName({ displayName: name });
       if (result.ok) {
         toast.success(t('nameSaved'));
-        router.refresh();
       } else {
         toast.error(result.error);
       }
