@@ -101,7 +101,7 @@ export function InstallPrompt() {
     <div className="rounded-lg border border-sand-300 bg-surface px-5 py-4 flex flex-col gap-3">
       <div>
         <p className="font-semibold text-ink">{t('installTitle')}</p>
-        <p className="text-sm text-ink/70">
+        <p className="text-sm text-ink-muted">
           {isIOS ? t('installIOS') : t('installAndroid')}
         </p>
       </div>

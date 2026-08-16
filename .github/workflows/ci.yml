@@ -42,6 +42,8 @@ jobs:
           version: latest
 
       - run: pnpm install --frozen-lockfile
+      - name: Verify generated theme.css matches tokens.ts
+        run: pnpm --filter @kapa/ui build:theme && git diff --exit-code packages/ui/theme.css
       - run: pnpm run format:check
       - run: pnpm run lint
       - run: pnpm run typecheck

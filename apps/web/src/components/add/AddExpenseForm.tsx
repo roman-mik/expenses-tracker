@@ -131,7 +131,7 @@ export function AddExpenseForm({
                 // ~3.6:1, below 4.5:1 AA; accent-600 clears it (see Button.tsx).
                 selected
                   ? 'bg-accent-600 text-white'
-                  : 'bg-surface text-ink/70 hover:bg-sand-300'
+                  : 'bg-surface text-ink-muted hover:bg-sand-300'
               }`}
             >
               {c.name}

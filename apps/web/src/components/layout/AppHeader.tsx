@@ -87,7 +87,7 @@ export function AppHeader() {
             className="w-full justify-start gap-3 px-3"
             autoFocus={i === 0}
           >
-            <Icon className="text-ink/70" />
+            <Icon className="text-ink-muted" />
             {t(labelKey)}
           </Button>
         ))}

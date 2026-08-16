@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { color } from '@kapa/ui';
 
 /**
  * Web app manifest — makes Kapa installable to a phone home screen.
@@ -14,8 +15,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "A warm monthly spending-cap tracker. Always know what's left.",
     start_url: '/',
     display: 'standalone',
-    background_color: '#f5ead8',
-    theme_color: '#c67139',
+    background_color: color.bg,
+    theme_color: color.accent,
     icons: [
       {
         src: '/icon-192.png',
