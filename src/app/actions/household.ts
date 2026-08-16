@@ -9,7 +9,9 @@ import { joinHouseholdSchema } from '@/lib/validation';
 import {
   createInvite,
   joinHousehold as joinHouseholdRow,
+  leaveHousehold as leaveHouseholdRow,
   JoinHouseholdException,
+  LeaveHouseholdException,
 } from '@/lib/mutations/household';
 import { reportError } from '@/lib/observability';
 import type { ActionResult } from './expenses';
@@ -66,6 +68,38 @@ export async function joinHousehold(input: unknown): Promise<ActionResult> {
     }
     reportError('joinHousehold', error);
     return { ok: false, error: t('couldNotJoin') };
+  }
+
+  revalidatePath('/');
+  revalidatePath('/history');
+  revalidatePath('/household');
+  return { ok: true };
+}
+
+/**
+ * Leave the caller's current household — forks it, giving the caller a new
+ * solo household with a full copy of the shared history rather than
+ * splitting it (see 0012_leave_household.sql). Uses requireHousehold: unlike
+ * join, the caller must already be in a household to leave one.
+ */
+export async function leaveHousehold(): Promise<ActionResult> {
+  const t = await getTranslations('Household');
+  const ctx = await requireHousehold();
+  if ('response' in ctx) return { ok: false, error: t('couldNotLeave') };
+
+  try {
+    await leaveHouseholdRow(ctx.supabase);
+  } catch (error) {
+    if (error instanceof LeaveHouseholdException) {
+      // 'only-member' is the one case a caller can act on ("nothing to
+      // leave"); anything else (including the RPC's own unreachable
+      // "not authenticated", since requireHousehold already checked) falls
+      // through to the generic message below.
+      const key = error.code === 'only-member' ? 'onlyMember' : 'couldNotLeave';
+      return { ok: false, error: t(key) };
+    }
+    reportError('leaveHousehold', error);
+    return { ok: false, error: t('couldNotLeave') };
   }
 
   revalidatePath('/');

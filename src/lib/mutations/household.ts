@@ -102,3 +102,37 @@ export class JoinHouseholdException extends Error {
     this.name = 'JoinHouseholdException';
   }
 }
+
+/** Stable error codes `leave_household` raises, mapped from its SQLSTATE. */
+export type LeaveHouseholdError = 'not-authenticated' | 'only-member';
+
+const LEAVE_SQLSTATE_TO_ERROR: Record<string, LeaveHouseholdError> = {
+  KAPA4: 'only-member',
+};
+
+/**
+ * Leaves the caller's current household, forking it: a brand-new household
+ * is created with a full copy of the shared history (categories, cap, every
+ * expense — not just the caller's own), and the caller's membership moves
+ * there. Nobody's past totals change on either side — see
+ * 0012_leave_household.sql for why duplication, not a split, is the model.
+ * Returns the new household id.
+ */
+export async function leaveHousehold(
+  supabase: SupabaseServerClient
+): Promise<string> {
+  const { data, error } = await supabase.rpc('leave_household');
+  if (error) {
+    const mapped = error.code ? LEAVE_SQLSTATE_TO_ERROR[error.code] : undefined;
+    if (mapped) throw new LeaveHouseholdException(mapped);
+    throw new Error(error.message);
+  }
+  return data as string;
+}
+
+export class LeaveHouseholdException extends Error {
+  constructor(public readonly code: LeaveHouseholdError) {
+    super(code);
+    this.name = 'LeaveHouseholdException';
+  }
+}

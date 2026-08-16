@@ -6,9 +6,11 @@ import { member } from '@/test/factories';
 
 const mockMintInvite = vi.fn();
 const mockJoinHousehold = vi.fn();
+const mockLeaveHousehold = vi.fn();
 vi.mock('@/app/actions/household', () => ({
   mintInvite: (...args: unknown[]) => mockMintInvite(...args),
   joinHousehold: (...args: unknown[]) => mockJoinHousehold(...args),
+  leaveHousehold: (...args: unknown[]) => mockLeaveHousehold(...args),
 }));
 
 const mockToastError = vi.fn();
@@ -138,6 +140,65 @@ describe('HouseholdPanel', () => {
 
     await waitFor(() =>
       expect(mockToastError).toHaveBeenCalledWith('Could not join')
+    );
+  });
+
+  it('does not show a leave option for a solo household', () => {
+    render(
+      <HouseholdPanel
+        members={[member({ userId: 'u1' })]}
+        invite={null}
+        currentUserId="u1"
+      />
+    );
+    expect(
+      screen.queryByRole('button', { name: 'Leave household' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('leaves the household after a two-step confirm', async () => {
+    mockLeaveHousehold.mockResolvedValue({ ok: true });
+    render(
+      <HouseholdPanel
+        members={[member({ userId: 'u1' }), member({ userId: 'u2' })]}
+        invite={null}
+        currentUserId="u1"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Leave household' }));
+    expect(mockLeaveHousehold).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Leave for good?' }));
+
+    await waitFor(() =>
+      expect(mockToastSuccess).toHaveBeenCalledWith(
+        "You've left — welcome to your new household"
+      )
+    );
+    expect(mockLeaveHousehold).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a friendly error when leaving fails', async () => {
+    mockLeaveHousehold.mockResolvedValue({
+      ok: false,
+      error: "You're the only member — there's nothing to leave",
+    });
+    render(
+      <HouseholdPanel
+        members={[member({ userId: 'u1' }), member({ userId: 'u2' })]}
+        invite={null}
+        currentUserId="u1"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Leave household' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Leave for good?' }));
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith(
+        "You're the only member — there's nothing to leave"
+      )
     );
   });
 });

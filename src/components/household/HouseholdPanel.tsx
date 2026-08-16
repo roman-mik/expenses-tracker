@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
 import {
   joinHousehold as joinHouseholdAction,
+  leaveHousehold as leaveHouseholdAction,
   mintInvite as mintInviteAction,
 } from '@/app/actions/household';
 
@@ -20,12 +21,16 @@ export function HouseholdPanel({
   currentUserId: string;
 }) {
   const t = useTranslations('Household');
+  const tCommon = useTranslations('Common');
   const toast = useToast();
   const [code, setCode] = useState(invite);
   const [joinCode, setJoinCode] = useState('');
   const [, startTransition] = useTransition();
-  const [pending, setPending] = useState<null | 'invite' | 'join'>(null);
+  const [pending, setPending] = useState<null | 'invite' | 'join' | 'leave'>(
+    null
+  );
   const [copied, setCopied] = useState(false);
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
 
   const shared = members.length > 1;
 
@@ -51,6 +56,21 @@ export function HouseholdPanel({
     } catch {
       /* clipboard unavailable — the code is visible to copy manually */
     }
+  }
+
+  function leaveHousehold() {
+    setPending('leave');
+    startTransition(async () => {
+      const result = await leaveHouseholdAction();
+      if (result.ok) {
+        toast.success(t('leftHousehold'));
+        setConfirmingLeave(false);
+      } else {
+        toast.error(result.error);
+        setConfirmingLeave(false);
+      }
+      setPending(null);
+    });
   }
 
   function submitJoin(e: React.FormEvent) {
@@ -162,6 +182,48 @@ export function HouseholdPanel({
           </Button>
         </form>
       </section>
+
+      {/* Leave — only meaningful once you're sharing with someone else; the
+          RPC itself refuses a solo household ("nothing to leave"). */}
+      {shared ? (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
+            {t('leaveSectionTitle')}
+          </h2>
+          <p className="text-sm text-ink-muted">{t('leaveDescription')}</p>
+          {confirmingLeave ? (
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={leaveHousehold}
+                disabled={pending === 'leave'}
+                className="text-sm"
+              >
+                {pending === 'leave' ? t('leaving') : t('leaveConfirm')}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setConfirmingLeave(false)}
+                disabled={pending === 'leave'}
+                className="text-sm"
+              >
+                {tCommon('cancel')}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmingLeave(true)}
+              className="text-sm"
+            >
+              {t('leaveButton')}
+            </Button>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

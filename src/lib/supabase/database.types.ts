@@ -300,6 +300,7 @@ export type Database = {
       delete_account: { Args: never; Returns: undefined };
       is_household_member: { Args: { hid: string }; Returns: boolean };
       join_household: { Args: { invite_code: string }; Returns: string };
+      leave_household: { Args: never; Returns: string };
       same_household: { Args: { other: string }; Returns: boolean };
     };
     Enums: {
