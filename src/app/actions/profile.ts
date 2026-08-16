@@ -7,7 +7,6 @@ import { verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { displayNameSchema } from '@/lib/validation';
 import { updateDisplayName, updateLocale } from '@/lib/mutations/profile';
-import { getProfile } from '@/lib/queries/profile';
 import { isLocale } from '@/i18n/routing';
 import { LOCALE_COOKIE } from '@/i18n/request';
 import { reportError } from '@/lib/observability';
@@ -70,27 +69,4 @@ export async function setLocale(locale: unknown): Promise<ActionResult> {
 
   revalidatePath('/', 'layout');
   return { ok: true };
-}
-
-/**
- * Seeds the `KAPA_LOCALE` cookie from `profiles.locale` right after a
- * password sign-in (`LoginForm`, which never hits the OAuth/magic-link
- * `auth/callback` route — see its comment there) — so a fresh device or
- * cleared-cookie browser still lands in the caller's chosen language.
- * Silently no-ops when signed out or no profile row exists yet.
- */
-export async function syncLocaleCookie(): Promise<void> {
-  const user = await verifySession();
-  if (!user) return;
-
-  const supabase = await createClient();
-  const profile = await getProfile(supabase, user.id);
-  if (!profile) return;
-
-  const cookieStore = await cookies();
-  cookieStore.set(LOCALE_COOKIE, profile.locale, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax',
-  });
 }
