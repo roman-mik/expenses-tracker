@@ -8,6 +8,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     env:
       # Build-time only — nothing hits Supabase during `next build`, so dummy
       # values are enough to satisfy the env checks in src/lib/supabase/*.
