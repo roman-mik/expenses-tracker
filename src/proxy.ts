@@ -27,14 +27,20 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refreshes the auth token and keeps the session cookie fresh.
-  await supabase.auth.getUser();
+  // Refreshes the auth token and keeps the session cookie fresh. getClaims()
+  // verifies the JWT locally and only reaches the network when the token is
+  // actually expired, unlike getUser() which always round-trips to Auth.
+  // dal.ts already uses getClaims() as the real authorization boundary — the
+  // proxy only needs to keep the cookie in sync with it.
+  await supabase.auth.getClaims();
 
   return response;
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // /api/* handlers do their own auth (requireHousehold / CRON_SECRET) and
+    // discard this response's cookie-setting side effect, so they're excluded.
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
