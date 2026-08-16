@@ -10,6 +10,11 @@
 -- 1. Schema: expiry default, single-use, and a wider code format.
 -- ---------------------------------------------------------------------------
 
+-- Invites are short-lived, single-use bearer tokens — any row already in the
+-- table predates this format (e.g. the old 8-char code scheme) and is safe
+-- to drop; the household just re-mints a fresh code on next invite.
+delete from public.household_invites where code !~ '^[0-9A-HJKMNP-TV-Z]{10}$';
+
 alter table public.household_invites
   alter column expires_at set default now() + interval '24 hours',
   add column if not exists redeemed_at timestamptz,
