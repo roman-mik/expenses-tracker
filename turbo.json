@@ -1,5 +1,18 @@
 {
   "$schema": "https://turborepo.com/schema.json",
+  "globalEnv": [
+    "POSTGRES_URL",
+    "POSTGRES_PRISMA_URL",
+    "POSTGRES_URL_NON_POOLING",
+    "POSTGRES_USER",
+    "POSTGRES_HOST",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_DATABASE",
+    "SUPABASE_URL",
+    "SUPABASE_JWT_SECRET",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
