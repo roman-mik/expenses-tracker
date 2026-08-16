@@ -30,7 +30,7 @@ afterAll(async () => {
 });
 
 describe('concurrent edits within a shared household', () => {
-  it('two co-members editing the same expense: neither throws, last write wins deterministically', async () => {
+  it('two co-members racing on the same expense: exactly one wins, the other gets a conflict — not a silent overwrite', async () => {
     const created = await createExpense(
       alice.client,
       alice.householdId,
@@ -38,20 +38,38 @@ describe('concurrent edits within a shared household', () => {
       { amountMinor: 1000, note: 'race' }
     );
 
+    // Both start from the same updated_at, as they would if they'd both
+    // opened the edit screen before either saved.
     const [aliceResult, bobResult] = await Promise.all([
-      updateExpense(alice.client, alice.householdId, created.id, {
-        note: 'alice wrote this',
-      }),
-      updateExpense(bob.client, alice.householdId, created.id, {
-        note: 'bob wrote this',
-      }),
+      updateExpense(
+        alice.client,
+        alice.householdId,
+        created.id,
+        { note: 'alice wrote this' },
+        created.updatedAt
+      ),
+      updateExpense(
+        bob.client,
+        alice.householdId,
+        created.id,
+        { note: 'bob wrote this' },
+        created.updatedAt
+      ),
     ]);
 
-    expect(aliceResult).not.toBeNull();
-    expect(bobResult).not.toBeNull();
+    const results = [aliceResult, bobResult];
+    const wins = results.filter((r) => r.ok);
+    const conflicts = results.filter((r) => !r.ok && r.reason === 'conflict');
+
+    // Neither call throws (both resolve to a discriminated result), and
+    // exactly one of the two actually wrote — the other is told to reload
+    // rather than silently losing its edit.
+    expect(wins).toHaveLength(1);
+    expect(conflicts).toHaveLength(1);
 
     const final = await getExpense(alice.client, alice.householdId, created.id);
     expect(['alice wrote this', 'bob wrote this']).toContain(final?.note);
+    expect(wins[0].ok && wins[0].expense.note).toBe(final?.note);
   });
 });
 

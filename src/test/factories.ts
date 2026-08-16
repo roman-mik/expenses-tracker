@@ -16,6 +16,7 @@ export function expense(
     note: null,
     spentAt: '2026-08-01T00:00:00.000Z',
     addedBy: 'user-1',
+    updatedAt: '2026-08-01T00:00:00.000Z',
     ...partial,
   } as Expense;
 }

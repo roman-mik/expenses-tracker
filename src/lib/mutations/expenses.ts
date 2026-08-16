@@ -9,7 +9,7 @@ import type { ExpenseCreateInput, ExpenseUpdateInput } from '@/lib/validation';
 
 /** Columns selected everywhere an expense round-trips back to the domain layer. */
 const EXPENSE_COLUMNS =
-  'id, category_id, amount_minor, currency, note, spent_at, user_id';
+  'id, category_id, amount_minor, currency, note, spent_at, user_id, updated_at';
 
 export async function createExpense(
   supabase: SupabaseServerClient,
@@ -46,19 +46,29 @@ export async function createExpense(
   return toExpense(data as ExpenseRow);
 }
 
+export type MutateExpenseResult =
+  | { ok: true; expense: Expense }
+  | { ok: false; reason: 'not_found' | 'conflict' };
+
 /**
  * Edit an expense, scoped to the household (any member may edit any household
  * expense — shared pool). Currency is never patched: it stays as stamped at
  * insert. A field is only touched when the caller sends it (`undefined` means
- * "leave unchanged"; explicit `null` clears category/note). Returns the updated
- * expense, or `null` if no row in this household matched the id.
+ * "leave unchanged"; explicit `null` clears category/note).
+ *
+ * `expectedUpdatedAt` is the optimistic-concurrency token: the caller must
+ * present the `updatedAt` it last read. If zero rows match — either the id
+ * isn't in this household, or it is but someone else's write changed
+ * `updated_at` first — a second read distinguishes the two so the caller can
+ * tell "that's gone" from "reload, someone else changed this".
  */
 export async function updateExpense(
   supabase: SupabaseServerClient,
   householdId: string,
   id: string,
-  input: ExpenseUpdateInput
-): Promise<Expense | null> {
+  input: ExpenseUpdateInput,
+  expectedUpdatedAt: string
+): Promise<MutateExpenseResult> {
   const { amountMinor, categoryId, note, spentAt } = input;
 
   const patch: Partial<ExpenseRow> = {};
@@ -72,30 +82,59 @@ export async function updateExpense(
     .update(patch)
     .eq('id', id)
     .eq('household_id', householdId)
+    .eq('updated_at', expectedUpdatedAt)
     .select(EXPENSE_COLUMNS)
     .maybeSingle();
 
   if (error) throw new Error(error.message);
-  return data ? toExpense(data as ExpenseRow) : null;
+  if (data) return { ok: true, expense: toExpense(data as ExpenseRow) };
+
+  return {
+    ok: false,
+    reason: await existsInHousehold(supabase, householdId, id),
+  };
 }
 
 /**
- * Delete an expense, scoped to the household. Returns whether a row was
- * actually removed (false = not in this household / already gone).
+ * Delete an expense, scoped to the household. Same optimistic-concurrency
+ * check as `updateExpense` — deleting a row someone else just edited is the
+ * same lost-write risk, just terminal instead of overwritten.
  */
 export async function deleteExpense(
   supabase: SupabaseServerClient,
   householdId: string,
-  id: string
-): Promise<boolean> {
+  id: string,
+  expectedUpdatedAt: string
+): Promise<{ ok: true } | { ok: false; reason: 'not_found' | 'conflict' }> {
   const { data, error } = await supabase
     .from('expenses')
     .delete()
     .eq('id', id)
     .eq('household_id', householdId)
+    .eq('updated_at', expectedUpdatedAt)
     .select('id')
     .maybeSingle();
 
   if (error) throw new Error(error.message);
-  return data !== null;
+  if (data) return { ok: true };
+
+  return {
+    ok: false,
+    reason: await existsInHousehold(supabase, householdId, id),
+  };
+}
+
+async function existsInHousehold(
+  supabase: SupabaseServerClient,
+  householdId: string,
+  id: string
+): Promise<'not_found' | 'conflict'> {
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('id')
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? 'conflict' : 'not_found';
 }

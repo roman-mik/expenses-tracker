@@ -104,7 +104,7 @@ function ExpenseRow({
 
   const remove = () => {
     startTransition(async () => {
-      const result = await deleteExpense(e.id);
+      const result = await deleteExpense(e.id, e.updatedAt);
       if (result.ok) {
         // The action's response already carries the fresh RSC tree that
         // drops this row — no separate refresh() needed.

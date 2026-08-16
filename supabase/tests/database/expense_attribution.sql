@@ -26,7 +26,7 @@ end $$ language plpgsql;
 grant execute on function tests.login_as(uuid) to authenticated;
 grant execute on function tests.logout() to authenticated;
 
-select plan(10);
+select plan(12);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures — alice and bob share alice's household.
@@ -84,6 +84,32 @@ select lives_ok(
   'a co-member can still edit amount/note on a shared expense');
 
 select tests.logout();
+
+-- ---------------------------------------------------------------------------
+-- updated_at trigger (0011) — bumped on every UPDATE, and expenses_freeze
+-- (which fires first, by trigger name order) still permits the write.
+--
+-- pgTAP runs this whole file in one transaction, and now() is frozen at
+-- transaction start for its duration — a real-clock "did time pass" check
+-- can't work here. Instead: INSERT (no touch trigger) with a deliberately
+-- old updated_at, then UPDATE (touch trigger fires) and confirm the value
+-- moved forward off that old constant to the transaction's now().
+-- ---------------------------------------------------------------------------
+
+insert into public.expenses (household_id, user_id, amount_minor, currency, note, updated_at)
+  values (:'household'::uuid, :'alice_id', 100, 'RSD', 'touch fixture', '2000-01-01T00:00:00+00')
+  returning id as touch_expense_id \gset
+
+select tests.login_as(:'bob_id');
+select lives_ok(
+  format($$ update public.expenses set note = 'touched' where id = %L $$, :'touch_expense_id'),
+  'a co-member editing a shared expense does not trip the freeze trigger');
+select tests.logout();
+
+select cmp_ok(
+  (select updated_at from public.expenses where id = :'touch_expense_id'),
+  '>', '2000-01-01T00:00:00+00'::timestamptz,
+  'updated_at is bumped by the update trigger, not left at its inserted value');
 
 -- ---------------------------------------------------------------------------
 -- Currency stamping (0009) — a client-supplied currency is overwritten from

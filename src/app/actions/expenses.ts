@@ -42,12 +42,17 @@ export async function addExpense(input: unknown): Promise<ActionResult> {
 
 /**
  * Edit an existing expense. Scoped to the caller's household (RLS + query both
- * enforce it). A missing row (wrong household / already deleted) is reported as
- * a friendly error, not a crash.
+ * enforce it). `expectedUpdatedAt` is the optimistic-concurrency token — the
+ * `updatedAt` the form last read; a mismatch means someone else edited this
+ * expense first. A missing row (wrong household / already deleted) and a
+ * conflict are both reported as friendly errors, not crashes — but distinct
+ * ones, since "reload, this changed" and "this is gone" call for different
+ * next steps from the person reading it.
  */
 export async function updateExpense(
   id: string,
-  input: unknown
+  input: unknown,
+  expectedUpdatedAt: string
 ): Promise<ActionResult> {
   const t = await getTranslations('Errors');
   const user = await verifySession();
@@ -60,13 +65,21 @@ export async function updateExpense(
     const householdId = await getHouseholdId(user.id);
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
-    const updated = await updateExpenseRow(
+    const result = await updateExpenseRow(
       supabase,
       householdId,
       id,
-      parsed.data
+      parsed.data,
+      expectedUpdatedAt
     );
-    if (!updated) return { ok: false, error: t('expenseNotFound') };
+    if (!result.ok) {
+      return {
+        ok: false,
+        error: t(
+          result.reason === 'conflict' ? 'expenseChanged' : 'expenseNotFound'
+        ),
+      };
+    }
   } catch (error) {
     reportError('updateExpense', error);
     return { ok: false, error: t('saveFailed') };
@@ -77,8 +90,14 @@ export async function updateExpense(
   return { ok: true };
 }
 
-/** Delete an expense, scoped to the caller's household. */
-export async function deleteExpense(id: string): Promise<ActionResult> {
+/**
+ * Delete an expense, scoped to the caller's household. Same optimistic-
+ * concurrency token as `updateExpense`.
+ */
+export async function deleteExpense(
+  id: string,
+  expectedUpdatedAt: string
+): Promise<ActionResult> {
   const t = await getTranslations('Errors');
   const user = await verifySession();
   if (!user) return { ok: false, error: t('notSignedIn') };
@@ -87,8 +106,20 @@ export async function deleteExpense(id: string): Promise<ActionResult> {
     const householdId = await getHouseholdId(user.id);
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
-    const removed = await deleteExpenseRow(supabase, householdId, id);
-    if (!removed) return { ok: false, error: t('expenseNotFound') };
+    const result = await deleteExpenseRow(
+      supabase,
+      householdId,
+      id,
+      expectedUpdatedAt
+    );
+    if (!result.ok) {
+      return {
+        ok: false,
+        error: t(
+          result.reason === 'conflict' ? 'expenseChanged' : 'expenseNotFound'
+        ),
+      };
+    }
   } catch (error) {
     reportError('deleteExpense', error);
     return { ok: false, error: t('removeFailed') };
