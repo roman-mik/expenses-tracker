@@ -4,6 +4,7 @@ import {
   daysInMonth,
   daysLeft,
   elapsedDays,
+  completedDays,
   remaining,
   safeDaily,
   evenPace,
@@ -89,6 +90,23 @@ describe('elapsedDays', () => {
   });
 });
 
+describe('completedDays', () => {
+  it('first day → 0 (today has not happened yet, from the baseline)', () => {
+    expect(completedDays(31, 30)).toBe(0);
+  });
+  it('last day → D-1', () => {
+    expect(completedDays(31, 0)).toBe(30);
+  });
+  it('clamps to >= 0', () => {
+    expect(completedDays(31, 31)).toBe(0);
+  });
+  it('spans the month together with the spendable days (daysLeft + 1)', () => {
+    for (let dl = 0; dl <= 30; dl++) {
+      expect(completedDays(31, dl) + (dl + 1)).toBe(31);
+    }
+  });
+});
+
 describe('remaining', () => {
   it('spent < cap', () => {
     expect(remaining(100000, 35000)).toBe(65000);
@@ -111,20 +129,48 @@ describe('safeDaily', () => {
   it('nothing remaining → 0', () => {
     expect(safeDaily(0, 10)).toBe(0);
   });
+  it('floors rather than rounds — a rounded-up allowance can bust the cap', () => {
+    // 999 remaining, 2 spendable days (daysLeft=1): round(499.5)=500 would
+    // advise 500+500=1000 > 999. Floor advises 499+499=998 <= 999.
+    expect(safeDaily(999, 1)).toBe(499);
+  });
+  it('never overshoots what remains, across a range of inputs', () => {
+    for (let r = 0; r <= 2000; r += 37) {
+      for (let dl = 0; dl <= 10; dl++) {
+        expect(safeDaily(r, dl) * (dl + 1)).toBeLessThanOrEqual(r);
+      }
+    }
+  });
 });
 
 describe('evenPace / paceGap', () => {
-  it('even pace at mid-month', () => {
+  it('even pace with 15 completed days of 30', () => {
     expect(evenPace(100000, 15, 30)).toBe(50000);
   });
-  it('first day even pace is small', () => {
+  it('one completed day (second day of the month) even pace is small', () => {
     expect(evenPace(93000, 1, 31)).toBe(3000);
+  });
+  it('first day (0 completed days) even pace is 0', () => {
+    expect(evenPace(93000, 0, 31)).toBe(0);
   });
   it('under pace → positive gap', () => {
     expect(paceGap(evenPace(100000, 15, 30), 40000)).toBe(10000);
   });
   it('ahead of pace → negative gap', () => {
     expect(paceGap(evenPace(100000, 15, 30), 60000)).toBe(-10000);
+  });
+});
+
+describe('reconciliation: safeDaily and evenPace must agree', () => {
+  it('a user spending exactly evenPace always has safeDaily === floor(cap / D)', () => {
+    const cap = 30000;
+    const D = 31;
+    for (let dl = 0; dl <= D - 1; dl++) {
+      const completed = completedDays(D, dl);
+      const spent = evenPace(cap, completed, D);
+      const rem = remaining(cap, spent);
+      expect(safeDaily(rem, dl)).toBe(Math.floor(cap / D));
+    }
   });
 });
 

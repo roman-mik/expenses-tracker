@@ -19,6 +19,7 @@ npm run dev                         # http://localhost:3000
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase → Project Settings → API Keys → publishable key |
 | `CRON_SECRET` | Any random string; set the same value in Vercel → Project Settings → Environment Variables. Vercel sends it automatically as the `Authorization` header on cron requests — see [Keep-alive](#keep-alive) below. |
+| `HEALTHCHECK_URL` | Optional. A [healthchecks.io](https://healthchecks.io) check's ping URL (e.g. `https://hc-ping.com/<uuid>`), set in Vercel → Project Settings → Environment Variables. See [Keep-alive](#keep-alive) below. |
 
 The app runs without these (landing page only); auth and data need them.
 
@@ -35,6 +36,18 @@ Supabase free projects pause after ~7 days of inactivity. `vercel.json` schedule
 against `GET /api/keepalive`, which does one trivial read to keep the project warm — no data is
 exposed. Requires `CRON_SECRET` to be set (see the table above); without it the route 401s and
 the cron does nothing useful, so set it before relying on this.
+
+The read itself uses the cookie-based Supabase client, so a real RLS failure returns an empty
+result with `error: null` rather than an error — the route can't tell that apart from "no
+households yet" from its own response alone. And if Vercel's cron scheduler stops firing
+entirely, nothing runs to report that at all. `HEALTHCHECK_URL` (optional, see the table above)
+closes both gaps: set it to a [healthchecks.io](https://healthchecks.io) check's ping URL
+("Simple" schedule, expected daily) and the route pings it on every successful run, `/fail` on a
+DB error. healthchecks.io flags the check as down once its expected-ping window passes on its
+own — independent of whether the route ever got a chance to ping it — so a stopped cron, a down
+database, and a down app are all visible the same way. A ping failure never fails the route, and
+the check is skipped entirely when `HEALTHCHECK_URL` is unset, so local/preview runs are
+unaffected.
 
 ## Backups & restore
 

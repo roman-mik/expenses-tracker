@@ -42,6 +42,9 @@ describe('getSummary', () => {
     expect(summary.spent).toBe(15_000);
     expect(summary.remaining).toBe(85_000);
     expect(summary.overspend).toBe(0);
+    // Aug 10: 9 whole days completed before today (daysLeft=21, D=31).
+    expect(summary.completedDays).toBe(9);
+    expect(summary.elapsedDays).toBe(10);
     expect(summary.nudgeEnabled).toBe(true);
     expect(summary.nudgePct).toBe(80);
     expect(summary.categoryBreakdown).toEqual(

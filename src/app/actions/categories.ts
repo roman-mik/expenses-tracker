@@ -10,6 +10,7 @@ import {
   updateCategory,
   moveCategory as moveCategoryRow,
 } from '@/lib/mutations/categories';
+import { reportError } from '@/lib/observability';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -30,7 +31,8 @@ export async function addCategory(input: unknown): Promise<ActionResult> {
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await createCategory(supabase, householdId, parsed.data);
-  } catch {
+  } catch (error) {
+    reportError('addCategory', error);
     return { ok: false, error: t('saveFailed') };
   }
 
@@ -66,7 +68,8 @@ export async function editCategory(
       parsed.data
     );
     if (!updated) return { ok: false, error: t('categoryNotFound') };
-  } catch {
+  } catch (error) {
+    reportError('editCategory', error);
     return { ok: false, error: t('saveFailed') };
   }
 
@@ -90,7 +93,8 @@ export async function moveCategory(
     if (!householdId) throw new Error('No household for user');
     const supabase = await createClient();
     await moveCategoryRow(supabase, householdId, id, direction);
-  } catch {
+  } catch (error) {
+    reportError('moveCategory', error);
     return { ok: false, error: t('reorderFailed') };
   }
 

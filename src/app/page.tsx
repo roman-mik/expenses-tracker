@@ -52,11 +52,22 @@ export default async function Home() {
   );
   const days = dailyTotals(expenses, month, timeZone, summary.currency);
 
-  // Home state: over-cap wins over the nudge, which wins over the healthy view.
-  const isOver = summary.overspend > 0;
+  // Home state: no-cap-set is a distinct first-class state (cap <= 0 makes
+  // every cap-relative number meaningless — % spent, pace, projection,
+  // recovery). Otherwise over-cap wins over the nudge, which wins over the
+  // healthy view.
+  const isNoCap = summary.cap <= 0;
+  const isOver = !isNoCap && summary.overspend > 0;
   const isNudge =
-    !isOver && summary.nudgeEnabled && summary.spentPct >= summary.nudgePct;
+    !isNoCap &&
+    !isOver &&
+    summary.nudgeEnabled &&
+    summary.spentPct >= summary.nudgePct;
   const barState = isOver ? 'over' : isNudge ? 'nudge' : 'healthy';
+  // Day 1 has zero completed days, so evenPace is 0 and any spend reads as
+  // "ahead of pace" — arithmetically honest but cool in tone. Suppress rather
+  // than reintroduce the old off-by-one to soften it.
+  const showPace = summary.completedDays >= 1;
   const t = await getTranslations('Home');
 
   return (
@@ -81,14 +92,22 @@ export default async function Home() {
 
           <section className="rounded-lg bg-surface shadow-md p-7 flex flex-col gap-5">
             <span className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
-              {isOver ? t('overBudgetBy') : t('leftToSpend')}
+              {isNoCap
+                ? t('spentThisMonth')
+                : isOver
+                  ? t('overBudgetBy')
+                  : t('leftToSpend')}
             </span>
             <div className="flex items-baseline gap-2">
               <span
                 className={`font-heading text-5xl ${isOver ? 'text-accent-700' : ''}`}
               >
                 {formatMoney(
-                  isOver ? summary.overspend : summary.remaining,
+                  isNoCap
+                    ? summary.spent
+                    : isOver
+                      ? summary.overspend
+                      : summary.remaining,
                   summary.currency
                 )}
               </span>
@@ -97,62 +116,74 @@ export default async function Home() {
               </span>
             </div>
 
-            <SpentBar
-              spent={summary.spent}
-              cap={summary.cap}
-              spentPct={summary.spentPct}
-              currency={summary.currency}
-              state={barState}
-            />
-
-            <div className="-mt-2 -mr-2 flex justify-end">
-              <Button href="/cap" variant="ghost" className="text-sm">
-                {t('adjustCap')}
-              </Button>
-            </div>
-
-            <div className="flex gap-6 text-sm">
-              <span className="text-ink/70">
-                {t.rich('daysUntilReset', {
-                  count: summary.daysLeft,
-                  strong: (chunks) => (
-                    <strong className="text-ink">{chunks}</strong>
-                  ),
-                })}
-              </span>
-              {!isOver && (
-                <span className="text-ink/70">
-                  <strong className="text-ink">
-                    {formatMoney(
-                      Math.round(summary.safeDaily),
-                      summary.currency
-                    )}
-                  </strong>{' '}
-                  {t('safeADay')}
-                </span>
-              )}
-            </div>
-
-            {isOver ? (
-              <RecoveryPlan
+            {!isNoCap && (
+              <SpentBar
+                spent={summary.spent}
                 cap={summary.cap}
-                overspend={summary.overspend}
-                recoveryCap={recoveryCap(summary.cap, summary.overspend)}
-                daysLeft={summary.daysLeft}
+                spentPct={summary.spentPct}
                 currency={summary.currency}
+                state={barState}
               />
+            )}
+
+            {isNoCap ? (
+              <>
+                <p className="text-sm text-ink/70">{t('noCapYet')}</p>
+                <Button href="/cap" variant="primary" className="self-start">
+                  {t('setYourCap')}
+                </Button>
+              </>
             ) : (
               <>
-                <PaceLine
-                  paceGap={summary.paceGap}
-                  currency={summary.currency}
-                />
-                <ProjectionCard
-                  projection={summary.projection}
-                  cap={summary.cap}
-                  elapsedDays={summary.elapsedDays}
-                  currency={summary.currency}
-                />
+                <div className="-mt-2 -mr-2 flex justify-end">
+                  <Button href="/cap" variant="ghost" className="text-sm">
+                    {t('adjustCap')}
+                  </Button>
+                </div>
+
+                <div className="flex gap-6 text-sm">
+                  <span className="text-ink/70">
+                    {t.rich('daysUntilReset', {
+                      count: summary.daysLeft,
+                      strong: (chunks) => (
+                        <strong className="text-ink">{chunks}</strong>
+                      ),
+                    })}
+                  </span>
+                  {!isOver && (
+                    <span className="text-ink/70">
+                      <strong className="text-ink">
+                        {formatMoney(summary.safeDaily, summary.currency)}
+                      </strong>{' '}
+                      {t('safeADay')}
+                    </span>
+                  )}
+                </div>
+
+                {isOver ? (
+                  <RecoveryPlan
+                    cap={summary.cap}
+                    overspend={summary.overspend}
+                    recoveryCap={recoveryCap(summary.cap, summary.overspend)}
+                    daysLeft={summary.daysLeft}
+                    currency={summary.currency}
+                  />
+                ) : (
+                  <>
+                    {showPace && (
+                      <PaceLine
+                        paceGap={summary.paceGap}
+                        currency={summary.currency}
+                      />
+                    )}
+                    <ProjectionCard
+                      projection={summary.projection}
+                      cap={summary.cap}
+                      elapsedDays={summary.elapsedDays}
+                      currency={summary.currency}
+                    />
+                  </>
+                )}
               </>
             )}
           </section>

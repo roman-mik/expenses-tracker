@@ -24,7 +24,7 @@ export async function DailySpendChart({
   const linePct = Math.min(100, (safeDaily / max) * 100);
 
   const summary = t('ariaSummary', {
-    amount: formatMoney(Math.round(safeDaily), currency),
+    amount: formatMoney(safeDaily, currency),
   });
 
   return (

@@ -10,6 +10,7 @@ import { updateDisplayName, updateLocale } from '@/lib/mutations/profile';
 import { getProfile } from '@/lib/queries/profile';
 import { isLocale } from '@/i18n/routing';
 import { LOCALE_COOKIE } from '@/i18n/request';
+import { reportError } from '@/lib/observability';
 import type { ActionResult } from './expenses';
 
 /**
@@ -27,7 +28,8 @@ export async function setDisplayName(input: unknown): Promise<ActionResult> {
   try {
     const supabase = await createClient();
     await updateDisplayName(supabase, user.id, parsed.data);
-  } catch {
+  } catch (error) {
+    reportError('setDisplayName', error);
     return { ok: false, error: t('saveFailed') };
   }
 
@@ -54,7 +56,8 @@ export async function setLocale(locale: unknown): Promise<ActionResult> {
   try {
     const supabase = await createClient();
     await updateLocale(supabase, user.id, locale);
-  } catch {
+  } catch (error) {
+    reportError('setLocale', error);
     return { ok: false, error: t('saveFailed') };
   }
 

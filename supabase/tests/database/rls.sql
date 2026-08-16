@@ -87,7 +87,7 @@ select is(
   0, 'alice''s profile is hidden from bob (not a co-member)');
 
 insert into public.household_invites (code, household_id, created_by)
-  select 'BOB-CODE', household_id, :'bob_id' from public.household_members where user_id = :'bob_id';
+  select 'CCCCDDDD02', household_id, :'bob_id' from public.household_members where user_id = :'bob_id';
 
 select is(
   (select count(*)::int from public.household_invites where household_id = :'alice_household'),
@@ -143,7 +143,7 @@ select is((select count(*)::int from p), 0, 'bob''s update of alice''s profile t
 -- ---------------------------------------------------------------------------
 
 select is(
-  (select count(*)::int from public.household_invites where code = 'BOB-CODE'),
+  (select count(*)::int from public.household_invites where code = 'CCCCDDDD02'),
   1, 'bob can still read the invite he just created in his own household');
 
 select lives_ok(
