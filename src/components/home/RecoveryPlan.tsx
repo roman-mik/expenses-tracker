@@ -31,7 +31,7 @@ export async function RecoveryPlan({
   currency: Currency;
 }) {
   const t = await getTranslations('RecoveryPlan');
-  const suggestReducedCap = recoveryCap >= cap * MIN_SUGGESTION_FRACTION;
+  const suggestReducedCap = cap > 0 && recoveryCap >= cap * MIN_SUGGESTION_FRACTION;
   return (
     <div className="rounded-lg border border-accent/40 bg-accent/8 px-5 py-4 flex flex-col gap-2">
       <p className="text-sm text-ink/85">

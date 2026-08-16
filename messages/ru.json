@@ -35,6 +35,9 @@
   "Home": {
     "overBudgetBy": "Превышение на",
     "leftToSpend": "Осталось потратить",
+    "spentThisMonth": "Потрачено в этом месяце",
+    "noCapYet": "Лимит ещё не задан — задайте его, чтобы начать отслеживание.",
+    "setYourCap": "Задать лимит →",
     "adjustCap": "Изменить лимит →",
     "daysUntilReset": "<strong>{count}</strong> {count, plural, one {день} few {дня} many {дней} other {дня}} до сброса",
     "safeADay": "безопасно в день",
