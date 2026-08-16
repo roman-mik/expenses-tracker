@@ -148,6 +148,8 @@ expenses
 
 ## 4. API surface (Next.js Route Handlers → reused by mobile)
 
+**Status: this REST layer was deleted** (`docs/review/review-api-contract.md`'s "delete it" recommendation, P2 item 17). Bearer auth never actually worked — `requireHousehold()` took no request object, so it structurally could not read an `Authorization` header — and the only web caller (`HouseholdPanel`'s two `fetch` calls) has moved to Server Actions (`src/app/actions/household.ts`). What's left: `/api/keepalive` (cron) and `/api/export` (CSV, §6). The table below is kept as a historical record of the surface that existed; if a mobile client is ever built, the plan is `supabase-js` talking directly to Postgres through `lib/queries/*`/`lib/mutations/*`, which already take a generically-typed `SupabaseClient<Database>` (`src/lib/supabase/types.ts`) rather than the cookie-bound server client, so no rewrite is needed for that seam to work.
+
 Keep it thin and RESTish. Auth via Supabase session (web) / bearer token (mobile).
 
 **Dual path (as shipped, not as originally imagined):** the web app does **not** consume `/api/*` for its own reads/writes. Reads go straight through `src/lib/queries/*` inside Server Components; writes go through Server Actions (`src/app/actions/{cap,categories,expenses}.ts`), giving `useTransition`-based optimistic UI without a client data-fetching library. The `/api/*` routes below are maintained in parallel as the contract for the future Expo app (§5) — today the only web caller of `/api/*` is `HouseholdPanel` (invite/join, via `fetch`).

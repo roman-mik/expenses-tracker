@@ -4,9 +4,11 @@ import { renderWithIntl as render } from '@/test/intl';
 import { HouseholdPanel } from './HouseholdPanel';
 import { member } from '@/test/factories';
 
-const mockRefresh = vi.fn();
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: mockRefresh }),
+const mockMintInvite = vi.fn();
+const mockJoinHousehold = vi.fn();
+vi.mock('@/app/actions/household', () => ({
+  mintInvite: (...args: unknown[]) => mockMintInvite(...args),
+  joinHousehold: (...args: unknown[]) => mockJoinHousehold(...args),
 }));
 
 const mockToastError = vi.fn();
@@ -15,11 +17,8 @@ vi.mock('@/components/ui/Toast', () => ({
   useToast: () => ({ success: mockToastSuccess, error: mockToastError }),
 }));
 
-const mockFetch = vi.fn();
-
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.stubGlobal('fetch', mockFetch);
 });
 
 describe('HouseholdPanel', () => {
@@ -35,10 +34,7 @@ describe('HouseholdPanel', () => {
   });
 
   it('mints an invite code on request', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({ code: 'NEWCODE1' }),
-    });
+    mockMintInvite.mockResolvedValue({ ok: true, code: 'NEWCODE1' });
     render(
       <HouseholdPanel
         members={[member({ userId: 'u1' })]}
@@ -54,13 +50,12 @@ describe('HouseholdPanel', () => {
     await waitFor(() =>
       expect(screen.getByText('NEWCODE1')).toBeInTheDocument()
     );
-    expect(mockRefresh).toHaveBeenCalled();
   });
 
   it('shows an error toast when minting fails', async () => {
-    mockFetch.mockResolvedValue({
+    mockMintInvite.mockResolvedValue({
       ok: false,
-      json: async () => ({ error: 'Could not create a code' }),
+      error: 'Could not create a code',
     });
     render(
       <HouseholdPanel
@@ -80,10 +75,7 @@ describe('HouseholdPanel', () => {
   });
 
   it('joins a household by code', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({ householdId: 'h2' }),
-    });
+    mockJoinHousehold.mockResolvedValue({ ok: true });
     render(
       <HouseholdPanel
         members={[member({ userId: 'u1' })]}
@@ -100,19 +92,14 @@ describe('HouseholdPanel', () => {
     await waitFor(() =>
       expect(mockToastSuccess).toHaveBeenCalledWith('Joined the household')
     );
-    expect(mockFetch).toHaveBeenCalledWith(
-      '/api/household/join',
-      expect.objectContaining({ body: JSON.stringify({ code: 'ABCD1234' }) })
-    );
+    expect(mockJoinHousehold).toHaveBeenCalledWith({ code: 'ABCD1234' });
   });
 
   it('shows translated copy for a stable join error code, not raw server text', async () => {
-    mockFetch.mockResolvedValue({
+    mockJoinHousehold.mockResolvedValue({
       ok: false,
-      json: async () => ({
-        error: 'Invalid request',
-        details: 'has-other-members',
-      }),
+      error:
+        "You'd need to leave your current household first — it has other members",
     });
     render(
       <HouseholdPanel
@@ -135,10 +122,7 @@ describe('HouseholdPanel', () => {
   });
 
   it('falls back to a generic message for an unrecognized error code', async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      json: async () => ({ error: 'Invalid request', details: 'weird' }),
-    });
+    mockJoinHousehold.mockResolvedValue({ ok: false, error: 'Could not join' });
     render(
       <HouseholdPanel
         members={[member({ userId: 'u1' })]}
