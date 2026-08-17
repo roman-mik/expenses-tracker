@@ -2,15 +2,18 @@
  * Shared client + server validation (Zod). One source of truth so the web
  * form, the API, and a future mobile client can never drift.
  *
- * Note: `currency` is intentionally NOT accepted from the client on expense
- * create — the server stamps it from the user's profile so history stays
- * currency-stable and can't be spoofed.
+ * Note: `currency` is optional on expense create/update — when omitted, the
+ * server defaults it to the household's currency. Either way, a DB check
+ * constraint (0013_expense_currency_choice.sql) is the real backstop against
+ * a spoofed value, since RLS alone can't validate it.
  */
 import { z } from 'zod';
 import { CATEGORY_COLORS } from './category-colors';
+import { CURRENCIES } from './types';
 
 export const expenseCreateSchema = z.object({
   amountMinor: z.number().int().nonnegative(),
+  currency: z.enum(CURRENCIES).optional(),
   categoryId: z.string().uuid().nullable().optional(),
   note: z.string().max(500).nullable().optional(),
   spentAt: z.string().datetime().optional(),

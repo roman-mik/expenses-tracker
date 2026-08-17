@@ -5,7 +5,7 @@ import { createExpense, updateExpense, deleteExpense } from './expenses';
 const UPDATED_AT = '2026-08-01T00:00:00.000Z';
 
 describe('createExpense', () => {
-  it('stamps the currency from the household, not the input', async () => {
+  it('defaults to the household currency when the input omits one', async () => {
     const { client, db } = fakeSupabase();
     db.seed('households', [{ id: 'h1', currency: 'EUR' }]);
     const expense = await createExpense(client, 'h1', 'u1', {
@@ -14,6 +14,17 @@ describe('createExpense', () => {
     });
     expect(expense.currency).toBe('EUR');
     expect(expense.addedBy).toBe('u1');
+  });
+
+  it('uses the currency chosen by the client over the household default', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('households', [{ id: 'h1', currency: 'EUR' }]);
+    const expense = await createExpense(client, 'h1', 'u1', {
+      amountMinor: 500,
+      currency: 'RUB',
+      categoryId: null,
+    });
+    expect(expense.currency).toBe('RUB');
   });
 
   it('falls back to RSD when the household is unseeded', async () => {
@@ -107,6 +118,31 @@ describe('updateExpense', () => {
       note: 'old note',
       categoryId: 'groceries',
     });
+  });
+
+  it('patches currency only when explicitly present in the input', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('expenses', [
+      {
+        id: 'e1',
+        household_id: 'h1',
+        category_id: null,
+        amount_minor: 100,
+        currency: 'RSD',
+        note: null,
+        spent_at: '2026-08-01T00:00:00.000Z',
+        user_id: 'u1',
+        updated_at: UPDATED_AT,
+      },
+    ]);
+    const result = await updateExpense(
+      client,
+      'h1',
+      'e1',
+      { currency: 'RUB' },
+      UPDATED_AT
+    );
+    expect(result.ok && result.expense.currency).toBe('RUB');
   });
 
   it('clears the category when explicitly set to null', async () => {

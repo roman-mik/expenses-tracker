@@ -5,13 +5,16 @@
  * Rows are mapped to these at the data-access edge (see `mappers.ts`).
  *
  * All money is integer MINOR UNITS of the given currency (RSD has 0 decimals,
- * EUR/USD have 2). Use CURRENCY_EXPONENT for display formatting only — never
- * for arithmetic in kapa-math, which stays integer-based.
+ * EUR/USD/RUB have 2). Use CURRENCY_EXPONENT for display formatting only —
+ * never for arithmetic in kapa-math, which stays integer-based.
  */
 
 import type { Locale } from '@/i18n/routing';
 
-export type Currency = 'RSD' | 'EUR' | 'USD';
+/** Single source of truth for supported currencies — feeds the Zod enum and the UI picker. */
+export const CURRENCIES = ['RSD', 'EUR', 'USD', 'RUB'] as const;
+
+export type Currency = (typeof CURRENCIES)[number];
 
 /** Minor units of some currency (integer). Branded to prevent mixing with plain numbers. */
 export type Money = number & { readonly __brand: 'MoneyMinor' };
@@ -20,6 +23,7 @@ export const CURRENCY_EXPONENT: Record<Currency, number> = {
   RSD: 0,
   EUR: 2,
   USD: 2,
+  RUB: 2,
 };
 
 export interface Profile {

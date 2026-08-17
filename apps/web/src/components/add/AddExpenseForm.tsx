@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { addExpense, updateExpense } from '@/app/actions/expenses';
 import { formatMoney } from '@/lib/format';
 import {
+  CURRENCIES,
   CURRENCY_EXPONENT,
   type Category,
   type Currency,
@@ -34,9 +35,12 @@ export function AddExpenseForm({
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(
+    expense?.currency ?? currency
+  );
   const [digits, setDigits] = useState(() =>
     expense
-      ? String(expense.amountMinor / 10 ** CURRENCY_EXPONENT[currency])
+      ? String(expense.amountMinor / 10 ** CURRENCY_EXPONENT[selectedCurrency])
       : ''
   );
   const [categoryId, setCategoryId] = useState<string | null>(
@@ -47,7 +51,10 @@ export function AddExpenseForm({
   // The keypad enters whole major units (the design has no decimals); convert
   // to minor units for storage.
   const major = digits === '' ? 0 : Number(digits);
-  const amountMinor = major * 10 ** CURRENCY_EXPONENT[currency];
+  const amountMinor = major * 10 ** CURRENCY_EXPONENT[selectedCurrency];
+  // The cap has no FX conversion (see getSummary), so "left after this" only
+  // means anything when the expense is in the household's own currency.
+  const showRemaining = selectedCurrency === currency;
   const leftAfter = remaining - amountMinor;
 
   const press = (k: string) =>
@@ -67,6 +74,7 @@ export function AddExpenseForm({
             expense.id,
             {
               amountMinor,
+              currency: selectedCurrency,
               categoryId: categoryId ?? null,
               note: note.trim() || null,
             },
@@ -74,6 +82,7 @@ export function AddExpenseForm({
           )
         : await addExpense({
             amountMinor,
+            currency: selectedCurrency,
             categoryId: categoryId ?? undefined,
             note: note.trim() || undefined,
           });
@@ -92,15 +101,48 @@ export function AddExpenseForm({
       <div className="flex flex-col items-center gap-1">
         <div className="flex items-baseline gap-2">
           <span className="font-heading text-5xl">
-            {formatMoney(amountMinor, currency)}
+            {formatMoney(amountMinor, selectedCurrency)}
           </span>
-          <span className="font-semibold text-ink-muted">{currency}</span>
+          <span className="font-semibold text-ink-muted">
+            {selectedCurrency}
+          </span>
         </div>
-        <p
-          className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink-muted'}`}
-        >
-          {t('leftAfterThis', { amount: formatMoney(leftAfter, currency) })}
-        </p>
+        {showRemaining && (
+          <p
+            className={`text-sm ${leftAfter < 0 ? 'text-accent-700' : 'text-ink-muted'}`}
+          >
+            {t('leftAfterThis', {
+              amount: formatMoney(leftAfter, selectedCurrency),
+            })}
+          </p>
+        )}
+      </div>
+
+      {/* Currency */}
+      <div
+        role="radiogroup"
+        aria-label={t('currencyLabel')}
+        className="flex flex-wrap justify-center gap-2"
+      >
+        {CURRENCIES.map((c) => {
+          const selected = c === selectedCurrency;
+          return (
+            <button
+              key={c}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => setSelectedCurrency(c)}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                selected
+                  ? 'bg-accent-600 text-white'
+                  : 'bg-surface text-ink-muted hover:bg-sand-300'
+              }`}
+            >
+              {c}
+            </button>
+          );
+        })}
       </div>
 
       {/* Keypad */}

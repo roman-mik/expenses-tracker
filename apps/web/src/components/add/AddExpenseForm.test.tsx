@@ -70,12 +70,38 @@ describe('AddExpenseForm', () => {
     await waitFor(() =>
       expect(mockAddExpense).toHaveBeenCalledWith({
         amountMinor: 5,
+        currency: 'RSD',
         categoryId: 'c1',
         note: undefined,
       })
     );
     expect(mockToastSuccess).toHaveBeenCalledWith('Expense added');
     expect(mockPush).toHaveBeenCalledWith('/');
+  });
+
+  it('submits the selected currency and hides the cap preview once switched away from the household currency', async () => {
+    mockAddExpense.mockResolvedValue({ ok: true });
+    render(
+      <AddExpenseForm categories={[]} currency="RSD" remaining={10_000} />
+    );
+    fireEvent.click(screen.getByText('5'));
+    expect(screen.getByText(/left after this/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('radio', { name: 'EUR' }));
+    expect(screen.queryByText(/left after this/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add expense' }));
+
+    await waitFor(() =>
+      // EUR has 2 minor-unit decimals, so the "5" entered under RSD (exponent
+      // 0) becomes 500 minor units (5.00 EUR) once the currency is switched.
+      expect(mockAddExpense).toHaveBeenCalledWith({
+        amountMinor: 500,
+        currency: 'EUR',
+        categoryId: undefined,
+        note: undefined,
+      })
+    );
   });
 
   it('shows an error toast and does not navigate on failure', async () => {

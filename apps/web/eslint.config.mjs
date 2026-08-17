@@ -7,6 +7,17 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   eslintConfigPrettier,
+  {
+    rules: {
+      // A leading underscore (e.g. `_cols`) marks a parameter as
+      // intentionally unused — used by test fakes that stub a method's full
+      // signature (matching what real callers pass) without needing the value.
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

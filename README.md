@@ -62,15 +62,20 @@ The app runs without these (landing page only); auth and data need them.
 ## Deploy (free tier)
 
 1. **Push to GitHub** — create a repo and push this project.
-2. **Supabase** — create a free project at [supabase.com](https://supabase.com); copy the URL + publishable key. Run `supabase link` then `supabase db push` to apply `supabase/migrations/*` to it (this is the same schema `supabase db reset` applies locally — see [Local development](#local-development) above).
+2. **Supabase** — create a free project at [supabase.com](https://supabase.com); copy the URL + publishable key. Run `supabase link` then `supabase db push` once by hand to apply `supabase/migrations/*` to it (this is the same schema `supabase db reset` applies locally — see [Local development](#local-development) above). After this first push, add `SUPABASE_DB_URL` (Settings → Database → Connection string, session pooler, percent-encoded, port 5432) as a repo secret — every release after this one applies new migrations automatically (step 4).
 3. **Vercel** — import the GitHub repo at [vercel.com](https://vercel.com); add the env vars above; deploy.
-4. Every push to `main` deploys once CI passes — `apps/web/vercel.json`'s
-   `ignoreCommand` disables Vercel's own auto-deploy-on-push, so the `deploy`
-   job in `.github/workflows/ci.yml` (gated on `needs: ci`) is the only path
-   to production. It runs `vercel deploy --prod` (no `--prebuilt`), which
-   builds on Vercel's own infrastructure — the only place the Sensitive
+4. A merged release-please PR is the only path to production: `.github/workflows/release-please.yml`'s
+   `deploy` job (gated on `needs: [release-please, ci]` and
+   `releases_created == 'true'`) first runs `supabase db push --db-url
+   "$SUPABASE_DB_URL"` so the database is never behind the code it's about to
+   receive, then `vercel deploy --prod` (no `--prebuilt`), which builds on
+   Vercel's own infrastructure — the only place the Sensitive
    `NEXT_PUBLIC_SUPABASE_*` vars decrypt — rather than building locally in
-   Actions.
+   Actions. `apps/web/vercel.json`'s `ignoreCommand` disables Vercel's own
+   auto-deploy-on-push so this workflow stays the only trigger. Because
+   migrations apply before the deploy, every migration merged to `main` must
+   stay backward compatible with the *previous* release for the brief window
+   until the new app code lands.
 5. **Lock down auth** — Supabase dashboard → Authentication → Providers → Email → Site URL and Additional Redirect URLs should point at the deployed domain (`https://your-app.vercel.app` and `/auth/callback`), which `auth/callback/route.ts` needs for its OAuth/magic-link/email-confirmation exchange. Then Authentication → Sign In / Providers → turn **"Allow new users to sign up" OFF** — `allowed_emails` (see [Local development](#local-development)) is a backstop, not the primary gate; this toggle is.
 
 ## Keep-alive

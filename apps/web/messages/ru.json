@@ -102,6 +102,7 @@
   "Add": {
     "titleNew": "Новый расход",
     "titleEdit": "Изменить расход",
+    "currencyLabel": "Валюта",
     "deleteDigit": "Стереть",
     "notePlaceholder": "Заметка (необязательно)",
     "leftAfterThis": "{amount} останется после этого",
