@@ -1,9 +1,26 @@
 {
   "$schema": "https://turborepo.com/schema.json",
+  "globalPassThroughEnv": [
+    "POSTGRES_URL",
+    "POSTGRES_PRISMA_URL",
+    "POSTGRES_URL_NON_POOLING",
+    "POSTGRES_USER",
+    "POSTGRES_HOST",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_DATABASE",
+    "SUPABASE_JWT_SECRET",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_SECRET_KEY",
+    "CRON_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},

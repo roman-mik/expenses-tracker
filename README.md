@@ -64,7 +64,10 @@ The app runs without these (landing page only); auth and data need them.
 1. **Push to GitHub** — create a repo and push this project.
 2. **Supabase** — create a free project at [supabase.com](https://supabase.com); copy the URL + publishable key. Run `supabase link` then `supabase db push` to apply `supabase/migrations/*` to it (this is the same schema `supabase db reset` applies locally — see [Local development](#local-development) above).
 3. **Vercel** — import the GitHub repo at [vercel.com](https://vercel.com); add the env vars above; deploy.
-4. Every push to `main` auto-deploys.
+4. Every push to `main` auto-deploys — Vercel's own Git integration builds it,
+   since it's the only place the Sensitive `NEXT_PUBLIC_SUPABASE_*` vars are
+   readable. CI (`.github/workflows/ci.yml`) is a test gate only; it does not
+   build or deploy, so don't re-add a `vercel build`/`vercel deploy` step there.
 5. **Lock down auth** — Supabase dashboard → Authentication → Providers → Email → Site URL and Additional Redirect URLs should point at the deployed domain (`https://your-app.vercel.app` and `/auth/callback`), which `auth/callback/route.ts` needs for its OAuth/magic-link/email-confirmation exchange. Then Authentication → Sign In / Providers → turn **"Allow new users to sign up" OFF** — `allowed_emails` (see [Local development](#local-development)) is a backstop, not the primary gate; this toggle is.
 
 ## Keep-alive
