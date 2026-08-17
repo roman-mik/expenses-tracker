@@ -1,5 +1,12 @@
 @AGENTS.md
 
+## Commit & PR titles
+
+CI enforces Conventional Commits (release-please depends on it). Every commit message
+and every PR title must start with a valid type, e.g. `feat:`, `fix:`, `chore:`, `docs:`,
+`refactor:`, `test:`, `ci:`. A PR title that doesn't follow this fails CI even if the
+underlying commits do.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
