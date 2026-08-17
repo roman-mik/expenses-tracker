@@ -7,7 +7,7 @@ import {
   getActiveInviteCode,
   getHouseholdMembers,
 } from '@/lib/queries/household';
-import { HouseholdPanel } from '@/components/household/HouseholdPanel';
+import { HouseholdPanel } from '@/components/kapa/household/HouseholdPanel';
 
 export default async function HouseholdPage() {
   const user = await verifySession();

@@ -4,12 +4,12 @@ import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
-import { getCategories } from '@/lib/queries/categories';
+import { getCap } from '@/lib/queries/cap';
 import { getHousehold } from '@/lib/queries/household';
 import { currentMonth } from '@/lib/kapa-math';
-import { AddExpenseForm } from '@/components/add/AddExpenseForm';
+import { SetCapForm } from '@/components/kapa/cap/SetCapForm';
 
-export default async function AddExpensePage() {
+export default async function SetCapPage() {
   const user = await verifySession();
   if (!user) redirect('/login');
 
@@ -20,23 +20,25 @@ export default async function AddExpensePage() {
   const { timezone: timeZone } = await getHousehold(supabase, householdId);
   const now = new Date();
 
-  const [summary, categories] = await Promise.all([
+  const [summary, cap] = await Promise.all([
     getSummary(supabase, householdId, currentMonth(now, timeZone), now),
-    getCategories(supabase, householdId),
+    getCap(supabase, householdId),
   ]);
 
-  const activeCategories = categories.filter((c) => !c.archived);
-  const t = await getTranslations('Add');
+  const t = await getTranslations('Cap');
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <PageHeader title={t('titleNew')} />
+        <PageHeader title={t('title')} />
 
-        <AddExpenseForm
-          categories={activeCategories}
+        <SetCapForm
           currency={summary.currency}
-          remaining={summary.remaining}
+          spent={summary.spent}
+          daysLeft={summary.daysLeft}
+          initialCap={cap?.monthlyCap ?? summary.cap}
+          initialNudgeEnabled={cap?.nudgeEnabled ?? true}
+          initialNudgePct={cap?.nudgePct ?? 80}
         />
       </div>
     </main>
