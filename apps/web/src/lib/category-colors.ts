@@ -15,5 +15,3 @@ export const CATEGORY_COLORS = [
   'sage-500',
   'sage-700',
 ] as const;
-
-export type CategoryColor = (typeof CATEGORY_COLORS)[number];

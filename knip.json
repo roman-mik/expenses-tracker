@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreBinaries": ["supabase"],
+  "workspaces": {
+    ".": {
+      "entry": [],
+      "project": []
+    },
+    "apps/web": {
+      "ignore": ["src/lib/supabase/database.types.ts"]
+    },
+    "packages/ui": {}
+  }
+}

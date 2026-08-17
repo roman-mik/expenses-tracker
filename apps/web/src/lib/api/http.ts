@@ -18,7 +18,7 @@ export function json<T>(data: T, init?: ResponseInit): NextResponse {
   return NextResponse.json(data, init);
 }
 
-export function unauthorized(): NextResponse {
+function unauthorized(): NextResponse {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 

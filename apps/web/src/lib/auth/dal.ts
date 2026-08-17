@@ -29,9 +29,6 @@ export const verifySession = cache(async (): Promise<SessionUser | null> => {
   return id ? { id } : null;
 });
 
-/** Alias for readability at call sites that just want the user. */
-export const getUser = verifySession;
-
 /**
  * Resolves the household a user belongs to. Every user is in exactly one
  * household (a household-of-one until they pair up), seeded by the
