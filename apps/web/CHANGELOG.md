@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/roman-mik/kapa/compare/web-v0.3.0...web-v0.4.0) (2026-08-17)
+
+
+### Features
+
+* let users pick a currency when adding an expense ([#57](https://github.com/roman-mik/kapa/issues/57)) ([26b4bf8](https://github.com/roman-mik/kapa/commit/26b4bf84c3d64994b5e77faa7879b4facf46c654))
+
 ## [0.3.0](https://github.com/roman-mik/kapa/compare/web-v0.2.0...web-v0.3.0) (2026-08-17)
 
 
