@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/roman-mik/kapa/compare/web-v0.1.2...web-v0.2.0) (2026-08-17)
+
+
+### Features
+
+* add knip dead-code check, enforced in CI ([#52](https://github.com/roman-mik/kapa/issues/52)) ([8d18a34](https://github.com/roman-mik/kapa/commit/8d18a341f6b76528f5be96e05429a6b8d2d8a7ba))
+
 ## [0.1.2](https://github.com/roman-mik/kapa/compare/web-v0.1.1...web-v0.1.2) (2026-08-17)
 
 
