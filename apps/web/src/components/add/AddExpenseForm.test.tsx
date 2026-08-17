@@ -88,9 +88,7 @@ describe('AddExpenseForm', () => {
     expect(screen.getByText(/left after this/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('radio', { name: 'EUR' }));
-    expect(
-      screen.queryByText(/left after this/)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/left after this/)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Add expense' }));
 
