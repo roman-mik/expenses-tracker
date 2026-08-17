@@ -138,7 +138,7 @@ function ExpenseRow({
         </span>
 
         <span className="shrink-0 font-medium tabular-nums">
-          {formatMoney(e.amountMinor, e.currency)}
+          {formatMoney(e.amountMinor, e.currency, { withCurrency: true })}
         </span>
 
         {confirming ? (
