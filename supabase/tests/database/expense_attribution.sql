@@ -4,7 +4,8 @@
 -- Two things to verify: (1) deleting a user out of auth.users anonymizes
 -- their expenses instead of deleting them out of the shared pool, and (2) no
 -- UPDATE — from any member, including the row's own attributed user — can
--- change user_id, household_id, currency, or created_at.
+-- change user_id, household_id, or created_at. (Currency was immutable here
+-- too until 0013_expense_currency_choice.sql relaxed it — see that file.)
 
 begin;
 
@@ -26,7 +27,7 @@ end $$ language plpgsql;
 grant execute on function tests.login_as(uuid) to authenticated;
 grant execute on function tests.logout() to authenticated;
 
-select plan(12);
+select plan(13);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures — alice and bob share alice's household.
@@ -67,10 +68,18 @@ select throws_like(
   '%user_id is immutable%',
   'a co-member cannot re-attribute an expense''s user_id');
 
-select throws_like(
+-- currency is deliberately NOT frozen (0013_expense_currency_choice.sql) —
+-- a co-member may correct it, same as amount/note below. The check
+-- constraint added by that migration is the remaining guard: it accepts any
+-- supported currency and rejects everything else.
+select lives_ok(
   format($$ update public.expenses set currency = 'EUR' where id = %L $$, :'expense_id'),
-  '%currency is immutable%',
-  'a co-member cannot rewrite an expense''s currency');
+  'a co-member can rewrite an expense''s currency');
+
+select throws_like(
+  format($$ update public.expenses set currency = 'XXX' where id = %L $$, :'expense_id'),
+  '%expenses_currency_allowed%',
+  'an unsupported currency is rejected by the check constraint');
 
 select throws_like(
   format($$ update public.expenses set household_id = gen_random_uuid() where id = %L $$, :'expense_id'),
@@ -112,19 +121,20 @@ select cmp_ok(
   'updated_at is bumped by the update trigger, not left at its inserted value');
 
 -- ---------------------------------------------------------------------------
--- Currency stamping (0009) — a client-supplied currency is overwritten from
--- the household on insert, not trusted from the request.
+-- Currency stamping (0009, relaxed by 0013) — a supported client-supplied
+-- currency is kept as-is on insert; the household's is only a default for
+-- when the client omits one.
 -- ---------------------------------------------------------------------------
 
 select tests.login_as(:'bob_id');
 
 insert into public.expenses (household_id, user_id, amount_minor, currency, note)
-  values (:'household'::uuid, :'bob_id', 500, 'EUR', 'currency spoof attempt')
-  returning currency as spoofed_currency \gset
+  values (:'household'::uuid, :'bob_id', 500, 'EUR', 'client-chosen currency')
+  returning currency as chosen_currency \gset
 
 select is(
-  :'spoofed_currency'::text, 'RSD'::text,
-  'a client-supplied currency is overwritten from the household on insert');
+  :'chosen_currency'::text, 'EUR'::text,
+  'a supported client-supplied currency is kept as-is on insert');
 
 select tests.logout();
 
