@@ -183,7 +183,3 @@ To add a locale:
 ## Design system
 
 The "Organic" tokens (cream / terracotta / sage, Caprasimo + Figtree) live in `src/app/globals.css` under Tailwind v4's `@theme`. Utilities: `bg-bg`, `bg-surface`, `text-ink`, `bg-accent`, `text-sage-700`, `rounded-lg`, `shadow-md`, `font-heading`.
-
-## License
-
-© 2026 Roman. All rights reserved. This code is publicly viewable but not licensed for reuse, redistribution, or modification.
