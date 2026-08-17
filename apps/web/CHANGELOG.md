@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/roman-mik/kapa/compare/web-v0.2.0...web-v0.3.0) (2026-08-17)
+
+
+### Features
+
+* show currency code on history expense rows ([#55](https://github.com/roman-mik/kapa/issues/55)) ([fa051a3](https://github.com/roman-mik/kapa/commit/fa051a3d31d96e0665a2c01cdc91c54d11016ae2))
+
 ## [0.2.0](https://github.com/roman-mik/kapa/compare/web-v0.1.2...web-v0.2.0) (2026-08-17)
 
 
