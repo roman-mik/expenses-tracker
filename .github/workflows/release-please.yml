@@ -22,11 +22,11 @@ jobs:
 
   ci:
     needs: release-please
-    if: needs.release-please.outputs.releases_created == 'true'
     uses: ./.github/workflows/ci.yml
 
   deploy:
     needs: [release-please, ci]
+    if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     environment: production
     env:
