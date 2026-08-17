@@ -102,6 +102,7 @@
   "Add": {
     "titleNew": "Add expense",
     "titleEdit": "Edit expense",
+    "currencyLabel": "Currency",
     "deleteDigit": "Delete",
     "notePlaceholder": "Add a note (optional)",
     "leftAfterThis": "{amount} left after this",

@@ -48,7 +48,7 @@ export default async function EditExpensePage({
 
         <AddExpenseForm
           categories={activeCategories}
-          currency={expense.currency}
+          currency={summary.currency}
           remaining={remainingIfReplaced}
           expense={expense}
         />

@@ -1,6 +1,7 @@
 /**
  * Expense create, shared by `POST /api/expenses` and the `addExpense` Server
- * Action. Currency is stamped from the profile — never trusted from the client.
+ * Action. Currency defaults to the household's when the client doesn't pick
+ * one; a DB check constraint validates whatever ends up on the row.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Expense } from '@/lib/types';
@@ -19,14 +20,17 @@ export async function createExpense(
 ): Promise<Expense> {
   const { amountMinor, categoryId, note, spentAt } = input;
 
-  const { data: household, error: hErr } = await supabase
-    .from('households')
-    .select('currency')
-    .eq('id', householdId)
-    .maybeSingle();
-  if (hErr) throw new Error(hErr.message);
-  // Fall back to the default currency if the household isn't seeded yet.
-  const currency = household?.currency ?? 'RSD';
+  let currency: string | undefined = input.currency;
+  if (!currency) {
+    const { data: household, error: hErr } = await supabase
+      .from('households')
+      .select('currency')
+      .eq('id', householdId)
+      .maybeSingle();
+    if (hErr) throw new Error(hErr.message);
+    // Fall back to the default currency if the household isn't seeded yet.
+    currency = household?.currency ?? 'RSD';
+  }
 
   const { data, error } = await supabase
     .from('expenses')
@@ -52,9 +56,9 @@ export type MutateExpenseResult =
 
 /**
  * Edit an expense, scoped to the household (any member may edit any household
- * expense — shared pool). Currency is never patched: it stays as stamped at
- * insert. A field is only touched when the caller sends it (`undefined` means
- * "leave unchanged"; explicit `null` clears category/note).
+ * expense — shared pool). A field is only touched when the caller sends it
+ * (`undefined` means "leave unchanged"; explicit `null` clears category/note).
+ * `currency` follows the same rule — the DB check constraint validates it.
  *
  * `expectedUpdatedAt` is the optimistic-concurrency token: the caller must
  * present the `updatedAt` it last read. If zero rows match — either the id
@@ -69,10 +73,11 @@ export async function updateExpense(
   input: ExpenseUpdateInput,
   expectedUpdatedAt: string
 ): Promise<MutateExpenseResult> {
-  const { amountMinor, categoryId, note, spentAt } = input;
+  const { amountMinor, currency, categoryId, note, spentAt } = input;
 
   const patch: Partial<ExpenseRow> = {};
   if (amountMinor !== undefined) patch.amount_minor = amountMinor;
+  if (currency !== undefined) patch.currency = currency;
   if (categoryId !== undefined) patch.category_id = categoryId;
   if (note !== undefined) patch.note = note;
   if (spentAt !== undefined) patch.spent_at = spentAt;
