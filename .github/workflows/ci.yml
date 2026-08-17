@@ -60,3 +60,25 @@ jobs:
       - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
         run: supabase stop
       - run: pnpm run build
+
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # Deliberately not `vercel build` + `vercel deploy --prebuilt`: that
+      # builds locally in Actions, and `vercel pull` can never retrieve
+      # Sensitive env vars (NEXT_PUBLIC_SUPABASE_URL and
+      # NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY are marked Sensitive), so the
+      # local build would inline empty values. `vercel deploy` without
+      # --prebuilt instead uploads source and builds on Vercel's own
+      # infrastructure — the only place those vars decrypt — same as a
+      # normal Git-triggered deploy, just gated on `needs: ci`.
+      - run: npx vercel deploy --prod --yes
