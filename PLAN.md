@@ -296,3 +296,31 @@ None of these block launch. The one to design around: **Supabase free projects p
 ## 8. Next step
 
 Phases 0–4 are shipped and verified. Phase 6 (hardening) is fully done — the pgTAP suite for `join_household` shipped 2026-08-15. Phase 7 (i18n: English + Russian) is shipped; Serbian remains an unstarted stretch item. Phase 5 (mobile, Expo) is postponed.
+
+---
+
+## 9. Ledger — a second, desktop-only sub-app (2026-08-17)
+
+Kapa now shares `apps/web` with a second product: **Ledger**, a multi-currency cashflow
+projector for variable/hourly income (accounts, income streams, obligations, scenarios,
+day-by-day projections). Full spec: `docs/ledger-user-stories.md`.
+
+**Decisions**
+- **Same Next.js app**, not a separate `apps/*` workspace — one Vercel project, one auth
+  session, shared `@kapa/ui` tokens. Kapa lives in `app/(kapa)` (a route group — URLs
+  unchanged) and `components/kapa/`; Ledger lives in `app/ledger/*` and `components/ledger/`.
+  An `AppSwitcher` (`components/layout/AppSwitcher.tsx`) lets the user move between them.
+- **Desktop-only, hard gate.** Below the `lg` breakpoint, `/ledger/*` renders a "needs a
+  wider screen" notice instead of the UI — CSS-only (`hidden lg:` / `lg:hidden`), no
+  viewport JS. Kapa remains the mobile-first PWA; Ledger is not installable.
+- **Data**: will live in new household-scoped `ledger_*` tables in the same Supabase
+  project, reusing `is_household_member()`, and will read Kapa's `expenses` table for daily
+  actuals. Not yet built — this section covers the shell only.
+
+**Shipped**: the shell — route/component split, desktop gate, left rail (`LedgerRail.tsx`),
+the app switcher, and placeholder pages for all seven spec screens (Today, Timeline, Money
+in, Money out, Scenarios, Target rate, Assumptions).
+
+**Not yet built**: the ledger domain model + migrations, the projection engine (a pure,
+deterministic module in the `lib/kapa-math.ts` idiom), and real content behind each
+placeholder screen.

@@ -8,9 +8,12 @@ import { getHousehold, getHouseholdMembers } from '@/lib/queries/household';
 import { currentMonth } from '@/lib/kapa-math';
 import { zonedDateKey, dayLabel } from '@/lib/date';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { HistoryList, type ExpenseGroup } from '@/components/home/HistoryList';
-import { CategoryFilter } from '@/components/history/CategoryFilter';
-import { CategoryBreakdown } from '@/components/history/CategoryBreakdown';
+import {
+  HistoryList,
+  type ExpenseGroup,
+} from '@/components/kapa/home/HistoryList';
+import { CategoryFilter } from '@/components/kapa/history/CategoryFilter';
+import { CategoryBreakdown } from '@/components/kapa/history/CategoryBreakdown';
 import { categoryBreakdown } from '@/lib/category-breakdown';
 
 export default async function HistoryPage({

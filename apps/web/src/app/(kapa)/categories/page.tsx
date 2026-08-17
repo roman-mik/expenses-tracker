@@ -4,7 +4,7 @@ import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getCategories } from '@/lib/queries/categories';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { CategoryManager } from '@/components/categories/CategoryManager';
+import { CategoryManager } from '@/components/kapa/categories/CategoryManager';
 
 export default async function CategoriesPage() {
   const user = await verifySession();

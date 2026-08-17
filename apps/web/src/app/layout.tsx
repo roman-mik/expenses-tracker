@@ -1,9 +1,9 @@
-import type { Metadata, Viewport } from 'next';
+import type { Viewport } from 'next';
 import { Caprasimo, Figtree } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages, getTranslations } from 'next-intl/server';
+import { getLocale, getMessages } from 'next-intl/server';
 import { color } from '@kapa/ui';
 import { OfflineBanner } from '@/components/pwa/OfflineBanner';
 import { ToastProvider } from '@/components/ui/Toast';
@@ -26,6 +26,7 @@ const CLIENT_MESSAGE_NAMESPACES = [
   'Add',
   'Household',
   'ErrorPage',
+  'Ledger',
 ] as const;
 
 function pick<T extends object, K extends keyof T>(
@@ -53,19 +54,6 @@ const caprasimo = Caprasimo({
   subsets: ['latin'],
   weight: '400',
 });
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Meta');
-  return {
-    title: t('title'),
-    description: t('description'),
-    appleWebApp: {
-      capable: true,
-      title: t('appleWebAppTitle'),
-      statusBarStyle: 'default',
-    },
-  };
-}
 
 export const viewport: Viewport = {
   themeColor: color.accent,
