@@ -9,10 +9,6 @@
 import { z } from 'zod';
 import { CATEGORY_COLORS } from './category-colors';
 
-export const monthParamSchema = z
-  .string()
-  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "month must be 'YYYY-MM'");
-
 export const expenseCreateSchema = z.object({
   amountMinor: z.number().int().nonnegative(),
   categoryId: z.string().uuid().nullable().optional(),
@@ -62,5 +58,4 @@ export type ExpenseUpdateInput = z.infer<typeof expenseUpdateSchema>;
 export type CapUpdateInput = z.infer<typeof capUpdateSchema>;
 export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
 export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
-export type JoinHouseholdInput = z.infer<typeof joinHouseholdSchema>;
 export type DisplayNameInput = z.infer<typeof displayNameSchema>;

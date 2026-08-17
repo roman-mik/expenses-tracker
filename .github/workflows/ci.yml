@@ -46,6 +46,7 @@ jobs:
         run: pnpm --filter @kapa/ui build:theme && git diff --exit-code packages/ui/theme.css
       - run: pnpm run format:check
       - run: pnpm run lint
+      - run: pnpm run knip
       - run: pnpm run typecheck
       - run: pnpm run test
       - if: github.event_name != 'pull_request' || steps.filter.outputs.db == 'true'
