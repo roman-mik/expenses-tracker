@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/roman-mik/kapa/compare/web-v0.4.0...web-v0.5.0) (2026-08-17)
+
+
+### Features
+
+* add ledger shell and app switcher ([#59](https://github.com/roman-mik/kapa/issues/59)) ([1c6c915](https://github.com/roman-mik/kapa/commit/1c6c915d68a73619d575350ecf243b094eaf7106))
+
 ## [0.4.0](https://github.com/roman-mik/kapa/compare/web-v0.3.0...web-v0.4.0) (2026-08-17)
 
 
