@@ -11,8 +11,37 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: release
+        uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  ci:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: [release-please, ci]
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # Deliberately not `vercel build` + `vercel deploy --prebuilt`: that
+      # builds locally in Actions, and `vercel pull` can never retrieve
+      # Sensitive env vars (NEXT_PUBLIC_SUPABASE_URL and
+      # NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY are marked Sensitive), so the
+      # local build would inline empty values. `vercel deploy` without
+      # --prebuilt instead uploads source and builds on Vercel's own
+      # infrastructure — the only place those vars decrypt — same as a
+      # normal Git-triggered deploy, just gated on the release CI run.
+      - run: npx vercel deploy --prod --yes
