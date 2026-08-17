@@ -17,7 +17,9 @@
     "setCap": "Set cap",
     "categories": "Categories",
     "household": "Household",
-    "settings": "Settings"
+    "settings": "Settings",
+    "kapa": "Kapa",
+    "ledger": "Ledger"
   },
   "Errors": {
     "notSignedIn": "Not signed in.",
@@ -227,5 +229,33 @@
     "tryAgain": "Try again",
     "backToKapa": "Back to Kapa",
     "reference": "Reference: {digest}"
+  },
+  "Ledger": {
+    "meta": {
+      "title": "Ledger — cashflow, day by day"
+    },
+    "rail": {
+      "today": "Today",
+      "timeline": "Timeline",
+      "moneyIn": "Money in",
+      "moneyOut": "Money out",
+      "scenarios": "Scenarios",
+      "targetRate": "Target rate",
+      "assumptions": "Assumptions"
+    },
+    "gate": {
+      "title": "Needs a wider screen",
+      "body": "Ledger is built for desktop for now. Open it on a larger screen to use it.",
+      "backToKapa": "Back to Kapa"
+    },
+    "placeholder": {
+      "today": "The one-glance answer: what you have, what's coming, and when it gets tight.",
+      "timeline": "What's coming, day by day, with the intra-month minimum alongside the month-end balance.",
+      "moneyIn": "Manage income streams — rate, schedule, recurrence and confidence.",
+      "moneyOut": "Manage obligations and daily expenses, each with its own due date.",
+      "scenarios": "Compare up to four futures side by side.",
+      "targetRate": "Solve backwards from a desired life to the hourly rate that covers it.",
+      "assumptions": "Everything the model guessed, with its confidence and last-reviewed date."
+    }
   }
 }

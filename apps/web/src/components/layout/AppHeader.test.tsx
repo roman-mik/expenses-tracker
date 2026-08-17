@@ -31,4 +31,16 @@ describe('AppHeader', () => {
       screen.getByRole('link', { name: /settings/i, hidden: true })
     ).toHaveAttribute('href', '/settings');
   });
+
+  it('renders the app switcher with Kapa marked current', () => {
+    render(<AppHeader />);
+    expect(screen.getByRole('link', { name: 'Kapa' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
+    expect(screen.getByRole('link', { name: 'Ledger' })).toHaveAttribute(
+      'href',
+      '/ledger'
+    );
+  });
 });

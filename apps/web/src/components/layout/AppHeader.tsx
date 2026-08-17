@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
+import { AppSwitcher } from '@/components/layout/AppSwitcher';
 import {
   MenuIcon,
   TargetIcon,
@@ -58,19 +59,23 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex items-center justify-between gap-3">
       <span className="font-heading text-2xl">Kapa</span>
 
-      <Button
-        ref={triggerRef}
-        variant="pill"
-        className="w-11 px-0"
-        popoverTarget={MENU_ID}
-        aria-haspopup="true"
-        aria-label={t('menu')}
-      >
-        <MenuIcon />
-      </Button>
+      <div className="flex items-center gap-3">
+        <AppSwitcher current="kapa" />
+
+        <Button
+          ref={triggerRef}
+          variant="pill"
+          className="w-11 px-0"
+          popoverTarget={MENU_ID}
+          aria-haspopup="true"
+          aria-label={t('menu')}
+        >
+          <MenuIcon />
+        </Button>
+      </div>
 
       <nav
         ref={panelRef}

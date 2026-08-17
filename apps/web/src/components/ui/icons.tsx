@@ -97,3 +97,48 @@ export function UsersIcon({ className }: IconProps) {
     </Svg>
   );
 }
+
+export function HomeIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5 10v10h14V10" />
+    </Svg>
+  );
+}
+
+export function TimelineIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M3 17l5-6 4 3 5-8 4 5" />
+    </Svg>
+  );
+}
+
+export function TrendingUpIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M3 17l6-6 4 4 8-8" />
+      <path d="M15 7h6v6" />
+    </Svg>
+  );
+}
+
+export function TrendingDownIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M3 7l6 6 4-4 8 8" />
+      <path d="M15 17h6v-6" />
+    </Svg>
+  );
+}
+
+export function LayersIcon({ className }: IconProps) {
+  return (
+    <Svg size={18} className={className}>
+      <path d="M12 3 2 8.5 12 14l10-5.5Z" />
+      <path d="M2 15.5 12 21l10-5.5" />
+      <path d="M2 12l10 5.5L22 12" />
+    </Svg>
+  );
+}
