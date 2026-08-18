@@ -244,7 +244,8 @@
       "moneyOut": "Money out",
       "scenarios": "Scenarios",
       "targetRate": "Target rate",
-      "assumptions": "Assumptions"
+      "assumptions": "Assumptions",
+      "accounts": "Accounts"
     },
     "gate": {
       "title": "Needs a wider screen",
@@ -259,6 +260,44 @@
       "scenarios": "Compare up to four futures side by side.",
       "targetRate": "Solve backwards from a desired life to the hourly rate that covers it.",
       "assumptions": "Everything the model guessed, with its confidence and last-reviewed date."
+    },
+    "today": {
+      "heroLabel": "Total across accounts",
+      "missingRateNote": "Some balances couldn't be converted — missing an FX rate.",
+      "noAccountsYet": "Add an account to see it here.",
+      "rateUnavailable": "rate unavailable",
+      "rateDetail": "1 {base} = {rate} {quote} (as of {date}, {source})",
+      "staleRateWarning": "The FX rate is {days, plural, one {# day} other {# days}} old — totals may be off."
+    },
+    "accounts": {
+      "title": "Accounts",
+      "sectionTitle": "Accounts",
+      "noAccountsYet": "No accounts yet.",
+      "addAccount": "Add account",
+      "namePlaceholder": "Account name",
+      "currencyLabel": "Currency",
+      "typeLabel": "Type",
+      "type": {
+        "business": "Business",
+        "personal": "Personal",
+        "savings": "Savings"
+      },
+      "balancePlaceholder": "Starting balance",
+      "includeInTotal": "Count toward the Today total",
+      "add": "Add",
+      "archivedTitle": "Archived",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "archiveConfirm": "Archive?",
+      "archiving": "Archiving…",
+      "archiveAria": "Archive account",
+      "accountSaved": "Account saved.",
+      "accountArchived": "Account archived.",
+      "accountRestored": "Account restored.",
+      "accountAdded": "Account added.",
+      "excludedFromTotal": "excluded from total"
     }
   }
 }

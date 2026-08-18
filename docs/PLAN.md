@@ -327,9 +327,17 @@ constraints and cascade delete. Slice 2: `ledger_fx_rates` (migration 0015, glob
 service_role-only writes), `lib/ledger/fx.ts` (pure `convert`/`pickRate`/`rateAgeDays`/
 `isStale`, integer-only via BigInt), and the `/api/fx-refresh` daily cron (`vercel.json`,
 open.er-api.com, all-or-nothing writes, idempotent upsert) — verified end-to-end against
-local Supabase. No UI yet.
+local Supabase. Slice 3: real content behind Today and a new `/ledger/accounts` screen —
+`lib/ledger/today.ts` (pure `summarizeToday`, sums `includeInTotal` accounts converted via
+`fx.ts`, flags missing rates instead of throwing, tracks the oldest rate used for staleness),
+`components/ledger/today/{HeroBalance,AccountChips,StaleRateBanner}.tsx` (the rate/source
+behind each conversion is revealed via a native `<details>` disclosure, no client JS), and
+`components/ledger/accounts/{AccountForm,AccountList}.tsx` (add/edit/archive/reorder,
+mirroring `CategoryManager`'s pattern). Rail entry added directly under Today. Verified
+end-to-end against local Supabase, including running the `/api/fx-refresh` cron and
+confirming the hero total converts correctly and account rows stay unchanged in the DB (D15).
 
-**Not yet built**: the accounts/Today/Assumptions screens (slices 3–4), balance
-reconciliation (slice 5, A4), the projection
-engine (a pure, deterministic module in the `lib/kapa-math.ts` idiom), and real content
-behind the remaining placeholder screens.
+**Not yet built**: the Assumptions screen content (slice 4: reporting-currency picker, FX
+snapshot table), balance reconciliation (slice 5, A4), the projection engine (a pure,
+deterministic module in the `lib/kapa-math.ts` idiom), and real content behind the
+remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).
