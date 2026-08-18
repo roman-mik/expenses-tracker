@@ -33,7 +33,10 @@
     "categoryNotFound": "That category couldn't be found.",
     "expenseNotFound": "That expense couldn't be found.",
     "expenseChanged": "Someone else just changed this expense — reload to see the latest.",
-    "checkLocale": "Please pick a supported language."
+    "checkLocale": "Please pick a supported language.",
+    "checkAccountFields": "Please check the account's name, currency, and type.",
+    "accountNotFound": "That account couldn't be found.",
+    "checkCurrency": "Please pick a supported currency."
   },
   "Home": {
     "pageTitle": "Kapa — this month's spending",

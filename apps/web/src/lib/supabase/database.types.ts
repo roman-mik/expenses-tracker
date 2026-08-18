@@ -239,18 +239,21 @@ export type Database = {
           created_at: string;
           currency: string;
           id: string;
+          ledger_reporting_currency: string;
           timezone: string;
         };
         Insert: {
           created_at?: string;
           currency?: string;
           id?: string;
+          ledger_reporting_currency?: string;
           timezone?: string;
         };
         Update: {
           created_at?: string;
           currency?: string;
           id?: string;
+          ledger_reporting_currency?: string;
           timezone?: string;
         };
         Relationships: [];
@@ -269,6 +272,56 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      ledger_accounts: {
+        Row: {
+          archived: boolean;
+          created_at: string;
+          currency: string;
+          current_balance_minor: number;
+          household_id: string;
+          id: string;
+          include_in_total: boolean;
+          name: string;
+          sort_order: number;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          archived?: boolean;
+          created_at?: string;
+          currency: string;
+          current_balance_minor?: number;
+          household_id: string;
+          id?: string;
+          include_in_total?: boolean;
+          name: string;
+          sort_order?: number;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived?: boolean;
+          created_at?: string;
+          currency?: string;
+          current_balance_minor?: number;
+          household_id?: string;
+          id?: string;
+          include_in_total?: boolean;
+          name?: string;
+          sort_order?: number;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_accounts_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       profiles: {
         Row: {

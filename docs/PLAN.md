@@ -319,8 +319,13 @@ day-by-day projections). Full spec: `docs/ledger-user-stories.md`.
 
 **Shipped**: the shell — route/component split, desktop gate, left rail (`LedgerRail.tsx`),
 the app switcher, and placeholder pages for all seven spec screens (Today, Timeline, Money
-in, Money out, Scenarios, Target rate, Assumptions).
+in, Money out, Scenarios, Target rate, Assumptions). Epic A slice 1 (`docs/ledger-epic-a-plan.md`):
+`ledger_accounts` (migration 0014) plus `households.ledger_reporting_currency`, with
+`lib/ledger/{types,mappers,validation}`, queries/mutations/actions for accounts and the
+reporting-currency setting, pgTAP RLS coverage, and integration tests for its check
+constraints and cascade delete. No UI yet.
 
-**Not yet built**: the ledger domain model + migrations, the projection engine (a pure,
-deterministic module in the `lib/kapa-math.ts` idiom), and real content behind each
-placeholder screen.
+**Not yet built**: FX snapshots + the daily refresh cron (slice 2), the accounts/Today/
+Assumptions screens (slices 3–4), balance reconciliation (slice 5, A4), the projection
+engine (a pure, deterministic module in the `lib/kapa-math.ts` idiom), and real content
+behind the remaining placeholder screens.
