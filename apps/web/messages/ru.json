@@ -298,6 +298,23 @@
       "accountRestored": "Счёт восстановлен.",
       "accountAdded": "Счёт добавлен.",
       "excludedFromTotal": "не учитывается в итоге"
+    },
+    "assumptions": {
+      "title": "Допущения",
+      "reportingCurrencyTitle": "Отчётная валюта",
+      "reportingCurrencyDescription": "Единая валюта для отображения итоговых сумм и конвертации разных счетов в Ledger.",
+      "settingsSaved": "Отчётная валюта обновлена.",
+      "fxRatesTitle": "Курсы валют (FX)",
+      "fxRatesDescription": "Ежедневные снимки курсов валют для конвертации счетов в отчётную валюту.",
+      "pair": "Пара",
+      "rate": "Курс",
+      "asOfDate": "Дата",
+      "source": "Источник",
+      "age": "Возраст",
+      "staleBadge": "Устарел (> 30 дн.)",
+      "todayBadge": "Сегодня",
+      "daysOldBadge": "{days} дн. назад",
+      "noRatesYet": "Сохранённые курсы валют отсутствуют."
     }
   }
 }

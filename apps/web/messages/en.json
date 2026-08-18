@@ -298,6 +298,23 @@
       "accountRestored": "Account restored.",
       "accountAdded": "Account added.",
       "excludedFromTotal": "excluded from total"
+    },
+    "assumptions": {
+      "title": "Assumptions",
+      "reportingCurrencyTitle": "Reporting Currency",
+      "reportingCurrencyDescription": "The single currency used for headline totals and multi-currency conversions across Ledger screens.",
+      "settingsSaved": "Reporting currency updated.",
+      "fxRatesTitle": "FX Rates",
+      "fxRatesDescription": "Daily exchange rate snapshots ingested to convert non-reporting accounts.",
+      "pair": "Pair",
+      "rate": "Rate",
+      "asOfDate": "As of date",
+      "source": "Source",
+      "age": "Age",
+      "staleBadge": "Stale (> 30d)",
+      "todayBadge": "Today",
+      "daysOldBadge": "{days}d ago",
+      "noRatesYet": "No FX rates stored yet."
     }
   }
 }
