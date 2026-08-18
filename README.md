@@ -1,13 +1,38 @@
 # Kapa
 
+[![CI](https://github.com/roman-mik/kapa/actions/workflows/ci.yml/badge.svg)](https://github.com/roman-mik/kapa/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-live-000000?logo=vercel&logoColor=white)](https://expenses-tracker-kapa4.vercel.app)
+![Next.js](https://img.shields.io/badge/Next.js-App_Router-000000?logo=nextdotjs&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres-3FCF8E?logo=supabase&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+
 A warm monthly spending-cap tracker. One cap, every expense in two taps, always know what's left.
 
-Built with **Next.js** (App Router) + **Supabase** (Postgres/Auth) + **Tailwind v4**, deployed on **Vercel**. See [`PLAN.md`](./PLAN.md) for the full roadmap.
+**[Try the live demo →](https://expenses-tracker-kapa4.vercel.app)**
+
+Built with **Next.js** (App Router) + **Supabase** (Postgres/Auth) + **Tailwind v4**, deployed on **Vercel**. See [`docs/PLAN.md`](./docs/PLAN.md) for the full roadmap.
 
 This is a **pnpm + Turborepo workspace**: the app lives in `apps/web`, shared code (currently just
 a placeholder) in `packages/ui`, and `supabase/` stays at the repo root since it's the backend for
 every app in the workspace. Root-level `pnpm run <script>` commands (below) fan out to the
 workspace via Turborepo — run them from the repo root, not from inside `apps/web`.
+
+## Architecture at a glance
+
+- **Monorepo** — pnpm + Turborepo; `apps/web` (Next.js App Router), `packages/ui` (shared
+  components), `supabase/` (migrations, RLS policies) at the root.
+- **Data model** — household-scoped expenses and caps behind Postgres row-level security, so
+  every query is authorized at the database, not just the app layer.
+- **Release pipeline** — a merged [release-please](https://github.com/googleapis/release-please)
+  PR is the only path to production. CI applies pending Supabase migrations *before* the app
+  deploys, so the database is never behind the code that's about to depend on it (see
+  [Deploy](#deploy-free-tier) below).
+- **Generated types stay honest** — `pnpm run gen:types` regenerates `database.types.ts` from the
+  live schema; CI diffs it on every PR touching `supabase/**`, so a stale commit fails the build.
+- **Tested at the RLS boundary** — CI runs pgTAP tests directly against Postgres, plus integration
+  tests that exercise real query/mutation code through an actual per-user JWT rather than a
+  bypass, so row-level security is verified, not assumed (see [CI](#ci) below).
 
 ## Local development
 
