@@ -1,6 +1,6 @@
 # Ledger Epic A — Accounts and current position
 
-**Status:** in progress, slices 1–3 of 5 shipped (2026-08-18) · **Spec:** `docs/ledger-user-stories.md` §5 Epic A · **Plan of record:** `PLAN.md` §9
+**Status:** in progress, slices 1–4 of 5 shipped (2026-08-19) · **Spec:** `docs/ledger-user-stories.md` §5 Epic A · **Plan of record:** `PLAN.md` §9
 
 ---
 
@@ -297,7 +297,7 @@ titles are enforced on both commits and PR titles.
 | 1 | `feat: add ledger accounts schema and reporting currency` | Migration 0014, `lib/ledger/{types,mappers,validation}`, queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ✅ Done (`c1ddd58`) |
 | 2 | `feat: add ledger fx snapshots and daily refresh` | Migration 0015, `lib/ledger/fx.ts` + tests, `/api/fx-refresh`, `vercel.json` cron | ✅ Done (`b68ca54`) |
 | 3 | `feat: show ledger accounts and totals` | `/ledger/accounts` screen, rail entry, Today hero + chips, i18n | ✅ Done (`350accf`) |
-| 4 | `feat: add ledger fx and reporting currency settings` | Assumptions screen content | ✅ Done |
+| 4 | `feat: add ledger fx and reporting currency settings` | Assumptions screen content | ✅ Done (`3368432`) |
 | 5 | `feat: add ledger balance reconciliation` | A4 — migration 0016, reconcile panel | Not started |
 
 Update `PLAN.md` §9 as each slice lands (its "Not yet built" list is the ledger status board),

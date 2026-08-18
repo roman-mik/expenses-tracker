@@ -336,8 +336,12 @@ behind each conversion is revealed via a native `<details>` disclosure, no clien
 mirroring `CategoryManager`'s pattern). Rail entry added directly under Today. Verified
 end-to-end against local Supabase, including running the `/api/fx-refresh` cron and
 confirming the hero total converts correctly and account rows stay unchanged in the DB (D15).
+Slice 4: real content behind the `/ledger/assumptions` screen —
+`components/ledger/assumptions/{ReportingCurrencyPicker,FxSnapshotTable}.tsx` (reporting
+currency selector calling `setLedgerReportingCurrency` with optimistic state update and toast
+feedback, and stored FX rate snapshots table with formatted rates, dates, sources, age badges,
+and stale warning badges).
 
-**Not yet built**: the Assumptions screen content (slice 4: reporting-currency picker, FX
-snapshot table), balance reconciliation (slice 5, A4), the projection engine (a pure,
+**Not yet built**: balance reconciliation (slice 5, A4), the projection engine (a pure,
 deterministic module in the `lib/kapa-math.ts` idiom), and real content behind the
 remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).
