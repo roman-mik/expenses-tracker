@@ -297,7 +297,17 @@
       "accountArchived": "Счёт архивирован.",
       "accountRestored": "Счёт восстановлен.",
       "accountAdded": "Счёт добавлен.",
-      "excludedFromTotal": "не учитывается в итоге"
+      "excludedFromTotal": "не учитывается в итоге",
+      "reconcileTitle": "Сверка балансов",
+      "reconcileDescription": "Введите текущие реальные остатки по счетам для сохранения снимков и обновления модели.",
+      "expectedBalance": "Ожидаемый",
+      "actualBalance": "Фактический баланс",
+      "variance": "Разница",
+      "notePlaceholder": "Заметка (необязательно)",
+      "saveReconciliation": "Сохранить сверку",
+      "reconciling": "Сохранение...",
+      "reconcileSuccess": "Снимки остатков сохранены, балансы счетов обновлены.",
+      "reconcileButton": "Сверить балансы"
     },
     "assumptions": {
       "title": "Допущения",

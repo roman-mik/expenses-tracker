@@ -340,8 +340,12 @@ Slice 4: real content behind the `/ledger/assumptions` screen —
 `components/ledger/assumptions/{ReportingCurrencyPicker,FxSnapshotTable}.tsx` (reporting
 currency selector calling `setLedgerReportingCurrency` with optimistic state update and toast
 feedback, and stored FX rate snapshots table with formatted rates, dates, sources, age badges,
-and stale warning badges).
+and stale warning badges). Slice 5: balance reconciliation (A4) — `ledger_balance_snapshots`
+(migration 0016), `lib/ledger/{queries,mutations}/balances.ts`, `app/actions/ledger-balances.ts`,
+`components/ledger/accounts/ReconcilePanel.tsx` (reconcile panel on `/ledger/accounts` with live
+expected vs actual variance display, notes, and balance updates), pgTAP RLS coverage, unit and
+integration tests. All 5 slices of Epic A are now shipped!
 
-**Not yet built**: balance reconciliation (slice 5, A4), the projection engine (a pure,
+**Not yet built**: the projection engine (a pure,
 deterministic module in the `lib/kapa-math.ts` idiom), and real content behind the
 remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).

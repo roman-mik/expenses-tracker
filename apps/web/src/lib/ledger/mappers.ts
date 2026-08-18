@@ -8,6 +8,7 @@ import type {
   AccountType,
   FxRate,
   LedgerAccount,
+  LedgerBalanceSnapshot,
   LedgerSettings,
 } from './types';
 
@@ -16,6 +17,7 @@ type Row<T extends keyof Tables> = Tables[T]['Row'];
 
 export type LedgerAccountRow = Row<'ledger_accounts'>;
 export type LedgerFxRateRow = Row<'ledger_fx_rates'>;
+export type LedgerBalanceSnapshotRow = Row<'ledger_balance_snapshots'>;
 
 const money = (n: number): Money => n as Money;
 
@@ -47,5 +49,23 @@ export function toFxRate(row: LedgerFxRateRow): FxRate {
     rateE8: row.rate_e8,
     asOfDate: row.as_of_date,
     source: row.source,
+  };
+}
+
+export function toLedgerBalanceSnapshot(
+  row: LedgerBalanceSnapshotRow
+): LedgerBalanceSnapshot {
+  const balanceMinor = money(row.balance_minor);
+  const expectedMinor = money(row.expected_minor);
+  return {
+    id: row.id,
+    householdId: row.household_id,
+    accountId: row.account_id,
+    balanceMinor,
+    expectedMinor,
+    varianceMinor: money(row.balance_minor - row.expected_minor),
+    currency: row.currency as Currency,
+    recordedAt: row.recorded_at,
+    note: row.note,
   };
 }

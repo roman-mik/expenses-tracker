@@ -41,3 +41,19 @@ export interface FxRate {
   asOfDate: string;
   source: string;
 }
+
+/**
+ * A historical snapshot of an account's balance recorded during reconciliation (A4).
+ * `varianceMinor` is derived: `balanceMinor - expectedMinor`.
+ */
+export interface LedgerBalanceSnapshot {
+  id: string;
+  householdId: string;
+  accountId: string;
+  balanceMinor: Money;
+  expectedMinor: Money;
+  varianceMinor: Money;
+  currency: Currency;
+  recordedAt: string;
+  note: string | null;
+}

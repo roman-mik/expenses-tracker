@@ -323,6 +323,54 @@ export type Database = {
           },
         ];
       };
+      ledger_balance_snapshots: {
+        Row: {
+          account_id: string;
+          balance_minor: number;
+          currency: string;
+          expected_minor: number;
+          household_id: string;
+          id: string;
+          note: string | null;
+          recorded_at: string;
+        };
+        Insert: {
+          account_id: string;
+          balance_minor: number;
+          currency: string;
+          expected_minor: number;
+          household_id: string;
+          id?: string;
+          note?: string | null;
+          recorded_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          balance_minor?: number;
+          currency?: string;
+          expected_minor?: number;
+          household_id?: string;
+          id?: string;
+          note?: string | null;
+          recorded_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_balance_snapshots_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'ledger_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ledger_balance_snapshots_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       ledger_fx_rates: {
         Row: {
           as_of_date: string;

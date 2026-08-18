@@ -297,7 +297,17 @@
       "accountArchived": "Account archived.",
       "accountRestored": "Account restored.",
       "accountAdded": "Account added.",
-      "excludedFromTotal": "excluded from total"
+      "excludedFromTotal": "excluded from total",
+      "reconcileTitle": "Reconcile Balances",
+      "reconcileDescription": "Enter today's real balances for your accounts to record snapshots and update your model.",
+      "expectedBalance": "Expected",
+      "actualBalance": "Actual balance",
+      "variance": "Variance",
+      "notePlaceholder": "Optional note (e.g. statement check)",
+      "saveReconciliation": "Save reconciliation",
+      "reconciling": "Saving...",
+      "reconcileSuccess": "Balance snapshots recorded and account balances updated.",
+      "reconcileButton": "Reconcile balances"
     },
     "assumptions": {
       "title": "Assumptions",

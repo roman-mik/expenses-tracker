@@ -4,6 +4,7 @@ import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getLedgerAccounts } from '@/lib/ledger/queries/accounts';
 import { AccountList } from '@/components/ledger/accounts/AccountList';
+import { ReconcilePanel } from '@/components/ledger/accounts/ReconcilePanel';
 
 export default async function LedgerAccountsPage() {
   const user = await verifySession();
@@ -21,6 +22,7 @@ export default async function LedgerAccountsPage() {
       <h1 className="font-heading text-2xl">{t('title')}</h1>
       <div className="mt-6">
         <AccountList accounts={accounts} />
+        <ReconcilePanel accounts={accounts} />
       </div>
     </div>
   );

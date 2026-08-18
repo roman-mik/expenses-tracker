@@ -32,6 +32,16 @@ export const ledgerSettingsUpdateSchema = z.object({
   reportingCurrency: z.enum(CURRENCIES),
 });
 
+export const reconcileAccountBalanceSchema = z.object({
+  accountId: z.string().min(1),
+  balanceMinor: z.number().int(),
+  note: z.string().max(500).optional(),
+});
+
+export const reconcileBalancesSchema = z.object({
+  balances: z.array(reconcileAccountBalanceSchema).min(1),
+});
+
 export type LedgerAccountCreateInput = z.infer<
   typeof ledgerAccountCreateSchema
 >;
@@ -41,3 +51,7 @@ export type LedgerAccountUpdateInput = z.infer<
 export type LedgerSettingsUpdateInput = z.infer<
   typeof ledgerSettingsUpdateSchema
 >;
+export type ReconcileAccountBalanceInput = z.infer<
+  typeof reconcileAccountBalanceSchema
+>;
+export type ReconcileBalancesInput = z.infer<typeof reconcileBalancesSchema>;

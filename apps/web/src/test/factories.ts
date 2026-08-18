@@ -45,7 +45,9 @@ export function member(
 }
 
 export function ledgerAccount(
-  partial: Partial<LedgerAccount> = {}
+  partial: Partial<Omit<LedgerAccount, 'currentBalanceMinor'>> & {
+    currentBalanceMinor?: number;
+  } = {}
 ): LedgerAccount {
   return {
     id: 'account-1',
@@ -56,6 +58,6 @@ export function ledgerAccount(
     includeInTotal: true,
     sortOrder: 0,
     archived: false,
-    ...partial,
+    ...(partial as Partial<LedgerAccount>),
   };
 }
