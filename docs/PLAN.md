@@ -323,9 +323,13 @@ in, Money out, Scenarios, Target rate, Assumptions). Epic A slice 1 (`docs/ledge
 `ledger_accounts` (migration 0014) plus `households.ledger_reporting_currency`, with
 `lib/ledger/{types,mappers,validation}`, queries/mutations/actions for accounts and the
 reporting-currency setting, pgTAP RLS coverage, and integration tests for its check
-constraints and cascade delete. No UI yet.
+constraints and cascade delete. Slice 2: `ledger_fx_rates` (migration 0015, global,
+service_role-only writes), `lib/ledger/fx.ts` (pure `convert`/`pickRate`/`rateAgeDays`/
+`isStale`, integer-only via BigInt), and the `/api/fx-refresh` daily cron (`vercel.json`,
+open.er-api.com, all-or-nothing writes, idempotent upsert) — verified end-to-end against
+local Supabase. No UI yet.
 
-**Not yet built**: FX snapshots + the daily refresh cron (slice 2), the accounts/Today/
-Assumptions screens (slices 3–4), balance reconciliation (slice 5, A4), the projection
+**Not yet built**: the accounts/Today/Assumptions screens (slices 3–4), balance
+reconciliation (slice 5, A4), the projection
 engine (a pure, deterministic module in the `lib/kapa-math.ts` idiom), and real content
 behind the remaining placeholder screens.

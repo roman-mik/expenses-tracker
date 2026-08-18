@@ -323,6 +323,33 @@ export type Database = {
           },
         ];
       };
+      ledger_fx_rates: {
+        Row: {
+          as_of_date: string;
+          base_code: string;
+          fetched_at: string;
+          quote_code: string;
+          rate_e8: number;
+          source: string;
+        };
+        Insert: {
+          as_of_date: string;
+          base_code: string;
+          fetched_at?: string;
+          quote_code: string;
+          rate_e8: number;
+          source: string;
+        };
+        Update: {
+          as_of_date?: string;
+          base_code?: string;
+          fetched_at?: string;
+          quote_code?: string;
+          rate_e8?: number;
+          source?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;

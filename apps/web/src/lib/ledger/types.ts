@@ -28,3 +28,16 @@ export interface LedgerAccount {
 export interface LedgerSettings {
   reportingCurrency: Currency;
 }
+
+/**
+ * A single dated FX snapshot: `1 baseCode = rateE8 / 1e8 quoteCode`. Global
+ * reference data (not household-scoped) — see 0015_ledger_fx_rates.sql.
+ * `asOfDate` is `YYYY-MM-DD`, comparable lexicographically.
+ */
+export interface FxRate {
+  baseCode: Currency;
+  quoteCode: Currency;
+  rateE8: number;
+  asOfDate: string;
+  source: string;
+}
