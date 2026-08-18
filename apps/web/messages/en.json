@@ -33,7 +33,10 @@
     "categoryNotFound": "That category couldn't be found.",
     "expenseNotFound": "That expense couldn't be found.",
     "expenseChanged": "Someone else just changed this expense — reload to see the latest.",
-    "checkLocale": "Please pick a supported language."
+    "checkLocale": "Please pick a supported language.",
+    "checkAccountFields": "Please check the account's name, currency, and type.",
+    "accountNotFound": "That account couldn't be found.",
+    "checkCurrency": "Please pick a supported currency."
   },
   "Home": {
     "pageTitle": "Kapa — this month's spending",
@@ -241,7 +244,8 @@
       "moneyOut": "Money out",
       "scenarios": "Scenarios",
       "targetRate": "Target rate",
-      "assumptions": "Assumptions"
+      "assumptions": "Assumptions",
+      "accounts": "Accounts"
     },
     "gate": {
       "title": "Needs a wider screen",
@@ -256,6 +260,71 @@
       "scenarios": "Compare up to four futures side by side.",
       "targetRate": "Solve backwards from a desired life to the hourly rate that covers it.",
       "assumptions": "Everything the model guessed, with its confidence and last-reviewed date."
+    },
+    "today": {
+      "heroLabel": "Total across accounts",
+      "missingRateNote": "Some balances couldn't be converted — missing an FX rate.",
+      "noAccountsYet": "Add an account to see it here.",
+      "rateUnavailable": "rate unavailable",
+      "rateDetail": "1 {base} = {rate} {quote} (as of {date}, {source})",
+      "staleRateWarning": "The FX rate is {days, plural, one {# day} other {# days}} old — totals may be off."
+    },
+    "accounts": {
+      "title": "Accounts",
+      "sectionTitle": "Accounts",
+      "noAccountsYet": "No accounts yet.",
+      "addAccount": "Add account",
+      "namePlaceholder": "Account name",
+      "currencyLabel": "Currency",
+      "typeLabel": "Type",
+      "type": {
+        "business": "Business",
+        "personal": "Personal",
+        "savings": "Savings"
+      },
+      "balancePlaceholder": "Starting balance",
+      "includeInTotal": "Count toward the Today total",
+      "add": "Add",
+      "archivedTitle": "Archived",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "archiveConfirm": "Archive?",
+      "archiving": "Archiving…",
+      "archiveAria": "Archive account",
+      "accountSaved": "Account saved.",
+      "accountArchived": "Account archived.",
+      "accountRestored": "Account restored.",
+      "accountAdded": "Account added.",
+      "excludedFromTotal": "excluded from total",
+      "reconcileTitle": "Reconcile Balances",
+      "reconcileDescription": "Enter today's real balances for your accounts to record snapshots and update your model.",
+      "expectedBalance": "Expected",
+      "actualBalance": "Actual balance",
+      "variance": "Variance",
+      "notePlaceholder": "Optional note (e.g. statement check)",
+      "saveReconciliation": "Save reconciliation",
+      "reconciling": "Saving...",
+      "reconcileSuccess": "Balance snapshots recorded and account balances updated.",
+      "reconcileButton": "Reconcile balances"
+    },
+    "assumptions": {
+      "title": "Assumptions",
+      "reportingCurrencyTitle": "Reporting Currency",
+      "reportingCurrencyDescription": "The single currency used for headline totals and multi-currency conversions across Ledger screens.",
+      "settingsSaved": "Reporting currency updated.",
+      "fxRatesTitle": "FX Rates",
+      "fxRatesDescription": "Daily exchange rate snapshots ingested to convert non-reporting accounts.",
+      "pair": "Pair",
+      "rate": "Rate",
+      "asOfDate": "As of date",
+      "source": "Source",
+      "age": "Age",
+      "staleBadge": "Stale (> 30d)",
+      "todayBadge": "Today",
+      "daysOldBadge": "{days}d ago",
+      "noRatesYet": "No FX rates stored yet."
     }
   }
 }

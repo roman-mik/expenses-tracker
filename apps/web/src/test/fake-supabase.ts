@@ -87,6 +87,7 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
   private limitN?: number;
   private mode: Mode = 'select';
   private payload?: Row | Row[];
+  private onConflictCols?: string[];
   private singleFlag = false;
   private maybeSingleFlag = false;
 
@@ -137,9 +138,10 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
     this.mode = 'delete';
     return this;
   }
-  upsert(payload: Row, _opts?: { onConflict?: string }) {
+  upsert(payload: Row | Row[], opts?: { onConflict?: string }) {
     this.mode = 'upsert';
     this.payload = payload;
+    this.onConflictCols = opts?.onConflict?.split(',').map((s) => s.trim());
     return this;
   }
   maybeSingle() {
@@ -210,22 +212,32 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
     }
 
     if (this.mode === 'upsert') {
-      const payload = this.payload as Row;
-      // Match on every key the payload shares with an existing row (simple
-      // stand-in for `onConflict`, sufficient for this codebase's single-key
-      // upserts, e.g. `budget_settings` on `household_id`).
-      const existing = store.find((r) =>
-        Object.keys(payload).some(
-          (k) => r[k] !== undefined && r[k] === payload[k]
-        )
-      );
-      if (existing) {
-        Object.assign(existing, payload);
-        return this.finish([existing]);
-      }
-      const row: Row = { id: `fake-${store.length}`, ...payload };
-      store.push(row);
-      return this.finish([row]);
+      const payloads = Array.isArray(this.payload)
+        ? this.payload
+        : [this.payload as Row];
+      const matchCols = this.onConflictCols;
+      const upserted = payloads.map((payload) => {
+        // With `onConflict`, match exactly those columns (matching real
+        // upsert semantics for composite keys, e.g. `ledger_fx_rates` on
+        // `(base_code, quote_code, as_of_date)`). Without it, fall back to
+        // "shares any key" — sufficient for this codebase's other,
+        // single-key upserts (e.g. `budget_settings` on `household_id`).
+        const existing = store.find((r) =>
+          matchCols
+            ? matchCols.every((k) => r[k] === payload[k])
+            : Object.keys(payload).some(
+                (k) => r[k] !== undefined && r[k] === payload[k]
+              )
+        );
+        if (existing) {
+          Object.assign(existing, payload);
+          return existing;
+        }
+        const row: Row = { id: `fake-${store.length}`, ...payload };
+        store.push(row);
+        return row;
+      });
+      return this.finish(upserted);
     }
 
     const matched = () => store.filter((r) => this.filters.every((f) => f(r)));

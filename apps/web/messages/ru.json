@@ -33,7 +33,10 @@
     "categoryNotFound": "Эта категория не найдена.",
     "expenseNotFound": "Этот расход не найден.",
     "expenseChanged": "Кто-то другой только что изменил этот расход — обновите страницу, чтобы увидеть актуальную версию.",
-    "checkLocale": "Выберите поддерживаемый язык."
+    "checkLocale": "Выберите поддерживаемый язык.",
+    "checkAccountFields": "Проверьте название, валюту и тип счёта.",
+    "accountNotFound": "Этот счёт не найден.",
+    "checkCurrency": "Выберите поддерживаемую валюту."
   },
   "Home": {
     "pageTitle": "Kapa — расходы за этот месяц",
@@ -241,7 +244,8 @@
       "moneyOut": "Расходы",
       "scenarios": "Сценарии",
       "targetRate": "Целевая ставка",
-      "assumptions": "Допущения"
+      "assumptions": "Допущения",
+      "accounts": "Счета"
     },
     "gate": {
       "title": "Нужен экран пошире",
@@ -256,6 +260,71 @@
       "scenarios": "Сравнение до четырёх сценариев будущего одновременно.",
       "targetRate": "Расчёт от желаемой жизни к ставке, которая её покрывает.",
       "assumptions": "Все допущения модели, с уверенностью и датой последней проверки."
+    },
+    "today": {
+      "heroLabel": "Всего по счетам",
+      "missingRateNote": "Некоторые суммы не удалось конвертировать — не хватает курса.",
+      "noAccountsYet": "Добавьте счёт, чтобы увидеть его здесь.",
+      "rateUnavailable": "курс недоступен",
+      "rateDetail": "1 {base} = {rate} {quote} (на {date}, {source})",
+      "staleRateWarning": "Курсу {days, plural, one {# день} few {# дня} many {# дней} other {# дня}} — итог может быть неточным."
+    },
+    "accounts": {
+      "title": "Счета",
+      "sectionTitle": "Счета",
+      "noAccountsYet": "Пока нет счетов.",
+      "addAccount": "Добавить счёт",
+      "namePlaceholder": "Название счёта",
+      "currencyLabel": "Валюта",
+      "typeLabel": "Тип",
+      "type": {
+        "business": "Бизнес",
+        "personal": "Личный",
+        "savings": "Накопления"
+      },
+      "balancePlaceholder": "Начальный баланс",
+      "includeInTotal": "Учитывать в итоге дня",
+      "add": "Добавить",
+      "archivedTitle": "Архив",
+      "restore": "Восстановить",
+      "restoring": "Восстановление…",
+      "moveUp": "Переместить вверх",
+      "moveDown": "Переместить вниз",
+      "archiveConfirm": "В архив?",
+      "archiving": "Архивация…",
+      "archiveAria": "Архивировать счёт",
+      "accountSaved": "Счёт сохранён.",
+      "accountArchived": "Счёт архивирован.",
+      "accountRestored": "Счёт восстановлен.",
+      "accountAdded": "Счёт добавлен.",
+      "excludedFromTotal": "не учитывается в итоге",
+      "reconcileTitle": "Сверка балансов",
+      "reconcileDescription": "Введите текущие реальные остатки по счетам для сохранения снимков и обновления модели.",
+      "expectedBalance": "Ожидаемый",
+      "actualBalance": "Фактический баланс",
+      "variance": "Разница",
+      "notePlaceholder": "Заметка (необязательно)",
+      "saveReconciliation": "Сохранить сверку",
+      "reconciling": "Сохранение...",
+      "reconcileSuccess": "Снимки остатков сохранены, балансы счетов обновлены.",
+      "reconcileButton": "Сверить балансы"
+    },
+    "assumptions": {
+      "title": "Допущения",
+      "reportingCurrencyTitle": "Отчётная валюта",
+      "reportingCurrencyDescription": "Единая валюта для отображения итоговых сумм и конвертации разных счетов в Ledger.",
+      "settingsSaved": "Отчётная валюта обновлена.",
+      "fxRatesTitle": "Курсы валют (FX)",
+      "fxRatesDescription": "Ежедневные снимки курсов валют для конвертации счетов в отчётную валюту.",
+      "pair": "Пара",
+      "rate": "Курс",
+      "asOfDate": "Дата",
+      "source": "Источник",
+      "age": "Возраст",
+      "staleBadge": "Устарел (> 30 дн.)",
+      "todayBadge": "Сегодня",
+      "daysOldBadge": "{days} дн. назад",
+      "noRatesYet": "Сохранённые курсы валют отсутствуют."
     }
   }
 }

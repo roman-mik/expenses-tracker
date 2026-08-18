@@ -17,6 +17,10 @@ describe('LedgerRail', () => {
       'href',
       '/ledger'
     );
+    expect(screen.getByRole('link', { name: /accounts/i })).toHaveAttribute(
+      'href',
+      '/ledger/accounts'
+    );
     expect(screen.getByRole('link', { name: /timeline/i })).toHaveAttribute(
       'href',
       '/ledger/timeline'
@@ -53,6 +57,16 @@ describe('LedgerRail', () => {
     );
     expect(screen.getByRole('link', { name: /today/i })).not.toHaveAttribute(
       'aria-current'
+    );
+  });
+
+  it('marks Accounts active', () => {
+    pathname = '/ledger/accounts';
+    render(<LedgerRail />);
+
+    expect(screen.getByRole('link', { name: /accounts/i })).toHaveAttribute(
+      'aria-current',
+      'page'
     );
   });
 

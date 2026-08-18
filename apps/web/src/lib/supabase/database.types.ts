@@ -239,18 +239,21 @@ export type Database = {
           created_at: string;
           currency: string;
           id: string;
+          ledger_reporting_currency: string;
           timezone: string;
         };
         Insert: {
           created_at?: string;
           currency?: string;
           id?: string;
+          ledger_reporting_currency?: string;
           timezone?: string;
         };
         Update: {
           created_at?: string;
           currency?: string;
           id?: string;
+          ledger_reporting_currency?: string;
           timezone?: string;
         };
         Relationships: [];
@@ -267,6 +270,131 @@ export type Database = {
         Update: {
           attempted_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      ledger_accounts: {
+        Row: {
+          archived: boolean;
+          created_at: string;
+          currency: string;
+          current_balance_minor: number;
+          household_id: string;
+          id: string;
+          include_in_total: boolean;
+          name: string;
+          sort_order: number;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          archived?: boolean;
+          created_at?: string;
+          currency: string;
+          current_balance_minor?: number;
+          household_id: string;
+          id?: string;
+          include_in_total?: boolean;
+          name: string;
+          sort_order?: number;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived?: boolean;
+          created_at?: string;
+          currency?: string;
+          current_balance_minor?: number;
+          household_id?: string;
+          id?: string;
+          include_in_total?: boolean;
+          name?: string;
+          sort_order?: number;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_accounts_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      ledger_balance_snapshots: {
+        Row: {
+          account_id: string;
+          balance_minor: number;
+          currency: string;
+          expected_minor: number;
+          household_id: string;
+          id: string;
+          note: string | null;
+          recorded_at: string;
+        };
+        Insert: {
+          account_id: string;
+          balance_minor: number;
+          currency: string;
+          expected_minor: number;
+          household_id: string;
+          id?: string;
+          note?: string | null;
+          recorded_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          balance_minor?: number;
+          currency?: string;
+          expected_minor?: number;
+          household_id?: string;
+          id?: string;
+          note?: string | null;
+          recorded_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_balance_snapshots_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'ledger_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ledger_balance_snapshots_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      ledger_fx_rates: {
+        Row: {
+          as_of_date: string;
+          base_code: string;
+          fetched_at: string;
+          quote_code: string;
+          rate_e8: number;
+          source: string;
+        };
+        Insert: {
+          as_of_date: string;
+          base_code: string;
+          fetched_at?: string;
+          quote_code: string;
+          rate_e8: number;
+          source: string;
+        };
+        Update: {
+          as_of_date?: string;
+          base_code?: string;
+          fetched_at?: string;
+          quote_code?: string;
+          rate_e8?: number;
+          source?: string;
         };
         Relationships: [];
       };

@@ -319,8 +319,33 @@ day-by-day projections). Full spec: `docs/ledger-user-stories.md`.
 
 **Shipped**: the shell — route/component split, desktop gate, left rail (`LedgerRail.tsx`),
 the app switcher, and placeholder pages for all seven spec screens (Today, Timeline, Money
-in, Money out, Scenarios, Target rate, Assumptions).
+in, Money out, Scenarios, Target rate, Assumptions). Epic A slice 1 (`docs/ledger-epic-a-plan.md`):
+`ledger_accounts` (migration 0014) plus `households.ledger_reporting_currency`, with
+`lib/ledger/{types,mappers,validation}`, queries/mutations/actions for accounts and the
+reporting-currency setting, pgTAP RLS coverage, and integration tests for its check
+constraints and cascade delete. Slice 2: `ledger_fx_rates` (migration 0015, global,
+service_role-only writes), `lib/ledger/fx.ts` (pure `convert`/`pickRate`/`rateAgeDays`/
+`isStale`, integer-only via BigInt), and the `/api/fx-refresh` daily cron (`vercel.json`,
+open.er-api.com, all-or-nothing writes, idempotent upsert) — verified end-to-end against
+local Supabase. Slice 3: real content behind Today and a new `/ledger/accounts` screen —
+`lib/ledger/today.ts` (pure `summarizeToday`, sums `includeInTotal` accounts converted via
+`fx.ts`, flags missing rates instead of throwing, tracks the oldest rate used for staleness),
+`components/ledger/today/{HeroBalance,AccountChips,StaleRateBanner}.tsx` (the rate/source
+behind each conversion is revealed via a native `<details>` disclosure, no client JS), and
+`components/ledger/accounts/{AccountForm,AccountList}.tsx` (add/edit/archive/reorder,
+mirroring `CategoryManager`'s pattern). Rail entry added directly under Today. Verified
+end-to-end against local Supabase, including running the `/api/fx-refresh` cron and
+confirming the hero total converts correctly and account rows stay unchanged in the DB (D15).
+Slice 4: real content behind the `/ledger/assumptions` screen —
+`components/ledger/assumptions/{ReportingCurrencyPicker,FxSnapshotTable}.tsx` (reporting
+currency selector calling `setLedgerReportingCurrency` with optimistic state update and toast
+feedback, and stored FX rate snapshots table with formatted rates, dates, sources, age badges,
+and stale warning badges). Slice 5: balance reconciliation (A4) — `ledger_balance_snapshots`
+(migration 0016), `lib/ledger/{queries,mutations}/balances.ts`, `app/actions/ledger-balances.ts`,
+`components/ledger/accounts/ReconcilePanel.tsx` (reconcile panel on `/ledger/accounts` with live
+expected vs actual variance display, notes, and balance updates), pgTAP RLS coverage, unit and
+integration tests. All 5 slices of Epic A are now shipped!
 
-**Not yet built**: the ledger domain model + migrations, the projection engine (a pure,
-deterministic module in the `lib/kapa-math.ts` idiom), and real content behind each
-placeholder screen.
+**Not yet built**: the projection engine (a pure,
+deterministic module in the `lib/kapa-math.ts` idiom), and real content behind the
+remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).

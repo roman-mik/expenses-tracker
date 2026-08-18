@@ -4,6 +4,7 @@
  * test only needs to specify what it cares about.
  */
 import type { Category, Expense, HouseholdMember } from '@/lib/types';
+import type { LedgerAccount } from '@/lib/ledger/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}
@@ -40,5 +41,23 @@ export function member(
     displayName: null,
     role: 'owner',
     ...partial,
+  };
+}
+
+export function ledgerAccount(
+  partial: Partial<Omit<LedgerAccount, 'currentBalanceMinor'>> & {
+    currentBalanceMinor?: number;
+  } = {}
+): LedgerAccount {
+  return {
+    id: 'account-1',
+    name: 'Checking',
+    currency: 'RSD',
+    currentBalanceMinor: 0 as LedgerAccount['currentBalanceMinor'],
+    type: 'personal',
+    includeInTotal: true,
+    sortOrder: 0,
+    archived: false,
+    ...(partial as Partial<LedgerAccount>),
   };
 }

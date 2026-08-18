@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { AppSwitcher } from '@/components/layout/AppSwitcher';
 import {
   HomeIcon,
+  WalletIcon,
   TimelineIcon,
   TrendingUpIcon,
   TrendingDownIcon,
@@ -16,6 +17,7 @@ import {
 
 const links = [
   { href: '/ledger', labelKey: 'today', icon: HomeIcon },
+  { href: '/ledger/accounts', labelKey: 'accounts', icon: WalletIcon },
   { href: '/ledger/timeline', labelKey: 'timeline', icon: TimelineIcon },
   { href: '/ledger/money-in', labelKey: 'moneyIn', icon: TrendingUpIcon },
   { href: '/ledger/money-out', labelKey: 'moneyOut', icon: TrendingDownIcon },
