@@ -36,7 +36,7 @@ export async function addExpense(input: unknown): Promise<ActionResult> {
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
+  revalidatePath('/pocket');
   return { ok: true };
 }
 
@@ -85,8 +85,8 @@ export async function updateExpense(
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
   return { ok: true };
 }
 
@@ -125,7 +125,7 @@ export async function deleteExpense(
     return { ok: false, error: t('removeFailed') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
   return { ok: true };
 }

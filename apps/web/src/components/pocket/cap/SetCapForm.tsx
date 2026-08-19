@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { setCap } from '@/app/actions/cap';
 import { formatMoney } from '@/lib/format';
-import { remaining, safeDaily } from '@/lib/kapa-math';
+import { remaining, safeDaily } from '@/lib/pocket-math';
 import type { Currency } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
@@ -53,7 +53,7 @@ export function SetCapForm({
       });
       if (result.ok) {
         toast.success(t('capUpdated'));
-        router.push('/');
+        router.push('/pocket');
       } else {
         toast.error(result.error);
       }

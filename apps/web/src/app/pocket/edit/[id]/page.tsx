@@ -7,8 +7,8 @@ import { getSummary } from '@/lib/queries/summary';
 import { getCategories } from '@/lib/queries/categories';
 import { getExpense } from '@/lib/queries/expenses';
 import { getHousehold } from '@/lib/queries/household';
-import { currentMonth } from '@/lib/kapa-math';
-import { AddExpenseForm } from '@/components/kapa/add/AddExpenseForm';
+import { currentMonth } from '@/lib/pocket-math';
+import { AddExpenseForm } from '@/components/pocket/add/AddExpenseForm';
 
 export default async function EditExpensePage({
   params,
@@ -44,7 +44,7 @@ export default async function EditExpensePage({
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <PageHeader title={t('titleEdit')} backHref="/history" />
+        <PageHeader title={t('titleEdit')} backHref="/pocket/history" />
 
         <AddExpenseForm
           categories={activeCategories}

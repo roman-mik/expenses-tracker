@@ -4,7 +4,7 @@ import { PageLoadingShell } from '@/components/ui/PageLoadingShell';
 export default async function EditExpenseLoading() {
   const t = await getTranslations('Add');
   return (
-    <PageLoadingShell title={t('titleEdit')} backHref="/history">
+    <PageLoadingShell title={t('titleEdit')} backHref="/pocket/history">
       <div className="h-14 w-full rounded-lg bg-sand-200" />
       <div className="flex gap-3">
         <div className="h-10 w-20 rounded-lg bg-sand-200" />

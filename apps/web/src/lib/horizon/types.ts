@@ -1,9 +1,9 @@
 /**
- * Horizon domain types (camelCase), same idiom as `@/lib/types` — the Kapa
+ * Horizon domain types (camelCase), same idiom as `@/lib/types` — the Pocket
  * model and the Horizon model stay separate types even where a table (like
- * `households`) is shared, so a Horizon read never implies a Kapa contract.
+ * `households`) is shared, so a Horizon read never implies a Pocket contract.
  *
- * Money is integer minor units, same discipline as Kapa (see `@/lib/types`).
+ * Money is integer minor units, same discipline as Pocket (see `@/lib/types`).
  */
 import type { Currency, Money } from '@/lib/types';
 

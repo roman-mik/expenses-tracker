@@ -1,12 +1,12 @@
 /**
- * Domain types (camelCase) used by kapa-math, the API layer, and eventually
+ * Domain types (camelCase) used by pocket-math, the API layer, and eventually
  * the UI. These are the app's model — distinct from the raw Supabase row types
  * (snake_case) generated into `supabase/database.types.ts` via `npm run gen:types`.
  * Rows are mapped to these at the data-access edge (see `mappers.ts`).
  *
  * All money is integer MINOR UNITS of the given currency (RSD has 0 decimals,
  * EUR/USD/RUB have 2). Use CURRENCY_EXPONENT for display formatting only —
- * never for arithmetic in kapa-math, which stays integer-based.
+ * never for arithmetic in pocket-math, which stays integer-based.
  */
 
 import type { Locale } from '@/i18n/routing';
@@ -89,7 +89,7 @@ export interface Summary {
   safeDaily: number;
   daysLeft: number;
   elapsedDays: number;
-  /** Days fully completed before today — the pace baseline. See kapa-math.ts. */
+  /** Days fully completed before today — the pace baseline. See pocket-math.ts. */
   completedDays: number;
   evenPace: number;
   paceGap: number;

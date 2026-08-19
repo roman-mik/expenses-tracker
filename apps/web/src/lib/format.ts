@@ -2,7 +2,7 @@
  * Money display. Single source for turning integer minor units into the
  * Serbian-formatted strings the design uses (e.g. 65000 RSD → "65.000").
  *
- * Formatting only — never use this for arithmetic (kapa-math stays integer).
+ * Formatting only — never use this for arithmetic (pocket-math stays integer).
  */
 import { CURRENCY_EXPONENT, type Currency } from './types';
 

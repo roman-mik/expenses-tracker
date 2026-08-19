@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 
-const DISMISSED_KEY = 'kapa:install-prompt-dismissed';
+const DISMISSED_KEY = 'pocket:install-prompt-dismissed';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -55,7 +55,7 @@ function useInstallFacts() {
 }
 
 /**
- * A once-per-visitor nudge to add Kapa to the home screen. Chromium fires
+ * A once-per-visitor nudge to add Pocket to the home screen. Chromium fires
  * `beforeinstallprompt`, which we capture and defer; iOS Safari has no such
  * event, so it gets the share-sheet instructions instead. Renders nothing
  * once the app is already installed (standalone display mode) or once the

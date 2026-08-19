@@ -1,5 +1,5 @@
 /**
- * kapa-math — the derived-value formulas that power Kapa.
+ * pocket-math — the derived-value formulas that power Pocket.
  *
  * Pure functions, no I/O, currency-agnostic: every amount is an integer in
  * minor units of a SINGLE currency. Callers must not mix currencies here.

@@ -12,12 +12,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * Horizon's shell: a desktop-only left rail. This layout does NOT check
  * auth — per `lib/auth/dal.ts`'s header comment, layouts don't re-render on
  * client-side navigation between sibling routes, so authorization stays on
- * each page (matching every Kapa page). This only decides what to render
+ * each page (matching every Pocket page). This only decides what to render
  * once a page has already resolved that.
  *
  * The gate is CSS-only (`hidden lg:` / `lg:hidden`), no viewport JS: both
  * branches render server-side and Tailwind picks the visible one, same
- * precedent as the Kapa home's `hidden lg:flex` chart column.
+ * precedent as the Pocket home's `hidden lg:flex` chart column.
  */
 export default async function HorizonLayout({
   children,
@@ -29,8 +29,8 @@ export default async function HorizonLayout({
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center lg:hidden">
         <h1 className="font-heading text-xl">{t('title')}</h1>
         <p className="max-w-xs text-ink-muted">{t('body')}</p>
-        <Button href="/" variant="secondary">
-          {t('backToKapa')}
+        <Button href="/pocket" variant="secondary">
+          {t('backToPocket')}
         </Button>
       </div>
 

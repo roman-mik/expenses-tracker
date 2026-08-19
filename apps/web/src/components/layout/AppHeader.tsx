@@ -15,8 +15,8 @@ import {
 const MENU_ID = 'app-menu';
 
 const links = [
-  { href: '/cap', labelKey: 'setCap', icon: TargetIcon },
-  { href: '/categories', labelKey: 'categories', icon: TagIcon },
+  { href: '/pocket/cap', labelKey: 'setCap', icon: TargetIcon },
+  { href: '/pocket/categories', labelKey: 'categories', icon: TagIcon },
   { href: '/household', labelKey: 'household', icon: UsersIcon },
   { href: '/settings', labelKey: 'settings', icon: GearIcon },
 ] as const;
@@ -60,10 +60,10 @@ export function AppHeader() {
 
   return (
     <header className="flex items-center justify-between gap-3">
-      <span className="font-heading text-2xl">Kapa</span>
+      <span className="font-heading text-2xl">Pocket</span>
 
       <div className="flex items-center gap-3">
-        <AppSwitcher current="kapa" />
+        <AppSwitcher current="pocket" />
 
         <Button
           ref={triggerRef}

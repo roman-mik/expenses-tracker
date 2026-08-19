@@ -76,7 +76,7 @@ describe('AddExpenseForm', () => {
       })
     );
     expect(mockToastSuccess).toHaveBeenCalledWith('Expense added');
-    expect(mockPush).toHaveBeenCalledWith('/');
+    expect(mockPush).toHaveBeenCalledWith('/pocket');
   });
 
   it('submits the selected currency and hides the cap preview once switched away from the household currency', async () => {

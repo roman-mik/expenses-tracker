@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Meta');
+  const t = await getTranslations('Pocket.meta');
   return {
     title: t('title'),
     description: t('description'),
@@ -14,6 +14,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function KapaLayout({ children }: LayoutProps<'/'>) {
+export default function PocketLayout({ children }: LayoutProps<'/pocket'>) {
   return children;
 }

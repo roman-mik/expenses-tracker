@@ -163,7 +163,7 @@ function ExpenseRow({
         ) : (
           <span className="flex shrink-0 items-center gap-0.5">
             <Button
-              href={`/edit/${e.id}`}
+              href={`/pocket/edit/${e.id}`}
               variant="ghost"
               className="px-2 py-1"
               aria-label={t('editAria')}

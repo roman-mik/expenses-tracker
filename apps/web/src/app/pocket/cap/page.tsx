@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
 import { getCap } from '@/lib/queries/cap';
 import { getHousehold } from '@/lib/queries/household';
-import { currentMonth } from '@/lib/kapa-math';
-import { SetCapForm } from '@/components/kapa/cap/SetCapForm';
+import { currentMonth } from '@/lib/pocket-math';
+import { SetCapForm } from '@/components/pocket/cap/SetCapForm';
 
 export default async function SetCapPage() {
   const user = await verifySession();

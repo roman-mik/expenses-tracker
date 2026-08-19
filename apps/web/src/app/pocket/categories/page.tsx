@@ -1,15 +1,12 @@
-import { PageHeader } from '@/components/ui/PageHeader';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
-import {
-  getActiveInviteCode,
-  getHouseholdMembers,
-} from '@/lib/queries/household';
-import { HouseholdPanel } from '@/components/kapa/household/HouseholdPanel';
+import { getCategories } from '@/lib/queries/categories';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { CategoryManager } from '@/components/pocket/categories/CategoryManager';
 
-export default async function HouseholdPage() {
+export default async function CategoriesPage() {
   const user = await verifySession();
   if (!user) redirect('/login');
 
@@ -17,23 +14,15 @@ export default async function HouseholdPage() {
   if (!householdId) redirect('/login');
 
   const supabase = await createClient();
-  const [members, invite] = await Promise.all([
-    getHouseholdMembers(supabase, householdId),
-    getActiveInviteCode(supabase, householdId),
-  ]);
-
-  const t = await getTranslations('Household');
+  const categories = await getCategories(supabase, householdId);
+  const t = await getTranslations('Categories');
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
         <PageHeader title={t('title')} />
 
-        <HouseholdPanel
-          members={members}
-          invite={invite}
-          currentUserId={user.id}
-        />
+        <CategoryManager categories={categories} />
       </div>
     </main>
   );

@@ -8,7 +8,7 @@ export default function HomeLoading() {
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-xl flex flex-col gap-8 animate-pulse">
         <header className="flex items-center justify-between">
-          <span className="font-heading text-2xl">Kapa</span>
+          <span className="font-heading text-2xl">Pocket</span>
           <div className="h-11 w-11 rounded-lg bg-sand-200" />
         </header>
 

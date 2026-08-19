@@ -88,7 +88,7 @@ export function AddExpenseForm({
           });
       if (result.ok) {
         toast.success(editing ? t('changesSaved') : t('expenseAdded'));
-        router.push(editing ? '/history' : '/');
+        router.push(editing ? '/pocket/history' : '/pocket');
       } else {
         toast.error(result.error);
       }

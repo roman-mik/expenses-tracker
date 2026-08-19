@@ -4,9 +4,9 @@ import { renderWithIntl as render } from '@/test/intl';
 import { AppSwitcher } from './AppSwitcher';
 
 describe('AppSwitcher', () => {
-  it('marks Kapa as current and links to both apps', () => {
-    render(<AppSwitcher current="kapa" />);
-    expect(screen.getByRole('link', { name: 'Kapa' })).toHaveAttribute(
+  it('marks Pocket as current and links to both apps', () => {
+    render(<AppSwitcher current="pocket" />);
+    expect(screen.getByRole('link', { name: 'Pocket' })).toHaveAttribute(
       'aria-current',
       'page'
     );
@@ -25,22 +25,22 @@ describe('AppSwitcher', () => {
       'aria-current',
       'page'
     );
-    expect(screen.getByRole('link', { name: 'Kapa' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Pocket' })).toHaveAttribute(
       'href',
-      '/'
+      '/pocket'
     );
   });
 
-  it('hides the Horizon tab below lg only when Kapa is current', () => {
-    const { unmount } = render(<AppSwitcher current="kapa" />);
+  it('hides the Horizon tab below lg only when Pocket is current', () => {
+    const { unmount } = render(<AppSwitcher current="pocket" />);
     expect(screen.getByRole('link', { name: 'Horizon' }).className).toContain(
       'hidden'
     );
     unmount();
 
     render(<AppSwitcher current="horizon" />);
-    expect(screen.getByRole('link', { name: 'Kapa' }).className).not.toContain(
-      'hidden'
-    );
+    expect(
+      screen.getByRole('link', { name: 'Pocket' }).className
+    ).not.toContain('hidden');
   });
 });

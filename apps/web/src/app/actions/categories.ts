@@ -36,9 +36,9 @@ export async function addCategory(input: unknown): Promise<ActionResult> {
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
-  revalidatePath('/categories');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
+  revalidatePath('/pocket/categories');
   return { ok: true };
 }
 
@@ -73,9 +73,9 @@ export async function editCategory(
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
-  revalidatePath('/categories');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
+  revalidatePath('/pocket/categories');
   return { ok: true };
 }
 
@@ -98,8 +98,8 @@ export async function moveCategory(
     return { ok: false, error: t('reorderFailed') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
-  revalidatePath('/categories');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
+  revalidatePath('/pocket/categories');
   return { ok: true };
 }

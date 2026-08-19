@@ -1,5 +1,5 @@
 import type { Currency, Expense } from './types';
-import { daysInMonth } from './kapa-math';
+import { daysInMonth } from './pocket-math';
 
 /**
  * Timezone-aware calendar-day key ('YYYY-MM-DD') for grouping expenses by day

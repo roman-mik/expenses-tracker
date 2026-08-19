@@ -13,7 +13,7 @@ import {
   spentPct,
   overspend,
   recoveryCap,
-} from './kapa-math';
+} from './pocket-math';
 
 describe('daysInMonth', () => {
   it('handles 31/30/28/29-day months', () => {

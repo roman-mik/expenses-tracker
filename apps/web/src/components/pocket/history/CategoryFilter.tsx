@@ -23,7 +23,7 @@ export async function CategoryFilter({
   return (
     <div className="flex flex-wrap gap-2">
       <Link
-        href="/history"
+        href="/pocket/history"
         aria-current={activeCategoryId === null ? 'page' : undefined}
         className={chipClass(activeCategoryId === null)}
       >
@@ -34,7 +34,7 @@ export async function CategoryFilter({
         .map((c) => (
           <Link
             key={c.id}
-            href={`/history?category=${c.id}`}
+            href={`/pocket/history?category=${c.id}`}
             aria-current={c.id === activeCategoryId ? 'page' : undefined}
             className={chipClass(c.id === activeCategoryId)}
           >

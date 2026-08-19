@@ -1,9 +1,4 @@
 {
-  "Meta": {
-    "title": "Kapa — one cap, every expense in two taps",
-    "description": "A warm monthly spending-cap tracker. Always know what's left.",
-    "appleWebAppTitle": "Kapa"
-  },
   "Common": {
     "back": "Back",
     "cancel": "Cancel",
@@ -18,7 +13,7 @@
     "categories": "Categories",
     "household": "Household",
     "settings": "Settings",
-    "kapa": "Kapa",
+    "pocket": "Pocket",
     "horizon": "Horizon"
   },
   "Errors": {
@@ -39,7 +34,7 @@
     "checkCurrency": "Please pick a supported currency."
   },
   "Home": {
-    "pageTitle": "Kapa — this month's spending",
+    "pageTitle": "Pocket — this month's spending",
     "overBudgetBy": "Over budget by",
     "leftToSpend": "Left to spend",
     "spentThisMonth": "Spent this month",
@@ -214,8 +209,8 @@
     "missingCodeError": "That sign-in link was incomplete. Try signing in below."
   },
   "PWA": {
-    "installTitle": "Add Kapa to your home screen",
-    "installIOS": "Tap the share icon, then \"Add to Home Screen\" — Kapa opens like an app, no browser bar.",
+    "installTitle": "Add Pocket to your home screen",
+    "installIOS": "Tap the share icon, then \"Add to Home Screen\" — Pocket opens like an app, no browser bar.",
     "installAndroid": "Two taps for every expense, right from your home screen.",
     "install": "Install",
     "notNow": "Not now",
@@ -232,6 +227,13 @@
     "tryAgain": "Try again",
     "backToKapa": "Back to Kapa",
     "reference": "Reference: {digest}"
+  },
+  "Pocket": {
+    "meta": {
+      "title": "Pocket — one cap, every expense in two taps",
+      "description": "A warm monthly spending-cap tracker. Always know what's left.",
+      "appleWebAppTitle": "Pocket"
+    }
   },
   "Horizon": {
     "meta": {
@@ -250,7 +252,7 @@
     "gate": {
       "title": "Needs a wider screen",
       "body": "Horizon is built for desktop for now. Open it on a larger screen to use it.",
-      "backToKapa": "Back to Kapa"
+      "backToPocket": "Back to Pocket"
     },
     "placeholder": {
       "today": "The one-glance answer: what you have, what's coming, and when it gets tight.",

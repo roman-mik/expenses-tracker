@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getSummary } from '@/lib/queries/summary';
 import { getCategories } from '@/lib/queries/categories';
 import { getHousehold } from '@/lib/queries/household';
-import { currentMonth } from '@/lib/kapa-math';
-import { AddExpenseForm } from '@/components/kapa/add/AddExpenseForm';
+import { currentMonth } from '@/lib/pocket-math';
+import { AddExpenseForm } from '@/components/pocket/add/AddExpenseForm';
 
 export default async function AddExpensePage() {
   const user = await verifySession();

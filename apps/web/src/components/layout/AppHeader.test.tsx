@@ -20,10 +20,10 @@ describe('AppHeader', () => {
     render(<AppHeader />);
     expect(
       screen.getByRole('link', { name: /set cap/i, hidden: true })
-    ).toHaveAttribute('href', '/cap');
+    ).toHaveAttribute('href', '/pocket/cap');
     expect(
       screen.getByRole('link', { name: /categories/i, hidden: true })
-    ).toHaveAttribute('href', '/categories');
+    ).toHaveAttribute('href', '/pocket/categories');
     expect(
       screen.getByRole('link', { name: /household/i, hidden: true })
     ).toHaveAttribute('href', '/household');
@@ -32,9 +32,9 @@ describe('AppHeader', () => {
     ).toHaveAttribute('href', '/settings');
   });
 
-  it('renders the app switcher with Kapa marked current', () => {
+  it('renders the app switcher with Pocket marked current', () => {
     render(<AppHeader />);
-    expect(screen.getByRole('link', { name: 'Kapa' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Pocket' })).toHaveAttribute(
       'aria-current',
       'page'
     );

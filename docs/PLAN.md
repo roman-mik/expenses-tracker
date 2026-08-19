@@ -34,7 +34,7 @@ These shape the whole plan. If one is wrong, tell me and I'll adjust.
 | Overspend | `max(spent − cap, 0)` |
 | Recovery cap | a reduced *next-month* cap suggestion once over, computed from `overspend` |
 
-**`daysLeft` convention (implemented in `lib/kapa-math.ts`, see its header comment):** `daysLeft` counts whole days remaining in the month *excluding* today, so it ranges `0..daysInMonth-1` and matches the UI's "N days until reset" countdown. This is why elapsed/safe-daily above differ from a naive reading — a single `+1` formula can't satisfy both the first-day (`elapsed = 1`) and last-day (`daysLeft = 0`) edge cases at once, so the `+1` lives on `safeDaily`'s denominator instead of on `elapsedDays`. This is the source of truth; it is exhaustively unit-tested in `lib/kapa-math.test.ts`.
+**`daysLeft` convention (implemented in `lib/pocket-math.ts`, see its header comment):** `daysLeft` counts whole days remaining in the month *excluding* today, so it ranges `0..daysInMonth-1` and matches the UI's "N days until reset" countdown. This is why elapsed/safe-daily above differ from a naive reading — a single `+1` formula can't satisfy both the first-day (`elapsed = 1`) and last-day (`daysLeft = 0`) edge cases at once, so the `+1` lives on `safeDaily`'s denominator instead of on `elapsedDays`. This is the source of truth; it is exhaustively unit-tested in `lib/pocket-math.test.ts`.
 
 **Design principle carried into the build:** never scold. Nearing the cap only shifts color and speaks gently; going over recalculates a *lower* safe-daily "recovery plan" instead of blocking. Copy is warm.
 
@@ -172,7 +172,7 @@ Every household-scoped route resolves the caller via `requireHousehold()` (`lib/
 
 **RLS (membership-based).** Data tables use `is_household_member(household_id)`; `profiles` also allows co-members via `same_household(id)` (attribution). These are `SECURITY DEFINER` helpers so a membership check inside a policy doesn't recurse on `household_members`. Cross-household work (the join merge) runs inside the `join_household` definer RPC.
 
-The derived-values formulas from §1 live in **one shared module** (`lib/kapa-math.ts`) imported by both the API and the UI, so web and mobile can never drift from the prototype's math.
+The derived-values formulas from §1 live in **one shared module** (`lib/pocket-math.ts`) imported by both the API and the UI, so web and mobile can never drift from the prototype's math.
 
 ---
 
@@ -187,7 +187,7 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 ### Phase 1 — Auth + data (1–2 days)
 - [x] Supabase Auth (email+password — see §7). Login/logout, session handling.
 - [x] Run the schema migration (§3) + RLS policies. Seed default categories on first login.
-- [x] `lib/kapa-math.ts` with the §1 formulas + unit tests (this is the heart — test it).
+- [x] `lib/pocket-math.ts` with the §1 formulas + unit tests (this is the heart — test it).
 
 ### Phase 2 — Core loop, healthy state (2–3 days)
 - [x] **Home** screen (healthy state): hero, bar, pace line, today's list.
@@ -212,7 +212,7 @@ The derived-values formulas from §1 live in **one shared module** (`lib/kapa-ma
 **Status: postponed.** PWA (Phase 4) covers mobile for now; native is revisited later.
 
 - [ ] Expo (React Native) app hitting the same `/api/*` endpoints.
-- [ ] Share `lib/kapa-math.ts` + Zod schemas via a small internal package or copied module.
+- [ ] Share `lib/pocket-math.ts` + Zod schemas via a small internal package or copied module.
 - [ ] Native push notifications for the nudge.
 - [x] **Styling direction decided (2026-08-17): tokens shared, components not.**
   `@kapa/ui` is a zero-dependency TypeScript token package
@@ -347,5 +347,5 @@ expected vs actual variance display, notes, and balance updates), pgTAP RLS cove
 integration tests. All 5 slices of Epic A are now shipped!
 
 **Not yet built**: the projection engine (a pure,
-deterministic module in the `lib/kapa-math.ts` idiom), and real content behind the
+deterministic module in the `lib/pocket-math.ts` idiom), and real content behind the
 remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).

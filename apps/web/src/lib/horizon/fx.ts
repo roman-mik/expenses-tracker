@@ -3,7 +3,7 @@
  * (via BigInt so a large amount x rate product never risks overflowing
  * Number.MAX_SAFE_INTEGER), and never reads `Date.now()` — every date is
  * passed in, so the same inputs always give the same outputs (spec §7).
- * Mirrors the `lib/kapa-math.ts` discipline.
+ * Mirrors the `lib/pocket-math.ts` discipline.
  */
 import { CURRENCY_EXPONENT, type Currency } from '@/lib/types';
 import type { FxRate } from './types';

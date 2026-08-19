@@ -6,16 +6,16 @@ import { getSummary } from '@/lib/queries/summary';
 import { listExpenses } from '@/lib/queries/expenses';
 import { getCategories } from '@/lib/queries/categories';
 import { getHousehold, getHouseholdMembers } from '@/lib/queries/household';
-import { currentMonth, recoveryCap } from '@/lib/kapa-math';
+import { currentMonth, recoveryCap } from '@/lib/pocket-math';
 import { zonedDateKey, dailyTotals } from '@/lib/date';
 import { formatMoney } from '@/lib/format';
-import { SpentBar } from '@/components/kapa/home/SpentBar';
-import { PaceLine } from '@/components/kapa/home/PaceLine';
-import { RecoveryPlan } from '@/components/kapa/home/RecoveryPlan';
-import { NudgeBanner } from '@/components/kapa/home/NudgeBanner';
-import { ProjectionCard } from '@/components/kapa/home/ProjectionCard';
-import { TodayList } from '@/components/kapa/home/TodayList';
-import { DailySpendChart } from '@/components/kapa/home/DailySpendChart';
+import { SpentBar } from '@/components/pocket/home/SpentBar';
+import { PaceLine } from '@/components/pocket/home/PaceLine';
+import { RecoveryPlan } from '@/components/pocket/home/RecoveryPlan';
+import { NudgeBanner } from '@/components/pocket/home/NudgeBanner';
+import { ProjectionCard } from '@/components/pocket/home/ProjectionCard';
+import { TodayList } from '@/components/pocket/home/TodayList';
+import { DailySpendChart } from '@/components/pocket/home/DailySpendChart';
 import { Button } from '@/components/ui/Button';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
@@ -72,7 +72,7 @@ export default async function Home() {
 
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
-      {/* AppHeader's "Kapa" wordmark is a <span>, and the first visible
+      {/* AppHeader's "Pocket" wordmark is a <span>, and the first visible
           heading on this page is "Today" (<h2>) — this sr-only <h1> gives
           screen-reader users a page identity/document outline that matches
           every other route (PageHeader renders a real <h1>). */}
@@ -129,14 +129,22 @@ export default async function Home() {
             {isNoCap ? (
               <>
                 <p className="text-sm text-ink-muted">{t('noCapYet')}</p>
-                <Button href="/cap" variant="primary" className="self-start">
+                <Button
+                  href="/pocket/cap"
+                  variant="primary"
+                  className="self-start"
+                >
                   {t('setYourCap')}
                 </Button>
               </>
             ) : (
               <>
                 <div className="-mt-2 -mr-2 flex justify-end">
-                  <Button href="/cap" variant="ghost" className="text-sm">
+                  <Button
+                    href="/pocket/cap"
+                    variant="ghost"
+                    className="text-sm"
+                  >
                     {t('adjustCap')}
                   </Button>
                 </div>
@@ -188,7 +196,11 @@ export default async function Home() {
             )}
           </section>
 
-          <Button href="/add" variant="primary" className="py-4 text-center">
+          <Button
+            href="/pocket/add"
+            variant="primary"
+            className="py-4 text-center"
+          >
             {t('addExpense')}
           </Button>
 
@@ -197,7 +209,11 @@ export default async function Home() {
               <h2 className="text-xs font-semibold tracking-wider uppercase text-ink-muted">
                 {t('today')}
               </h2>
-              <Button href="/history" variant="ghost" className="text-sm">
+              <Button
+                href="/pocket/history"
+                variant="ghost"
+                className="text-sm"
+              >
                 {t('viewAll')}
               </Button>
             </div>

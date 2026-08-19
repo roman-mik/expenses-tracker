@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   return (
     <main className="flex-1 flex justify-center px-6 py-12">
       <div className="w-full max-w-md flex flex-col gap-8">
-        <PageHeader title={t('title')} />
+        <PageHeader title={t('title')} backHref="/" />
 
         <DisplayNameForm initialDisplayName={profile?.displayName ?? null} />
 

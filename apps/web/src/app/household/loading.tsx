@@ -4,7 +4,7 @@ import { PageLoadingShell } from '@/components/ui/PageLoadingShell';
 export default async function HouseholdLoading() {
   const t = await getTranslations('Household');
   return (
-    <PageLoadingShell title={t('title')}>
+    <PageLoadingShell title={t('title')} backHref="/">
       <div className="h-16 w-full rounded-lg bg-sand-200" />
       <div className="h-16 w-full rounded-lg bg-sand-200" />
       <div className="h-12 w-full rounded-lg bg-sand-200" />

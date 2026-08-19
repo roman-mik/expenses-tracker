@@ -5,15 +5,15 @@ import { createClient } from '@/lib/supabase/server';
 import { listExpenses } from '@/lib/queries/expenses';
 import { getCategories } from '@/lib/queries/categories';
 import { getHousehold, getHouseholdMembers } from '@/lib/queries/household';
-import { currentMonth } from '@/lib/kapa-math';
+import { currentMonth } from '@/lib/pocket-math';
 import { zonedDateKey, dayLabel } from '@/lib/date';
 import { PageHeader } from '@/components/ui/PageHeader';
 import {
   HistoryList,
   type ExpenseGroup,
-} from '@/components/kapa/home/HistoryList';
-import { CategoryFilter } from '@/components/kapa/history/CategoryFilter';
-import { CategoryBreakdown } from '@/components/kapa/history/CategoryBreakdown';
+} from '@/components/pocket/home/HistoryList';
+import { CategoryFilter } from '@/components/pocket/history/CategoryFilter';
+import { CategoryBreakdown } from '@/components/pocket/history/CategoryBreakdown';
 import { categoryBreakdown } from '@/lib/category-breakdown';
 
 export default async function HistoryPage({
