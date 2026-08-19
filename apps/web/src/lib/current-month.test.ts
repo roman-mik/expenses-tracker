@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { currentMonth } from './kapa-math';
+import { currentMonth } from './pocket-math';
 
 describe('currentMonth', () => {
   it('returns YYYY-MM in the given timezone', () => {

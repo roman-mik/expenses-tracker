@@ -32,7 +32,7 @@ export async function setDisplayName(input: unknown): Promise<ActionResult> {
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
+  revalidatePath('/pocket');
   revalidatePath('/household');
   revalidatePath('/settings');
   return { ok: true };

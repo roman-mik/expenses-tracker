@@ -31,6 +31,6 @@ export async function setCap(input: unknown): Promise<ActionResult> {
     return { ok: false, error: t('saveFailed') };
   }
 
-  revalidatePath('/');
+  revalidatePath('/pocket');
   return { ok: true };
 }

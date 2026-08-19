@@ -6,7 +6,7 @@ import type { SupabaseServerClient } from '@/lib/supabase/types';
 import type { Expense } from '@/lib/types';
 import { toExpense, type ExpenseRow } from '@/lib/mappers';
 import { getHousehold } from '@/lib/queries/household';
-import { monthWindow } from '@/lib/kapa-math';
+import { monthWindow } from '@/lib/pocket-math';
 
 export interface ListExpensesOptions {
   /** 'YYYY-MM' — already validated by the caller. */

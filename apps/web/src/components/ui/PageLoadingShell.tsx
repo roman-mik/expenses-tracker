@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
  */
 export function PageLoadingShell({
   title,
-  backHref = '/',
+  backHref = '/pocket',
   children,
 }: {
   title: string;

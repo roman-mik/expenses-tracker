@@ -1,6 +1,6 @@
 /**
  * Row → domain mappers, applied at the data-access edge so snake_case DB shapes
- * never leak into kapa-math or the UI. When `npm run gen:types` is wired up,
+ * never leak into pocket-math or the UI. When `npm run gen:types` is wired up,
  * swap the local Row interfaces below for the generated Supabase types.
  */
 import type {

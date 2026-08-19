@@ -19,7 +19,7 @@ import {
   remaining,
   safeDaily,
   spentPct,
-} from '@/lib/kapa-math';
+} from '@/lib/pocket-math';
 
 interface SummaryRow {
   amount_minor: number;

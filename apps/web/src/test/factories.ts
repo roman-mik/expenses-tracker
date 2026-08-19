@@ -4,7 +4,7 @@
  * test only needs to specify what it cares about.
  */
 import type { Category, Expense, HouseholdMember } from '@/lib/types';
-import type { LedgerAccount } from '@/lib/ledger/types';
+import type { HorizonAccount } from '@/lib/horizon/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}
@@ -44,20 +44,20 @@ export function member(
   };
 }
 
-export function ledgerAccount(
-  partial: Partial<Omit<LedgerAccount, 'currentBalanceMinor'>> & {
+export function horizonAccount(
+  partial: Partial<Omit<HorizonAccount, 'currentBalanceMinor'>> & {
     currentBalanceMinor?: number;
   } = {}
-): LedgerAccount {
+): HorizonAccount {
   return {
     id: 'account-1',
     name: 'Checking',
     currency: 'RSD',
-    currentBalanceMinor: 0 as LedgerAccount['currentBalanceMinor'],
+    currentBalanceMinor: 0 as HorizonAccount['currentBalanceMinor'],
     type: 'personal',
     includeInTotal: true,
     sortOrder: 0,
     archived: false,
-    ...(partial as Partial<LedgerAccount>),
+    ...(partial as Partial<HorizonAccount>),
   };
 }

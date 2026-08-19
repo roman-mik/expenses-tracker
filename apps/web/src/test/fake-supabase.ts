@@ -218,7 +218,7 @@ class FakeQueryBuilder implements PromiseLike<PGResult<unknown>> {
       const matchCols = this.onConflictCols;
       const upserted = payloads.map((payload) => {
         // With `onConflict`, match exactly those columns (matching real
-        // upsert semantics for composite keys, e.g. `ledger_fx_rates` on
+        // upsert semantics for composite keys, e.g. `horizon_fx_rates` on
         // `(base_code, quote_code, as_of_date)`). Without it, fall back to
         // "shares any key" — sufficient for this codebase's other,
         // single-key upserts (e.g. `budget_settings` on `household_id`).

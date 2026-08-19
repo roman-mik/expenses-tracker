@@ -1,6 +1,6 @@
 /**
  * A service-role Supabase client for server-only code that must bypass RLS —
- * currently just the FX cron writing `ledger_fx_rates`, which `authenticated`
+ * currently just the FX cron writing `horizon_fx_rates`, which `authenticated`
  * has no write grant on at all (see 0015_ledger_fx_rates.sql). Same
  * construction as `src/test/setup-integration.ts`'s admin client, promoted
  * here since the app now needs it too, not just tests.

@@ -70,8 +70,8 @@ export async function joinHousehold(input: unknown): Promise<ActionResult> {
     return { ok: false, error: t('couldNotJoin') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
   revalidatePath('/household');
   return { ok: true };
 }
@@ -102,8 +102,8 @@ export async function leaveHousehold(): Promise<ActionResult> {
     return { ok: false, error: t('couldNotLeave') };
   }
 
-  revalidatePath('/');
-  revalidatePath('/history');
+  revalidatePath('/pocket');
+  revalidatePath('/pocket/history');
   revalidatePath('/household');
   return { ok: true };
 }

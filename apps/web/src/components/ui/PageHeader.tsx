@@ -10,10 +10,10 @@ import { ChevronLeftIcon } from '@/components/ui/icons';
  */
 export async function PageHeader({
   title,
-  backHref = '/',
+  backHref = '/pocket',
 }: {
   title: string;
-  /** Where the Back pill points — defaults to Home. */
+  /** Where the Back pill points — defaults to Pocket home. */
   backHref?: string;
 }) {
   const t = await getTranslations('Common');
