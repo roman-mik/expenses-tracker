@@ -348,6 +348,13 @@ and stale warning badges). Slice 5: balance reconciliation (A4) — `horizon_bal
 expected vs actual variance display, notes, and balance updates), pgTAP RLS coverage, unit and
 integration tests. All 5 slices of Epic A are now shipped!
 
-**Not yet built**: the projection engine (a pure,
-deterministic module in the `lib/pocket-math.ts` idiom), and real content behind the
-remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).
+Epic B (`docs/horizon-epic-b-plan.md`), scope B1–B4 (B5 deferred to pair with Epic E's
+Scenario model, B6–B7 stay P2): slice 1 shipped — `horizon_work_calendars`/`horizon_holidays`
+(migration 0018), `horizon_income_streams`/`horizon_income_schedules` (migration 0019, a child
+table since one stream can carry several schedules), `lib/horizon/income/{types,mappers,validation}`,
+queries/mutations/actions, pgTAP + integration tests. No UI yet.
+
+**Not yet built**: Epic B slices 2 (the `schedule.ts`/`income-math.ts` pure engine) and 3
+(the `/horizon/money-in` screen and the work-calendar editor on Assumptions); the projection
+engine (a pure, deterministic module in the `lib/pocket-math.ts` idiom); real content behind
+the remaining placeholder screens (Timeline, Money out, Scenarios, Target rate).

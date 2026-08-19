@@ -50,7 +50,14 @@
     "checkLocale": "Please pick a supported language.",
     "checkAccountFields": "Please check the account's name, currency, and type.",
     "accountNotFound": "That account couldn't be found.",
-    "checkCurrency": "Please pick a supported currency."
+    "checkCurrency": "Please pick a supported currency.",
+    "checkIncomeStreamFields": "Please check the income stream's fields.",
+    "incomeStreamNotFound": "That income stream couldn't be found.",
+    "checkScheduleFields": "Please check the schedule's fields.",
+    "scheduleNotFound": "That schedule couldn't be found.",
+    "checkWorkCalendar": "Please check the working days.",
+    "checkHoliday": "Please check the holiday's date and name.",
+    "holidayNotFound": "That holiday couldn't be found."
   },
   "Home": {
     "pageTitle": "Pocket — this month's spending",

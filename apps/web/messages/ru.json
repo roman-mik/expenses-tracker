@@ -50,7 +50,14 @@
     "checkLocale": "Выберите поддерживаемый язык.",
     "checkAccountFields": "Проверьте название, валюту и тип счёта.",
     "accountNotFound": "Этот счёт не найден.",
-    "checkCurrency": "Выберите поддерживаемую валюту."
+    "checkCurrency": "Выберите поддерживаемую валюту.",
+    "checkIncomeStreamFields": "Проверьте поля источника дохода.",
+    "incomeStreamNotFound": "Этот источник дохода не найден.",
+    "checkScheduleFields": "Проверьте поля расписания.",
+    "scheduleNotFound": "Это расписание не найдено.",
+    "checkWorkCalendar": "Проверьте рабочие дни.",
+    "checkHoliday": "Проверьте дату и название праздника.",
+    "holidayNotFound": "Этот праздник не найден."
   },
   "Home": {
     "pageTitle": "Pocket — расходы за этот месяц",
