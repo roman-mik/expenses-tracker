@@ -5,8 +5,7 @@
  */
 import type { Currency, Money } from '@/lib/types';
 
-const INCOME_STREAM_KINDS = ['hourly', 'fixed', 'variable'] as const;
-export type IncomeStreamKind = (typeof INCOME_STREAM_KINDS)[number];
+export type IncomeStreamKind = 'hourly' | 'fixed' | 'variable';
 
 export const RECURRENCE_VALUES = ['recurring', 'oneOff'] as const;
 export type Recurrence = (typeof RECURRENCE_VALUES)[number];
@@ -18,14 +17,8 @@ export const CONFIDENCE_VALUES = [
 ] as const;
 export type Confidence = (typeof CONFIDENCE_VALUES)[number];
 
-const SCHEDULE_KINDS = [
-  'dayOfMonth',
-  'monthEnd',
-  'everyNDays',
-  'nthWeekday',
-  'oneOff',
-] as const;
-export type ScheduleKind = (typeof SCHEDULE_KINDS)[number];
+export type ScheduleKind =
+  'dayOfMonth' | 'monthEnd' | 'everyNDays' | 'nthWeekday' | 'oneOff';
 
 export const SLIPPAGE_POLICIES = [
   'nextBusinessDay',

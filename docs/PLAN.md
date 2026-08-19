@@ -352,9 +352,11 @@ Epic B (`docs/horizon-epic-b-plan.md`), scope B1–B4 (B5 deferred to pair with 
 Scenario model, B6–B7 stay P2): slice 1 shipped — `horizon_work_calendars`/`horizon_holidays`
 (migration 0018), `horizon_income_streams`/`horizon_income_schedules` (migration 0019, a child
 table since one stream can carry several schedules), `lib/horizon/income/{types,mappers,validation}`,
-queries/mutations/actions, pgTAP + integration tests. No UI yet.
+queries/mutations/actions, pgTAP + integration tests. Slice 2 shipped — `lib/horizon/income/schedule.ts`
+(pure date-generation + slippage, mirrors `fx.ts`) and `income-math.ts` (hourly derivation,
+schedule-aware monthly/annualized totals), exhaustively unit-tested. No UI yet.
 
-**Not yet built**: Epic B slices 2 (the `schedule.ts`/`income-math.ts` pure engine) and 3
-(the `/horizon/money-in` screen and the work-calendar editor on Assumptions); the projection
-engine (a pure, deterministic module in the `lib/pocket-math.ts` idiom); real content behind
-the remaining placeholder screens (Timeline, Money out, Scenarios, Target rate).
+**Not yet built**: Epic B slice 3 (the `/horizon/money-in` screen and the work-calendar editor
+on Assumptions); the projection engine (a pure, deterministic module in the `lib/pocket-math.ts`
+idiom); real content behind the remaining placeholder screens (Timeline, Money out, Scenarios,
+Target rate).

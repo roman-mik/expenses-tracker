@@ -1,6 +1,6 @@
 # Horizon Epic B — Income
 
-**Status:** slice 1 of 3 shipped · **Spec:** `docs/horizon-user-stories.md` §5 Epic B · **Plan of record:** `PLAN.md` §9
+**Status:** slices 1-2 of 3 shipped · **Spec:** `docs/horizon-user-stories.md` §5 Epic B · **Plan of record:** `PLAN.md` §9
 
 ---
 
@@ -190,6 +190,11 @@ nextSixDates(schedule, calendar, from): { date, shifted, originalDate? }[]
 
 ### `lib/horizon/income/income-math.ts`
 
+Refined during implementation — `annualizedIncome` sums the actual 12 months of a given
+`year` rather than a flat "monthly amount × 12", and `monthlyIncomeForStream` takes the
+stream's schedules so a fixed/variable stream paid twice a month (or quarterly) isn't
+silently treated as once/month:
+
 ```ts
 hourlyIncomeForPeriod(rateMinor, hoursPerDay, workingDaysInPeriod): Money
 // rateMinor × hoursPerDay × workingDaysInPeriod, rounded half-up (same
@@ -199,9 +204,15 @@ workingDaysInMonth(month, calendar): number
 // Feeds B1's "a month with fewer working days shows lower income
 // automatically" — derived from the calendar, never hand-entered.
 
-annualizedIncome(streams, { includeOneOff }): Money
-// Sums each recurring/expected+confirmed stream's derived monthly amount ×
-// 12; one-offs excluded unless includeOneOff (B4's toggle).
+monthlyIncomeForStream(stream, schedules, month, calendar): Money
+// hourly: workingDaysInMonth() × hourlyIncomeForPeriod(), independent of
+// payment schedule (D9). fixed/variable: fixedAmountMinor × the count of
+// that stream's schedule occurrences actually falling in the month
+// (via schedule.ts's generateDates), not assumed to be 1.
+
+annualizedIncome(streams, schedules, calendar, year, { includeOneOff }): Money
+// Sums monthlyIncomeForStream() across all 12 months of `year` for every
+// non-archived stream; one-offs excluded unless includeOneOff (B4's toggle).
 ```
 
 ---
@@ -248,7 +259,7 @@ Cut fresh off updated `origin/main`.
 | # | Branch / title | Contents | Status |
 |---|---|---|---|
 | 1 | `feat: add horizon income schema` | Migrations 0018–0019, `lib/horizon/income/{types,mappers,validation}`, queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ✅ Done |
-| 2 | `feat: add horizon schedule generation engine` | `schedule.ts` + `income-math.ts`, exhaustive unit tests. Still no UI | Not started |
+| 2 | `feat: add horizon schedule generation engine` | `schedule.ts` + `income-math.ts`, exhaustive unit tests. Still no UI | ✅ Done |
 | 3 | `feat: show horizon income streams` | `/horizon/money-in` real content, work-calendar editor on `/horizon/assumptions`, rail unchanged (already links to `money-in`), i18n | Not started |
 
 Update `PLAN.md` §9 as each slice lands, and run `graphify update .` after code changes.
