@@ -1,4 +1,23 @@
 {
+  "Landing": {
+    "meta": {
+      "title": "Kapa — Pocket + Horizon",
+      "description": "A warm monthly spending-cap tracker, and a multi-currency cashflow projector — both in one place."
+    },
+    "tagline": "One cap, every expense in two taps. Multi-currency cashflow, day by day.",
+    "signIn": "Sign in",
+    "pocket": {
+      "name": "Pocket",
+      "pitch": "A warm monthly spending-cap tracker. Always know what's left.",
+      "remainingLabel": "left to spend this month"
+    },
+    "horizon": {
+      "name": "Horizon",
+      "pitch": "Multi-currency cashflow, day by day.",
+      "totalLabel": "across accounts",
+      "desktopOnly": "Needs a wider screen — open Horizon on desktop."
+    }
+  },
   "Common": {
     "back": "Back",
     "cancel": "Cancel",

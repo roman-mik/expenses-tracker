@@ -7,7 +7,10 @@
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres-3FCF8E?logo=supabase&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
-A warm monthly spending-cap tracker. One cap, every expense in two taps, always know what's left.
+Kapa is the umbrella for two household apps: **Pocket** (`/pocket`), a warm monthly
+spending-cap tracker — one cap, every expense in two taps, always know what's left — and
+**Horizon** (`/horizon`), a multi-currency cashflow projector. `/` is a public landing page
+that chooses between them.
 
 **[Try the live demo →](https://expenses-tracker-kapa4.vercel.app)**
 

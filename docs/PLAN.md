@@ -307,14 +307,16 @@ day-by-day projections). Full spec: `docs/horizon-user-stories.md`.
 
 **Decisions**
 - **Same Next.js app**, not a separate `apps/*` workspace — one Vercel project, one auth
-  session, shared `@kapa/ui` tokens. Kapa lives in `app/(kapa)` (a route group — URLs
-  unchanged) and `components/kapa/`; Horizon lives in `app/horizon/*` and `components/horizon/`.
+  session, shared `@kapa/ui` tokens. Kapa is the umbrella project only, with a public landing
+  page/chooser at `/` (`app/page.tsx`). The two products underneath it are Pocket
+  (`app/pocket/*`, `components/pocket/`) and Horizon (`app/horizon/*`, `components/horizon/`).
   An `AppSwitcher` (`components/layout/AppSwitcher.tsx`) lets the user move between them.
 - **Desktop-only, hard gate.** Below the `lg` breakpoint, `/horizon/*` renders a "needs a
   wider screen" notice instead of the UI — CSS-only (`hidden lg:` / `lg:hidden`), no
-  viewport JS. Kapa remains the mobile-first PWA; Horizon is not installable.
+  viewport JS. Pocket remains the mobile-first PWA (`start_url: '/pocket'`); Horizon is not
+  installable.
 - **Data**: will live in new household-scoped `horizon_*` tables in the same Supabase
-  project, reusing `is_household_member()`, and will read Kapa's `expenses` table for daily
+  project, reusing `is_household_member()`, and will read Pocket's `expenses` table for daily
   actuals. Not yet built — this section covers the shell only.
 
 **Shipped**: the shell — route/component split, desktop gate, left rail (`HorizonRail.tsx`),
