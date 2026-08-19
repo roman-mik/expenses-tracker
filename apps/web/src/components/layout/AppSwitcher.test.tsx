@@ -10,18 +10,18 @@ describe('AppSwitcher', () => {
       'aria-current',
       'page'
     );
-    expect(screen.getByRole('link', { name: 'Ledger' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Horizon' })).toHaveAttribute(
       'href',
-      '/ledger'
+      '/horizon'
     );
-    expect(screen.getByRole('link', { name: 'Ledger' })).not.toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Horizon' })).not.toHaveAttribute(
       'aria-current'
     );
   });
 
-  it('marks Ledger as current when rendered on the ledger side', () => {
-    render(<AppSwitcher current="ledger" />);
-    expect(screen.getByRole('link', { name: 'Ledger' })).toHaveAttribute(
+  it('marks Horizon as current when rendered on the horizon side', () => {
+    render(<AppSwitcher current="horizon" />);
+    expect(screen.getByRole('link', { name: 'Horizon' })).toHaveAttribute(
       'aria-current',
       'page'
     );
@@ -31,14 +31,14 @@ describe('AppSwitcher', () => {
     );
   });
 
-  it('hides the Ledger tab below lg only when Kapa is current', () => {
+  it('hides the Horizon tab below lg only when Kapa is current', () => {
     const { unmount } = render(<AppSwitcher current="kapa" />);
-    expect(screen.getByRole('link', { name: 'Ledger' }).className).toContain(
+    expect(screen.getByRole('link', { name: 'Horizon' }).className).toContain(
       'hidden'
     );
     unmount();
 
-    render(<AppSwitcher current="ledger" />);
+    render(<AppSwitcher current="horizon" />);
     expect(screen.getByRole('link', { name: 'Kapa' }).className).not.toContain(
       'hidden'
     );

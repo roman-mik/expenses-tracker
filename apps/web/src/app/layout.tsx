@@ -26,7 +26,7 @@ const CLIENT_MESSAGE_NAMESPACES = [
   'Add',
   'Household',
   'ErrorPage',
-  'Ledger',
+  'Horizon',
 ] as const;
 
 function pick<T extends object, K extends keyof T>(

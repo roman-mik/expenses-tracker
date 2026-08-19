@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-type App = 'kapa' | 'ledger';
+type App = 'kapa' | 'horizon';
 
 function tabClassName(active: boolean, hideOnMobile: boolean) {
   return [
@@ -13,9 +13,9 @@ function tabClassName(active: boolean, hideOnMobile: boolean) {
 
 /**
  * Two-tab control marking which app the user is in. Used on Kapa's home
- * (`AppHeader`) and inside `LedgerRail`. The Ledger tab hides below `lg`
- * when rendered on the Kapa side — `/ledger` gates on desktop anyway, so a
- * phone-visible link there is a dead end. Inside `LedgerRail` this
+ * (`AppHeader`) and inside `HorizonRail`. The Horizon tab hides below `lg`
+ * when rendered on the Kapa side — `/horizon` gates on desktop anyway, so a
+ * phone-visible link there is a dead end. Inside `HorizonRail` this
  * component only ever renders above `lg` already, so nothing needs hiding.
  */
 export function AppSwitcher({ current }: { current: App }) {
@@ -31,11 +31,11 @@ export function AppSwitcher({ current }: { current: App }) {
         {t('kapa')}
       </Link>
       <Link
-        href="/ledger"
-        aria-current={current === 'ledger' ? 'page' : undefined}
-        className={tabClassName(current === 'ledger', current === 'kapa')}
+        href="/horizon"
+        aria-current={current === 'horizon' ? 'page' : undefined}
+        className={tabClassName(current === 'horizon', current === 'kapa')}
       >
-        {t('ledger')}
+        {t('horizon')}
       </Link>
     </div>
   );

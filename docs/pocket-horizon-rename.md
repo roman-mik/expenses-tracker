@@ -34,10 +34,12 @@ anyway.
 now correctly denote the project. Pocket and Horizon are English, so they read instantly
 in both shipped locales (en, ru).
 
-**The database is renamed too, with a known deploy window.** Migrations 0014/0015 created
-`ledger_accounts`, `ledger_fx_rates`, and `households.ledger_reporting_currency` plus
-their constraints, indexes, policies and trigger. Migration `0016` renames all of them to
-`horizon_*`.
+**The database is renamed too, with a known deploy window.** Migrations 0014/0015/0016
+created `ledger_accounts`, `ledger_fx_rates`, `ledger_balance_snapshots` (added by the
+now-completed Ledger Epic A, slice 5), and `households.ledger_reporting_currency`, plus
+their constraints, indexes, policies and trigger. Migration `0017` renames all of them to
+`horizon_*`. (`0016` is already taken by `ledger_balance_snapshots`, so the rename
+migration is `0017`, not `0016` as an earlier draft of this plan assumed.)
 
 This is the one part of the plan that is **not** backward compatible, and it breaks the
 repo's standing migration rule. `.github/workflows/release-please.yml` runs
@@ -87,35 +89,52 @@ break. On `@kapa/web`'s current `0.5.0`, release-please treats a breaking change
 `0.x` package as a minor bump (`0.6.0`), which is the right signal for "this release
 requires the migration to land with it".
 
-**Paths** (`git mv` so history follows):
+**Paths** (`git mv` so history follows). Epic A shipped all 5 slices since this plan was
+first drafted, so the tree is much bigger than the original inventory — this is the full
+current list:
 
 | From | To |
 | --- | --- |
-| `apps/web/src/app/ledger/` | `apps/web/src/app/horizon/` |
-| `apps/web/src/lib/ledger/` | `apps/web/src/lib/horizon/` |
-| `apps/web/src/components/ledger/` | `apps/web/src/components/horizon/` |
-| `.../components/ledger/LedgerRail.tsx` (+ `.test.tsx`) | `.../horizon/HorizonRail.tsx` |
-| `.../components/ledger/LedgerPlaceholder.tsx` | `.../horizon/HorizonPlaceholder.tsx` |
+| `apps/web/src/app/ledger/{page,layout}.tsx` | `apps/web/src/app/horizon/{page,layout}.tsx` |
+| `apps/web/src/app/ledger/{accounts,assumptions,money-in,money-out,scenarios,target-rate,timeline}/page.tsx` | `apps/web/src/app/horizon/.../page.tsx` (same sub-paths) |
+| `apps/web/src/lib/ledger/{fx,mappers,today,types,validation}.ts` (+ `.test.ts` where present) | `apps/web/src/lib/horizon/...` |
+| `apps/web/src/lib/ledger/queries/{accounts,balances,fx,settings}.ts` (+ `.test.ts` where present) | `apps/web/src/lib/horizon/queries/...` |
+| `apps/web/src/lib/ledger/mutations/{accounts,balances,settings}.ts` (+ `.test.ts`) | `apps/web/src/lib/horizon/mutations/...` |
+| `apps/web/src/components/ledger/LedgerRail.tsx` (+ `.test.tsx`) | `.../horizon/HorizonRail.tsx` |
+| `apps/web/src/components/ledger/LedgerPlaceholder.tsx` | `.../horizon/HorizonPlaceholder.tsx` |
+| `apps/web/src/components/ledger/accounts/{AccountForm,AccountList,ReconcilePanel}.tsx` (+ `.test.tsx` where present) | `.../horizon/accounts/...` |
+| `apps/web/src/components/ledger/assumptions/{FxSnapshotTable,ReportingCurrencyPicker}.tsx` (+ `.test.tsx`) | `.../horizon/assumptions/...` |
+| `apps/web/src/components/ledger/today/{AccountChips,HeroBalance,StaleRateBanner}.tsx` | `.../horizon/today/...` |
 | `apps/web/src/app/actions/ledger-accounts.ts` (+ `.test.ts`) | `horizon-accounts.ts` |
+| `apps/web/src/app/actions/ledger-balances.ts` (+ `.test.ts`) | `horizon-balances.ts` |
 | `apps/web/src/app/actions/ledger-settings.ts` (+ `.test.ts`) | `horizon-settings.ts` |
 | `apps/web/src/test/integration/ledger-accounts.itest.ts` | `horizon-accounts.itest.ts` |
+| `apps/web/src/test/integration/ledger-balances.itest.ts` | `horizon-balances.itest.ts` |
 
 **Code:** rename the `LedgerRail` / `LedgerPlaceholder` symbols and every import; update
 `app/horizon/layout.tsx`'s typed-route generic `LayoutProps<'/ledger'>` →
-`LayoutProps<'/horizon'>`; `revalidatePath('/ledger')` → `'/horizon'` in the two renamed
-action files; `LedgerRail`'s nav hrefs and its `/ledger/assumptions` link.
+`LayoutProps<'/horizon'>` and every other typed-route generic under the renamed tree
+(`/ledger/accounts`, `/ledger/assumptions`, etc.); `revalidatePath('/ledger')` → `'/horizon'`
+and `revalidatePath('/ledger/accounts')` → `'/horizon/accounts'` in the renamed action
+files; `LedgerRail`'s nav hrefs and its `/ledger/assumptions` link. Also rename the
+`LedgerAccount` type (and the `ledgerAccount()` builder that constructs it) in
+`apps/web/src/test/factories.ts` → `HorizonAccount` / `horizonAccount()`, and update every
+call site.
 
 **Leave alone:** `/api/fx-refresh` — the name is product-neutral and its `vercel.json`
 cron path stays valid.
 
-**Database — new migration `supabase/migrations/0016_rename_ledger_to_horizon.sql`.**
+**Database — new migration `supabase/migrations/0017_rename_ledger_to_horizon.sql`.**
 All metadata-only renames; no data movement. `ALTER TABLE … RENAME TO` carries data,
 grants, RLS-enabled state, and foreign keys across automatically — but *not* the names of
-constraints, indexes, policies, or triggers, so each is renamed explicitly:
+constraints, indexes, policies, or triggers, so each is renamed explicitly. This now also
+covers `ledger_balance_snapshots` (0016), added by Epic A slice 5 after this plan was
+first drafted:
 
 ```sql
-alter table public.ledger_accounts rename to horizon_accounts;
-alter table public.ledger_fx_rates  rename to horizon_fx_rates;
+alter table public.ledger_accounts          rename to horizon_accounts;
+alter table public.ledger_fx_rates          rename to horizon_fx_rates;
+alter table public.ledger_balance_snapshots rename to horizon_balance_snapshots;
 
 -- horizon_accounts: pkey, fkey, 3 checks, 1 index, 1 trigger, 4 policies
 alter table public.horizon_accounts rename constraint ledger_accounts_pkey
@@ -145,6 +164,24 @@ alter table public.horizon_fx_rates rename constraint ledger_fx_rates_rate_e8_ch
 alter policy "ledger_fx_rates_select" on public.horizon_fx_rates
   rename to "horizon_fx_rates_select";
 
+-- horizon_balance_snapshots: pkey, 2 fkeys (household_id, account_id), 1 check,
+-- 2 indexes, 4 policies
+alter table public.horizon_balance_snapshots rename constraint ledger_balance_snapshots_pkey
+  to horizon_balance_snapshots_pkey;
+alter table public.horizon_balance_snapshots rename constraint ledger_balance_snapshots_household_id_fkey
+  to horizon_balance_snapshots_household_id_fkey;
+alter table public.horizon_balance_snapshots rename constraint ledger_balance_snapshots_account_id_fkey
+  to horizon_balance_snapshots_account_id_fkey;
+alter table public.horizon_balance_snapshots rename constraint ledger_balance_snapshots_currency_allowed
+  to horizon_balance_snapshots_currency_allowed;
+alter index public.ledger_balance_snapshots_household_idx
+  rename to horizon_balance_snapshots_household_idx;
+alter index public.ledger_balance_snapshots_account_idx
+  rename to horizon_balance_snapshots_account_idx;
+alter policy "ledger_balance_snapshots_select" on public.horizon_balance_snapshots
+  rename to "horizon_balance_snapshots_select";
+-- …likewise _insert, _update, _delete
+
 -- shared households column
 alter table public.households
   rename column ledger_reporting_currency to horizon_reporting_currency;
@@ -153,40 +190,61 @@ alter table public.households
   to households_horizon_reporting_currency_allowed;
 ```
 
-Verify the auto-generated constraint names first (`\d+ public.ledger_accounts` and
-`\d+ public.ledger_fx_rates` in `supabase db psql`) — `ledger_accounts_pkey`,
-`ledger_accounts_household_id_fkey`, `ledger_fx_rates_pkey`, and
-`ledger_fx_rates_rate_e8_check` are Postgres defaults and should match, but confirm
-rather than assume. Head the migration with a comment stating it **deliberately breaks**
-the additive-migration rule and why (see Decisions).
+Verify the auto-generated constraint names first (`\d+ public.ledger_accounts`,
+`\d+ public.ledger_fx_rates`, `\d+ public.ledger_balance_snapshots` in `supabase db
+psql`) — the `_pkey`/`_fkey`/`_check` names above are Postgres defaults and should match,
+but confirm rather than assume, especially the two FKs on `ledger_balance_snapshots`
+(`household_id`, `account_id` — Postgres names multi-FK tables' constraints in
+declaration order, so double-check which is which). Head the migration with a comment
+stating it **deliberately breaks** the additive-migration rule and why (see Decisions).
 
 Keep the exact inverse SQL in the PR description as rollback.
 
 **Downstream of the migration:**
 
-- `apps/web/src/lib/horizon/queries/*.ts`, `mutations/*.ts`, `today.ts`, `fx.ts` —
-  `.from('ledger_accounts')` → `'horizon_accounts'`, `.from('ledger_fx_rates')` →
-  `'horizon_fx_rates'`, and the `ledger_reporting_currency` field →
-  `horizon_reporting_currency` (also read in `queries/settings.ts`).
-- `apps/web/src/app/api/fx-refresh/route.ts` — its service-role write target
-  `ledger_fx_rates` → `horizon_fx_rates`.
+- `apps/web/src/lib/horizon/queries/{accounts,balances,fx,settings}.ts`,
+  `mutations/{accounts,balances,settings}.ts`, `today.ts` — `.from('ledger_accounts')` →
+  `'horizon_accounts'`, `.from('ledger_fx_rates')` → `'horizon_fx_rates'`,
+  `.from('ledger_balance_snapshots')` → `'horizon_balance_snapshots'`, and the
+  `ledger_reporting_currency` field → `horizon_reporting_currency` (read/written in
+  `queries/settings.ts` and `mutations/settings.ts`). Update the corresponding `.test.ts`
+  files' `db.seed('ledger_accounts', …)` / `db.rows('ledger_accounts')` calls too — the
+  fake Supabase test double keys its in-memory tables by string name, so a missed rename
+  there fails silently at runtime, not at typecheck.
+- `apps/web/src/app/api/fx-refresh/route.ts` (+ `.test.ts`) — its service-role write
+  target `ledger_fx_rates` → `horizon_fx_rates`.
+- `apps/web/src/lib/supabase/service-role.ts` — doc comment references `ledger_fx_rates`
+  and `0015_ledger_fx_rates.sql`; update the table name, leave the migration filename
+  (migrations already shipped keep their historical names).
+- `apps/web/src/test/fake-supabase.ts` — one comment mentions `ledger_fx_rates` as an
+  example of composite-key upsert semantics; update the name.
 - Regenerate types: `pnpm gen:types` → `apps/web/src/lib/supabase/database.types.ts`.
   CI gates this with `git diff --exit-code`, so a stale file fails the build.
-- pgTAP: `git mv supabase/tests/database/ledger_accounts.sql` →
-  `horizon_accounts.sql`, same for `ledger_fx_rates.sql`; update the table, constraint,
-  and policy names asserted inside both.
+- pgTAP: `git mv supabase/tests/database/ledger_accounts.sql` → `horizon_accounts.sql`,
+  same for `ledger_fx_rates.sql` and `ledger_balance_snapshots.sql`; update the table,
+  constraint, index, and policy names asserted inside all three, plus each file's header
+  comment (`-- pgTAP RLS isolation suite for ledger_balance_snapshots
+  (0016_ledger_balance_snapshots.sql)` — update the table name, leave the migration
+  filename reference since 0016 itself isn't renamed).
 
-**i18n:** rename the `Ledger` namespace → `Horizon` in `apps/web/messages/{en,ru}.json`;
-update `CLIENT_MESSAGE_NAMESPACES` in `apps/web/src/app/layout.tsx` (`'Ledger'` →
-`'Horizon'`) and every `useTranslations('Ledger')` / `getTranslations('Ledger')` call.
-Sweep user-facing "Ledger" strings to "Horizon".
+**i18n:** rename the `Ledger` namespace → `Horizon` in `apps/web/messages/{en,ru}.json`.
+The namespace has grown substantially since this plan was drafted — it now covers
+`meta`, `rail`, `gate` (including `backToKapa` → `backToPocket`, folded into Commit 2's
+back-link work), `placeholder`, `today`, `accounts`, and `assumptions` sub-keys in both
+locale files. Update `CLIENT_MESSAGE_NAMESPACES` in `apps/web/src/app/layout.tsx`
+(`'Ledger'` → `'Horizon'`) and every `useTranslations('Ledger')` /
+`getTranslations('Ledger')` call across the renamed `app/horizon` and
+`components/horizon` trees. Sweep user-facing "Ledger" strings to "Horizon".
 
 **Docs:** `git mv docs/ledger-epic-a-plan.md docs/horizon-epic-a-plan.md` and
 `docs/ledger-user-stories.md` → `docs/horizon-user-stories.md`; sweep their bodies
 (including the `ledger_*` table names in the Epic A plan's schema sections) and update
-`PLAN.md`'s references. While in `horizon-epic-a-plan.md`, fix the two stale claims the
-exploration turned up: `feat/ledger-shell` is described as unmerged (it landed as PR #59),
-and the slice board doesn't reflect slices 1–3 being done.
+`PLAN.md` §9's references, including its migration-number mentions (0014–0016 stay as
+historical migration filenames; the new rename migration is 0017). Epic A's status is
+already recorded as "completed, all 5 slices shipped" at the top of
+`ledger-epic-a-plan.md`, so the two stale claims an earlier pass of this plan flagged
+(`feat/ledger-shell` unmerged, slice board not reflecting slices 1–3) no longer apply —
+no further correction needed there beyond the rename itself.
 
 ---
 
@@ -281,14 +339,14 @@ the unit, pgTAP, and integration suites should pass once their imports and ident
 updated.
 
 ```bash
-supabase db reset          # replays 0001–0016 from scratch onto a clean DB
+supabase db reset          # replays 0001–0017 from scratch onto a clean DB
 pnpm gen:types && git diff --exit-code -- apps/web/src/lib/supabase/database.types.ts
 pnpm test:db               # pgTAP against the renamed tables
 pnpm test:integration
 pnpm format:check && pnpm lint && pnpm knip && pnpm typecheck && pnpm test && pnpm build
 ```
 
-`supabase db reset` is the important one — it proves 0016 applies cleanly in sequence,
+`supabase db reset` is the important one — it proves 0017 applies cleanly in sequence,
 which is exactly what `supabase db push` will do in production. `knip` matters because
 renames orphan files easily; `typecheck` catches broken Next 16 typed routes
 (`LayoutProps<'/pocket'>`, `LayoutProps<'/horizon'>`).
@@ -345,8 +403,10 @@ which a split would otherwise fight. Vercel Hobby includes 2 microfrontend proje
 
 **But the cost/benefit is wrong at this size.** Microfrontends buy independent build
 times, independent teams, and independent release cadence. This is a solo, invite-only
-app of ~13k LOC (Pocket ≈ 5.1k, Horizon ≈ 2.5k with 6 of 8 routes still placeholders)
-that builds in seconds and ships both products from one branch. The bill: duplicate the
+app that builds in seconds and ships both products from one branch. Horizon has grown
+since this was first assessed — Epic A shipped real content behind Today, Accounts, and
+Assumptions — but 5 of its 8 routes (Timeline, Money in, Money out, Scenarios, Target
+rate) are still placeholders, so the two products remain far apart in size. The bill: duplicate the
 root shell (`app/layout.tsx` — fonts, `NextIntlClientProvider` and its hardcoded
 namespace allowlist, `ToastProvider`, `OfflineBanner`, Analytics), split
 `messages/{en,ru}.json`, extract `components/ui/*` + `lib/supabase` + `lib/auth` +
@@ -354,10 +414,10 @@ namespace allowlist, `ToastProvider`, `OfflineBanner`, Analytics), split
 and two env sets, a local dev proxy, two release-please units, and `AppSwitcher`'s two
 `next/link` calls become cross-zone hard navigations.
 
-**And the domains are converging, not separating.** `docs/horizon-user-stories.md` C4
-gives Horizon a `DailyExpense` with a `cap`; `PLAN.md:317-318` states it "will **read
-Kapa's `expenses` table for daily actuals**." A deployment boundary would harden a wall
-exactly where a shared spend model is about to be wanted.
+**And the domains are converging, not separating.** `docs/horizon-user-stories.md:75`
+gives Horizon a `DailyExpense` with a `cap`; `PLAN.md:317` states it "will **read Kapa's
+`expenses` table for daily actuals**." A deployment boundary would harden a wall exactly
+where a shared spend model is about to be wanted.
 
 This plan delivers the product separation the idea was really after — distinct names,
 distinct URL trees, a real front door — at a fraction of the cost, and leaves the

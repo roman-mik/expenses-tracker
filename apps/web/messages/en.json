@@ -19,7 +19,7 @@
     "household": "Household",
     "settings": "Settings",
     "kapa": "Kapa",
-    "ledger": "Ledger"
+    "horizon": "Horizon"
   },
   "Errors": {
     "notSignedIn": "Not signed in.",
@@ -233,9 +233,9 @@
     "backToKapa": "Back to Kapa",
     "reference": "Reference: {digest}"
   },
-  "Ledger": {
+  "Horizon": {
     "meta": {
-      "title": "Ledger — cashflow, day by day"
+      "title": "Horizon — cashflow, day by day"
     },
     "rail": {
       "today": "Today",
@@ -249,7 +249,7 @@
     },
     "gate": {
       "title": "Needs a wider screen",
-      "body": "Ledger is built for desktop for now. Open it on a larger screen to use it.",
+      "body": "Horizon is built for desktop for now. Open it on a larger screen to use it.",
       "backToKapa": "Back to Kapa"
     },
     "placeholder": {
@@ -312,7 +312,7 @@
     "assumptions": {
       "title": "Assumptions",
       "reportingCurrencyTitle": "Reporting Currency",
-      "reportingCurrencyDescription": "The single currency used for headline totals and multi-currency conversions across Ledger screens.",
+      "reportingCurrencyDescription": "The single currency used for headline totals and multi-currency conversions across Horizon screens.",
       "settingsSaved": "Reporting currency updated.",
       "fxRatesTitle": "FX Rates",
       "fxRatesDescription": "Daily exchange rate snapshots ingested to convert non-reporting accounts.",

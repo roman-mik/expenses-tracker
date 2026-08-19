@@ -19,7 +19,7 @@
     "household": "Семья",
     "settings": "Настройки",
     "kapa": "Kapa",
-    "ledger": "Ledger"
+    "horizon": "Horizon"
   },
   "Errors": {
     "notSignedIn": "Вы не вошли в систему.",
@@ -233,9 +233,9 @@
     "backToKapa": "Назад в Kapa",
     "reference": "Код ошибки: {digest}"
   },
-  "Ledger": {
+  "Horizon": {
     "meta": {
-      "title": "Ledger — денежный поток по дням"
+      "title": "Horizon — денежный поток по дням"
     },
     "rail": {
       "today": "Сегодня",
@@ -249,7 +249,7 @@
     },
     "gate": {
       "title": "Нужен экран пошире",
-      "body": "Пока Ledger рассчитан только на десктоп. Откройте его на экране побольше.",
+      "body": "Пока Horizon рассчитан только на десктоп. Откройте его на экране побольше.",
       "backToKapa": "Назад в Kapa"
     },
     "placeholder": {
@@ -312,7 +312,7 @@
     "assumptions": {
       "title": "Допущения",
       "reportingCurrencyTitle": "Отчётная валюта",
-      "reportingCurrencyDescription": "Единая валюта для отображения итоговых сумм и конвертации разных счетов в Ledger.",
+      "reportingCurrencyDescription": "Единая валюта для отображения итоговых сумм и конвертации разных счетов в Horizon.",
       "settingsSaved": "Отчётная валюта обновлена.",
       "fxRatesTitle": "Курсы валют (FX)",
       "fxRatesDescription": "Ежедневные снимки курсов валют для конвертации счетов в отчётную валюту.",

@@ -20,7 +20,7 @@ type FxRateInsert = {
  * open.er-api.com is free, keyless, and covers all four. Its response is
  * one currency's rates against every other, so fetching once per household
  * currency gives every pair as a *direct* rate rather than one derived by
- * inverting a division — see lib/ledger/fx.ts's module comment on why that
+ * inverting a division — see lib/horizon/fx.ts's module comment on why that
  * matters for reproducibility.
  */
 async function fetchRatesFor(base: string): Promise<Record<string, unknown>> {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceRoleClient();
   const { error } = await supabase
-    .from('ledger_fx_rates')
+    .from('horizon_fx_rates')
     .upsert(rows, { onConflict: 'base_code,quote_code,as_of_date' });
 
   if (error) {

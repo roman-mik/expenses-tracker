@@ -38,9 +38,9 @@ describe('AppHeader', () => {
       'aria-current',
       'page'
     );
-    expect(screen.getByRole('link', { name: 'Ledger' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Horizon' })).toHaveAttribute(
       'href',
-      '/ledger'
+      '/horizon'
     );
   });
 });

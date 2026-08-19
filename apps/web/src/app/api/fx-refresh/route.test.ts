@@ -64,7 +64,7 @@ describe('GET /api/fx-refresh', () => {
     // 4 currencies fetched as base, once each.
     expect(mockFetch).toHaveBeenCalledTimes(4);
 
-    const rows = db.rows('ledger_fx_rates');
+    const rows = db.rows('horizon_fx_rates');
     // 4 bases x 3 quotes each = 12 direct pairs, no inversion.
     expect(rows).toHaveLength(12);
     expect(rows.every((r) => r.source === 'open.er-api.com')).toBe(true);
@@ -83,7 +83,7 @@ describe('GET /api/fx-refresh', () => {
 
     const res = await GET(request('test-secret') as never);
     expect(res.status).toBe(500);
-    expect(db.rows('ledger_fx_rates')).toHaveLength(0);
+    expect(db.rows('horizon_fx_rates')).toHaveLength(0);
   });
 
   it('writes nothing at all when the provider request fails', async () => {
@@ -93,7 +93,7 @@ describe('GET /api/fx-refresh', () => {
 
     const res = await GET(request('test-secret') as never);
     expect(res.status).toBe(500);
-    expect(db.rows('ledger_fx_rates')).toHaveLength(0);
+    expect(db.rows('horizon_fx_rates')).toHaveLength(0);
   });
 
   it('re-running is idempotent — an upsert on the same day replaces rather than duplicates', async () => {
@@ -106,6 +106,6 @@ describe('GET /api/fx-refresh', () => {
 
     // fake-supabase's upsert matches on shared keys, so a second run
     // overwrites the same 12 rows rather than appending 12 more.
-    expect(db.rows('ledger_fx_rates')).toHaveLength(12);
+    expect(db.rows('horizon_fx_rates')).toHaveLength(12);
   });
 });
