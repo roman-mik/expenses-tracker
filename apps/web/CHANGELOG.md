@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/roman-mik/kapa/compare/web-v0.5.0...web-v0.6.0) (2026-08-19)
+
+
+### Features
+
+* ledger epic A ([#63](https://github.com/roman-mik/kapa/issues/63)) ([9f5bd83](https://github.com/roman-mik/kapa/commit/9f5bd83ca367a9c7e654b86d2bac4ae730f6361a))
+
 ## [0.5.0](https://github.com/roman-mik/kapa/compare/web-v0.4.0...web-v0.5.0) (2026-08-17)
 
 
