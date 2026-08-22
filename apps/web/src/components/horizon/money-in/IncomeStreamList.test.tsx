@@ -107,7 +107,9 @@ describe('IncomeStreamList', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /archive income stream/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /archive income stream/i })
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Archive?' }));
 
     await waitFor(() =>

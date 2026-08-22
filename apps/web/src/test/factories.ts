@@ -5,10 +5,7 @@
  */
 import type { Category, Expense, HouseholdMember, Money } from '@/lib/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
-import type {
-  IncomeSchedule,
-  IncomeStream,
-} from '@/lib/horizon/income/types';
+import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}

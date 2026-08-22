@@ -38,7 +38,11 @@ describe('ScheduleEditor', () => {
   it('adds a dayOfMonth schedule', async () => {
     mockAdd.mockResolvedValue({ ok: true });
     render(
-      <ScheduleEditor incomeStreamId="stream-1" schedules={[]} calendar={calendar} />
+      <ScheduleEditor
+        incomeStreamId="stream-1"
+        schedules={[]}
+        calendar={calendar}
+      />
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Add schedule' }));

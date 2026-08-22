@@ -85,10 +85,10 @@ describe('WorkCalendarEditor', () => {
     render(
       <WorkCalendarEditor
         initialCalendar={{ workingWeekdays: [1, 2, 3, 4, 5] }}
-        initialHolidays={[{ id: 'h1', date: '2026-01-01', name: "New Year" }]}
+        initialHolidays={[{ id: 'h1', date: '2026-01-01', name: 'New Year' }]}
       />
     );
-    expect(screen.getByText("New Year")).toBeInTheDocument();
+    expect(screen.getByText('New Year')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Date'), {
       target: { value: '2026-05-01' },
@@ -111,7 +111,7 @@ describe('WorkCalendarEditor', () => {
     render(
       <WorkCalendarEditor
         initialCalendar={{ workingWeekdays: [1, 2, 3, 4, 5] }}
-        initialHolidays={[{ id: 'h1', date: '2026-01-01', name: "New Year" }]}
+        initialHolidays={[{ id: 'h1', date: '2026-01-01', name: 'New Year' }]}
       />
     );
 
