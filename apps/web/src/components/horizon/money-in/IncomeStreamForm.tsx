@@ -3,16 +3,15 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { CURRENCIES, CURRENCY_EXPONENT, type Currency } from '@/lib/types';
-import type { HorizonAccount } from '@/lib/horizon/types';
 import type {
   Confidence,
+  HorizonAccount,
+  Recurrence,
+} from '@/lib/horizon/types';
+import { CONFIDENCE_VALUES, RECURRENCE_VALUES } from '@/lib/horizon/types';
+import type {
   IncomeStream,
   IncomeStreamKind,
-  Recurrence,
-} from '@/lib/horizon/income/types';
-import {
-  CONFIDENCE_VALUES,
-  RECURRENCE_VALUES,
 } from '@/lib/horizon/income/types';
 import { Button } from '@/components/ui/Button';
 

@@ -1,23 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import {
   applySlippage,
+  coveredPeriod,
   generateDates,
   isWorkingDay,
   nextDatesForSchedules,
   nextSixDates,
   type ScheduleCalendar,
+  type ScheduleRule,
 } from './schedule';
-import type { IncomeSchedule } from './types';
 
 const monFri: ScheduleCalendar = {
   workingWeekdays: [1, 2, 3, 4, 5],
   holidays: [],
 };
 
-function schedule(overrides: Partial<IncomeSchedule>): IncomeSchedule {
+function schedule(
+  overrides: Partial<ScheduleRule> & { id?: string } = {}
+): ScheduleRule & { id: string } {
   return {
     id: 'sc1',
-    incomeStreamId: 's1',
     kind: 'dayOfMonth',
     dayOfMonth: null,
     intervalDays: null,
@@ -250,5 +252,53 @@ describe('nextDatesForSchedules', () => {
       'sc-15',
       'sc-end',
     ]);
+  });
+});
+
+describe('coveredPeriod', () => {
+  it('same: the payment month', () => {
+    const sc = schedule({ coversPeriod: 'same' });
+    expect(coveredPeriod('2026-08-28', sc)).toBe('2026-08');
+  });
+
+  it('next: the following month', () => {
+    const sc = schedule({ coversPeriod: 'next' });
+    expect(coveredPeriod('2026-08-28', sc)).toBe('2026-09');
+  });
+
+  it('previous: the prior month', () => {
+    const sc = schedule({ coversPeriod: 'previous' });
+    expect(coveredPeriod('2026-08-20', sc)).toBe('2026-07');
+  });
+
+  it('next: rolls the year over on December', () => {
+    const sc = schedule({ coversPeriod: 'next' });
+    expect(coveredPeriod('2026-12-15', sc)).toBe('2027-01');
+  });
+
+  it('previous: rolls the year back on January', () => {
+    const sc = schedule({ coversPeriod: 'previous' });
+    expect(coveredPeriod('2026-01-15', sc)).toBe('2025-12');
+  });
+
+  it('must be derived from the unslipped date, not the slipped one', () => {
+    // 2026-05-31 (monthEnd) is a Sunday and slips to 2026-06-01 under
+    // nextBusinessDay. Rent due end-of-May that covers June must still read
+    // June even though the payment itself lands in June — passing the
+    // slipped date would wrongly push it to July.
+    const sc = schedule({
+      kind: 'monthEnd',
+      coversPeriod: 'next',
+      slippagePolicy: 'nextBusinessDay',
+    });
+    const [occ] = nextSixDates(sc, monFri, '2026-05-01');
+    expect(occ).toEqual({
+      date: '2026-06-01',
+      shifted: true,
+      originalDate: '2026-05-31',
+    });
+
+    expect(coveredPeriod(occ.originalDate ?? occ.date, sc)).toBe('2026-06');
+    expect(coveredPeriod(occ.date, sc)).toBe('2026-07');
   });
 });

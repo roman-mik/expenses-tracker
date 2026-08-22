@@ -10,7 +10,7 @@ import {
   generateDates,
   isWorkingDay,
   type ScheduleCalendar,
-} from './schedule';
+} from '@/lib/horizon/schedule';
 
 function money(n: number): Money {
   return n as Money;

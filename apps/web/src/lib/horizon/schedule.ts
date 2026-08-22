@@ -8,7 +8,7 @@
  * UTC throughout, so there is no local-timezone drift across the date-only
  * arithmetic below.
  */
-import type { IncomeSchedule, SlippagePolicy } from './types';
+import type { CoversPeriod, ScheduleKind, SlippagePolicy } from './types';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -18,6 +18,22 @@ export interface ScheduleCalendar {
   workingWeekdays: number[];
   /** `YYYY-MM-DD`. */
   holidays: string[];
+}
+
+/**
+ * Structural shape every concrete schedule (income, obligation, ...) must
+ * satisfy to run through this engine. `IncomeSchedule` and `ObligationSchedule`
+ * each add their own `id` and owner FK on top of this.
+ */
+export interface ScheduleRule {
+  kind: ScheduleKind;
+  dayOfMonth: number | null;
+  intervalDays: number | null;
+  nthWeekday: number | null;
+  weekday: number | null;
+  anchorDate: string | null;
+  slippagePolicy: SlippagePolicy;
+  coversPeriod: CoversPeriod;
 }
 
 function parseDate(date: string): Date {
@@ -111,8 +127,8 @@ function nthWeekdayOfMonth(
  * separately per date, since slippage depends on the calendar the same way
  * generation does but is a distinct step (B3).
  */
-export function generateDates(
-  schedule: IncomeSchedule,
+export function generateDates<T extends ScheduleRule>(
+  schedule: T,
   calendar: ScheduleCalendar,
   range: { from: string; to: string }
 ): string[] {
@@ -198,8 +214,8 @@ export interface UpcomingOccurrence {
 }
 
 /** Powers the schedule editor's preview (B2/B3). Searches up to 2 years out. */
-export function nextSixDates(
-  schedule: IncomeSchedule,
+export function nextSixDates<T extends ScheduleRule>(
+  schedule: T,
   calendar: ScheduleCalendar,
   from: string
 ): UpcomingOccurrence[] {
@@ -224,8 +240,8 @@ export interface UpcomingStreamOccurrence extends UpcomingOccurrence {
  * Merges and sorts the next `count` occurrences across every schedule on a
  * stream — B2's "the 15th **and** month end" preview.
  */
-export function nextDatesForSchedules(
-  schedules: IncomeSchedule[],
+export function nextDatesForSchedules<T extends ScheduleRule & { id: string }>(
+  schedules: T[],
   calendar: ScheduleCalendar,
   from: string,
   count = 6
@@ -247,4 +263,32 @@ export function nextDatesForSchedules(
       ? { date, shifted: false, scheduleId }
       : { date: shiftedDate, shifted: true, originalDate: date, scheduleId };
   });
+}
+
+/**
+ * The `YYYY-MM` period a payment on `paymentDate` covers, per `rule.coversPeriod`.
+ * `paymentDate` must be the UNSLIPPED generated date (`originalDate ?? date`
+ * from `nextSixDates`/`nextDatesForSchedules`), never the slipped one — rent
+ * due 31 Aug that slips to 1 Sep still covers September, not October.
+ */
+export function coveredPeriod(paymentDate: string, rule: ScheduleRule): string {
+  const d = parseDate(paymentDate);
+  let year = d.getUTCFullYear();
+  let month0 = d.getUTCMonth();
+
+  if (rule.coversPeriod === 'next') {
+    month0++;
+    if (month0 > 11) {
+      month0 = 0;
+      year++;
+    }
+  } else if (rule.coversPeriod === 'previous') {
+    month0--;
+    if (month0 < 0) {
+      month0 = 11;
+      year--;
+    }
+  }
+
+  return `${year}-${String(month0 + 1).padStart(2, '0')}`;
 }

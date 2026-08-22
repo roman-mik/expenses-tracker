@@ -5,7 +5,7 @@ import {
   monthlyIncomeForStream,
   workingDaysInMonth,
 } from './income-math';
-import type { ScheduleCalendar } from './schedule';
+import type { ScheduleCalendar } from '@/lib/horizon/schedule';
 import type { IncomeSchedule, IncomeStream } from './types';
 
 const monFri: ScheduleCalendar = {

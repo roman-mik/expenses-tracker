@@ -6,13 +6,15 @@ import type { Database } from '@/lib/supabase/database.types';
 import type {
   Confidence,
   CoversPeriod,
+  Recurrence,
+  ScheduleKind,
+  SlippagePolicy,
+} from '@/lib/horizon/types';
+import type {
   Holiday,
   IncomeSchedule,
   IncomeStream,
   IncomeStreamKind,
-  Recurrence,
-  ScheduleKind,
-  SlippagePolicy,
   WorkCalendar,
 } from './types';
 
