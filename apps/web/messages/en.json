@@ -532,7 +532,65 @@
       "shareBar": {
         "title": "Share of total",
         "missingRate": "missing rate"
-      }
+      },
+      "dailyExpenseSectionTitle": "Daily expenses",
+      "noDailyExpensesYet": "No daily expenses yet.",
+      "addDailyExpense": "Add daily expense",
+      "dailyExpenseNamePlaceholder": "Daily expense name",
+      "dailyAmountLabel": "Daily amount",
+      "perDaySuffix": " / day",
+      "cadenceLabel": "Charge cadence",
+      "cadence": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "capLabel": "Monthly cap (optional)",
+      "capBadge": "Cap {cap}",
+      "pocketCategoryLabel": "Pocket category",
+      "pocketCategoryNone": "No linked category",
+      "dailyExpenseSaved": "Daily expense saved.",
+      "dailyExpenseArchived": "Daily expense archived.",
+      "dailyExpenseRestored": "Daily expense restored.",
+      "dailyExpenseAdded": "Daily expense added.",
+      "archiveDailyExpenseAria": "Archive daily expense",
+      "capTracker": {
+        "title": "Cap tracker",
+        "noneYet": "No capped daily expenses yet.",
+        "plannedLabel": "Planned this month",
+        "actualLabel": "Actual so far",
+        "capLabel": "Cap",
+        "variantsLabel": "28 / 30 / 31 days",
+        "overCap": "Over cap"
+      },
+      "oneOffSectionTitle": "One-off events",
+      "noOneOffEventsYet": "No one-off events yet.",
+      "addOneOffEvent": "Add one-off event",
+      "oneOffNamePlaceholder": "One-off event name",
+      "dateLabel": "Date",
+      "directionLabel": "Direction",
+      "direction": {
+        "in": "Deposit",
+        "out": "Withdrawal"
+      },
+      "oneOffCategory": {
+        "housing": "Housing",
+        "utilities": "Utilities",
+        "debt": "Debt",
+        "subscriptions": "Subscriptions",
+        "insurance": "Insurance",
+        "transport": "Transport",
+        "family": "Family",
+        "gift": "Gift",
+        "bonus": "Bonus",
+        "other": "Other"
+      },
+      "oneOffEventSaved": "One-off event saved.",
+      "oneOffEventAdded": "One-off event added.",
+      "oneOffEventDeleted": "One-off event deleted.",
+      "deleteOneOffEventAria": "Delete one-off event",
+      "deleteConfirm": "Delete?",
+      "deleting": "Deleting…"
     }
   }
 }
