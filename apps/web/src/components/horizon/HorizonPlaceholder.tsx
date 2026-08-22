@@ -3,7 +3,6 @@ import { getTranslations } from 'next-intl/server';
 type ScreenKey =
   | 'today'
   | 'timeline'
-  | 'moneyIn'
   | 'moneyOut'
   | 'scenarios'
   | 'targetRate'

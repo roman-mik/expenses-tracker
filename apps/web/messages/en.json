@@ -283,7 +283,6 @@
     "placeholder": {
       "today": "The one-glance answer: what you have, what's coming, and when it gets tight.",
       "timeline": "What's coming, day by day, with the intra-month minimum alongside the month-end balance.",
-      "moneyIn": "Manage income streams — rate, schedule, recurrence and confidence.",
       "moneyOut": "Manage obligations and daily expenses, each with its own due date.",
       "scenarios": "Compare up to four futures side by side.",
       "targetRate": "Solve backwards from a desired life to the hourly rate that covers it.",
@@ -352,7 +351,119 @@
       "staleBadge": "Stale (> 30d)",
       "todayBadge": "Today",
       "daysOldBadge": "{days}d ago",
-      "noRatesYet": "No FX rates stored yet."
+      "noRatesYet": "No FX rates stored yet.",
+      "workCalendar": {
+        "title": "Work calendar",
+        "description": "The working weekdays and holidays used to derive hourly income and schedule slippage.",
+        "workingWeekdaysLabel": "Working weekdays",
+        "weekday": {
+          "0": "Sun",
+          "1": "Mon",
+          "2": "Tue",
+          "3": "Wed",
+          "4": "Thu",
+          "5": "Fri",
+          "6": "Sat"
+        },
+        "holidaysTitle": "Holidays",
+        "noHolidaysYet": "No holidays added yet.",
+        "dateLabel": "Date",
+        "nameLabel": "Name",
+        "namePlaceholder": "Holiday name",
+        "addHoliday": "Add holiday",
+        "holidayAdded": "Holiday added.",
+        "removeHolidayAria": "Remove holiday"
+      }
+    },
+    "moneyIn": {
+      "title": "Money in",
+      "sectionTitle": "Income streams",
+      "noStreamsYet": "No income streams yet.",
+      "needsAccountFirst": "Add an account first, then come back to add income streams.",
+      "addStream": "Add income stream",
+      "namePlaceholder": "Stream name",
+      "accountLabel": "Account",
+      "kindLabel": "Kind",
+      "kind": {
+        "hourly": "Hourly",
+        "fixed": "Fixed",
+        "variable": "Variable"
+      },
+      "currencyLabel": "Currency",
+      "hourlyRateLabel": "Hourly rate",
+      "hoursPerDayLabel": "Hours per day",
+      "fixedAmountLabel": "Amount",
+      "recurrenceLabel": "Recurrence",
+      "recurrence": {
+        "recurring": "Recurring",
+        "oneOff": "One-off"
+      },
+      "confidenceLabel": "Confidence",
+      "confidence": {
+        "confirmed": "Confirmed",
+        "expected": "Expected",
+        "uncertain": "Uncertain"
+      },
+      "startDateLabel": "Start date",
+      "endDateLabel": "End date (optional)",
+      "taxable": "Taxable",
+      "add": "Add",
+      "edit": "Edit",
+      "perMonth": "month",
+      "unknownAccount": "Unknown account",
+      "archivedTitle": "Archived",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "archiveConfirm": "Archive?",
+      "archiving": "Archiving…",
+      "archiveAria": "Archive income stream",
+      "streamSaved": "Income stream saved.",
+      "streamArchived": "Income stream archived.",
+      "streamRestored": "Income stream restored.",
+      "streamAdded": "Income stream added.",
+      "schedule": {
+        "title": "Payment schedule",
+        "noSchedulesYet": "No payment schedules yet.",
+        "upcomingTitle": "Upcoming",
+        "addSchedule": "Add schedule",
+        "scheduleAdded": "Schedule added.",
+        "removeAria": "Remove schedule",
+        "kindLabel": "Kind",
+        "kind": {
+          "dayOfMonth": "Day of month",
+          "monthEnd": "Month end",
+          "everyNDays": "Every N days",
+          "nthWeekday": "Nth weekday",
+          "oneOff": "One-off"
+        },
+        "dayOfMonthLabel": "Day of month",
+        "intervalDaysLabel": "Interval (days)",
+        "anchorDateLabel": "Anchor date",
+        "nthWeekdayLabel": "Occurrence",
+        "weekdayLabel": "Weekday",
+        "weekday": {
+          "0": "Sunday",
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday"
+        },
+        "slippagePolicyLabel": "If it lands on a non-working day",
+        "slippagePolicy": {
+          "nextBusinessDay": "Move to next business day",
+          "prevBusinessDay": "Move to previous business day",
+          "none": "Don't move it"
+        },
+        "summary": {
+          "dayOfMonth": "Day {day} of each month",
+          "monthEnd": "Last day of each month",
+          "everyNDays": "Every {interval} days from {anchor}",
+          "nthWeekday": "The {nth} {weekday} of each month",
+          "oneOff": "Once, on {date}"
+        }
+      }
     }
   }
 }

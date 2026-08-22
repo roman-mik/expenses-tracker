@@ -1,6 +1,6 @@
 # Horizon Epic B — Income
 
-**Status:** slices 1-2 of 3 shipped · **Spec:** `docs/horizon-user-stories.md` §5 Epic B · **Plan of record:** `PLAN.md` §9
+**Status:** all 3 slices shipped · **Spec:** `docs/horizon-user-stories.md` §5 Epic B · **Plan of record:** `PLAN.md` §9
 
 ---
 
@@ -260,9 +260,18 @@ Cut fresh off updated `origin/main`.
 |---|---|---|---|
 | 1 | `feat: add horizon income schema` | Migrations 0018–0019, `lib/horizon/income/{types,mappers,validation}`, queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ✅ Done |
 | 2 | `feat: add horizon schedule generation engine` | `schedule.ts` + `income-math.ts`, exhaustive unit tests. Still no UI | ✅ Done |
-| 3 | `feat: show horizon income streams` | `/horizon/money-in` real content, work-calendar editor on `/horizon/assumptions`, rail unchanged (already links to `money-in`), i18n | Not started |
+| 3 | `feat: show horizon income streams` | `/horizon/money-in` real content, work-calendar editor on `/horizon/assumptions`, rail unchanged (already links to `money-in`), i18n | ✅ Done |
 
 Update `PLAN.md` §9 as each slice lands, and run `graphify update .` after code changes.
+
+**Slice 3 notes:** `IncomeStreamList`/`IncomeStreamForm`/`ScheduleEditor` (money-in) and
+`WorkCalendarEditor` (assumptions) cover B1–B4 UI in three components rather than the five
+originally sketched in §4 — `HourlyCalculator` folded into `IncomeStreamForm` as a plain
+rate/hours input pair (no separate live-recompute widget), and `SchedulePreview` folded into
+`ScheduleEditor` (the upcoming-dates list). jsdom tests were written and pass (`format:check`,
+`lint`, `knip`, `typecheck`, `pnpm test` all green, `pnpm build` succeeds) — but the by-hand
+browser walkthrough in §7 was **not** run this session, since the Chrome browser-automation
+tool wasn't connected in this environment. Do that pass before calling B1–B4 fully verified.
 
 ---
 

@@ -4,8 +4,10 @@ import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import { getHorizonSettings } from '@/lib/horizon/queries/settings';
 import { getHorizonFxRates } from '@/lib/horizon/queries/fx';
+import { getHolidays, getWorkCalendar } from '@/lib/horizon/queries/income';
 import { ReportingCurrencyPicker } from '@/components/horizon/assumptions/ReportingCurrencyPicker';
 import { FxSnapshotTable } from '@/components/horizon/assumptions/FxSnapshotTable';
+import { WorkCalendarEditor } from '@/components/horizon/assumptions/WorkCalendarEditor';
 
 export default async function HorizonAssumptionsPage() {
   const user = await verifySession();
@@ -15,9 +17,11 @@ export default async function HorizonAssumptionsPage() {
   if (!householdId) redirect('/login');
 
   const supabase = await createClient();
-  const [settings, rates] = await Promise.all([
+  const [settings, rates, calendar, holidays] = await Promise.all([
     getHorizonSettings(supabase, householdId),
     getHorizonFxRates(supabase),
+    getWorkCalendar(supabase, householdId),
+    getHolidays(supabase, householdId),
   ]);
 
   const t = await getTranslations('Horizon.assumptions');
@@ -26,6 +30,10 @@ export default async function HorizonAssumptionsPage() {
     <div className="flex max-w-2xl flex-col gap-6">
       <h1 className="font-heading text-2xl">{t('title')}</h1>
       <ReportingCurrencyPicker initialCurrency={settings.reportingCurrency} />
+      <WorkCalendarEditor
+        initialCalendar={calendar}
+        initialHolidays={holidays}
+      />
       <FxSnapshotTable rates={rates} />
     </div>
   );
