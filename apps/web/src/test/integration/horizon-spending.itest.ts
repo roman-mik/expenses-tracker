@@ -1,6 +1,7 @@
 /**
- * Horizon obligation constraint behavior against real Postgres — the check
- * constraints and FK cascades a mock DB (fake-supabase.ts) can't surface.
+ * Horizon obligation/spending constraint behavior against real Postgres —
+ * the check constraints and FK cascades a mock DB (fake-supabase.ts) can't
+ * surface, plus `sumPocketExpenses`'s real timezone-aware month window.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import {
@@ -10,13 +11,20 @@ import {
   type TestUser,
 } from '@/test/setup-integration';
 import { createHorizonAccount } from '@/lib/horizon/mutations/accounts';
+import { createCategory } from '@/lib/mutations/categories';
+import { createExpense } from '@/lib/mutations/expenses';
 import {
+  createDailyExpense,
   createObligation,
   createObligationSchedule,
+  createOneOffEvent,
 } from '@/lib/horizon/mutations/spending';
 import {
+  getDailyExpenses,
   getObligationSchedules,
   getObligations,
+  getOneOffEvents,
+  sumPocketExpenses,
 } from '@/lib/horizon/queries/spending';
 
 let alice: TestUser;
@@ -156,5 +164,142 @@ describe('households.on delete cascade', () => {
     expect(await getObligations(admin, bob.householdId)).toEqual([]);
 
     await destroyUser(bob);
+  });
+});
+
+describe('horizon_daily_expenses check constraints', () => {
+  it('rejects a non-positive daily amount', async () => {
+    const { error } = await alice.client.from('horizon_daily_expenses').insert({
+      household_id: alice.householdId,
+      account_id: accountId,
+      name: 'Free lunch',
+      daily_amount_minor: 0,
+      currency: 'RSD',
+      start_date: '2026-01-01',
+    });
+    expect(error).not.toBeNull();
+  });
+
+  it('rejects an end date before the start date', async () => {
+    const { error } = await alice.client.from('horizon_daily_expenses').insert({
+      household_id: alice.householdId,
+      account_id: accountId,
+      name: 'Backwards',
+      daily_amount_minor: 1000,
+      currency: 'RSD',
+      start_date: '2026-06-01',
+      end_date: '2026-01-01',
+    });
+    expect(error).not.toBeNull();
+  });
+});
+
+describe('horizon_one_off_events check constraints', () => {
+  it('rejects a non-positive amount', async () => {
+    const { error } = await alice.client.from('horizon_one_off_events').insert({
+      household_id: alice.householdId,
+      account_id: accountId,
+      name: 'Free gift',
+      category: 'gift',
+      amount_minor: 0,
+      currency: 'RSD',
+      date: '2026-02-01',
+      direction: 'in',
+    });
+    expect(error).not.toBeNull();
+  });
+});
+
+describe('horizon_accounts.on delete cascade (daily expenses / one-offs)', () => {
+  it('deleting the account deletes its daily expenses and one-off events', async () => {
+    const account = await createHorizonAccount(
+      alice.client,
+      alice.householdId,
+      { name: 'Temp2', currency: 'RSD', type: 'personal' }
+    );
+    const dailyExpense = await createDailyExpense(
+      alice.client,
+      alice.householdId,
+      {
+        accountId: account.id,
+        name: 'Temp daily expense',
+        dailyAmountMinor: 500,
+        currency: 'RSD',
+        startDate: '2026-01-01',
+      }
+    );
+    const oneOff = await createOneOffEvent(alice.client, alice.householdId, {
+      accountId: account.id,
+      name: 'Temp one-off',
+      category: 'other',
+      amountMinor: 1000,
+      currency: 'RSD',
+      date: '2026-01-01',
+      direction: 'out',
+    });
+
+    const { error } = await alice.client
+      .from('horizon_accounts')
+      .delete()
+      .eq('id', account.id);
+    expect(error).toBeNull();
+
+    const remainingExpenses = await getDailyExpenses(
+      alice.client,
+      alice.householdId
+    );
+    expect(
+      remainingExpenses.find((e) => e.id === dailyExpense.id)
+    ).toBeUndefined();
+
+    const remainingOneOffs = await getOneOffEvents(
+      alice.client,
+      alice.householdId
+    );
+    expect(remainingOneOffs.find((e) => e.id === oneOff.id)).toBeUndefined();
+  });
+});
+
+describe('sumPocketExpenses', () => {
+  it('sums the household month window for a linked Pocket category', async () => {
+    const category = await createCategory(alice.client, alice.householdId, {
+      name: 'Groceries',
+      color: 'sage-500',
+    });
+
+    await createExpense(alice.client, alice.householdId, alice.id, {
+      categoryId: category.id,
+      amountMinor: 1000,
+      spentAt: '2026-08-05T00:00:00.000Z',
+    });
+    await createExpense(alice.client, alice.householdId, alice.id, {
+      categoryId: category.id,
+      amountMinor: 2000,
+      spentAt: '2026-08-15T00:00:00.000Z',
+    });
+    // Outside the window — excluded.
+    await createExpense(alice.client, alice.householdId, alice.id, {
+      categoryId: category.id,
+      amountMinor: 9000,
+      spentAt: '2026-09-05T00:00:00.000Z',
+    });
+
+    const total = await sumPocketExpenses(
+      alice.client,
+      alice.householdId,
+      category.id,
+      '2026-08'
+    );
+    expect(total).toBe(3000);
+  });
+
+  it('returns 0 for a null category without querying expenses', async () => {
+    const total = await sumPocketExpenses(
+      alice.client,
+      alice.householdId,
+      null,
+      '2026-08'
+    );
+    expect(total).toBe(0);
   });
 });

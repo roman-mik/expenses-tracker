@@ -389,13 +389,29 @@ case. All existing `schedule.test.ts` assertions pass unchanged; format/lint/kni
 build all green. The by-hand confirmation that `/horizon/money-in` behaves identically is still
 pending — this environment has no active Supabase session to sign in with.
 
-Slice 2 shipped — migration `0020_horizon_obligations.sql` (`horizon_obligations`,
-`horizon_obligation_schedules`, same shape as Epic B's income tables); `lib/horizon/spending/
-{types,mappers,validation}.ts`; obligation queries/mutations (`queries/spending.ts`,
-`mutations/spending.ts`) and server actions (`app/actions/horizon-spending.ts`); pgTAP RLS suites
-and an integration test for check constraints/cascades; `obligation`/`obligationSchedule` test
-factories; new `Errors.checkObligationFields`/`obligationNotFound` i18n keys. No UI — `/horizon/
-money-out` is still the placeholder. `database.types.ts` was hand-edited to add the two new tables
-rather than generated, since local Supabase remains unavailable in this environment; `pnpm
-gen:types` still needs to run for real once it is, to confirm the hand-edit matches. `pnpm test:db`/
-`pnpm test:integration` for the new pgTAP/integration suites are correspondingly still unverified.
+Slice 2 shipped (PR #69, stacked on #68) — migration `0020_horizon_obligations.sql`
+(`horizon_obligations`, `horizon_obligation_schedules`, same shape as Epic B's income tables);
+`lib/horizon/spending/{types,mappers,validation}.ts`; obligation queries/mutations
+(`queries/spending.ts`, `mutations/spending.ts`) and server actions
+(`app/actions/horizon-spending.ts`); pgTAP RLS suites and an integration test for check
+constraints/cascades; new `Errors.checkObligationFields`/`obligationNotFound` i18n keys. No UI —
+`/horizon/money-out` is still the placeholder. `database.types.ts` was hand-edited to add the two
+new tables rather than generated, since local Supabase remains unavailable in this environment;
+`pnpm gen:types` still needs to run for real once it is, to confirm the hand-edit matches. `pnpm
+test:db`/`pnpm test:integration` for the new pgTAP/integration suites are correspondingly still
+unverified.
+
+Slice 3 shipped (stacked on the slice-2 branch) — migration `0021_horizon_daily_expenses.sql`
+(`horizon_daily_expenses`, `horizon_one_off_events`); `spending/types.ts` extended with
+`DailyExpense`/`OneOffEvent`; queries/mutations/actions extended with full CRUD for both plus
+`sumPocketExpenses` (reads Pocket's `expenses` for a linked category over the household's
+timezone-aware month window, mirroring `listExpenses`); new pure `spending-math.ts`
+(`monthlyObligationTotal`, `dailyExpenseForMonth`, `monthLengthVariants`, `chargeDates`,
+`chargeAmount`, `categoryShares`) and `hours.ts` (`blendedHourlyRate`, `obligationCostInHours`,
+`availableWorkingHours`), exhaustively unit-tested. `obligationSchedule` factory kept (consumed by
+`spending-math.test.ts`); `obligation`/`dailyExpense`/`oneOffEvent` factories were written then
+removed after `knip` flagged them unused — no UI consumes them yet, so they're deferred to slice
+4/5 same as slice 2's deferral. New `Errors.checkDailyExpenseFields`/`dailyExpenseNotFound`/
+`checkOneOffEventFields`/`oneOffEventNotFound` i18n keys. No UI. `database.types.ts` hand-edited
+again for the same reason as slice 2; `gen:types`/`test:db`/`test:integration` remain unverified —
+no local Supabase in this environment. format/lint/knip/typecheck/test/build all green.

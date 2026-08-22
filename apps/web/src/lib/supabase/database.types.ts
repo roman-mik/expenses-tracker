@@ -268,6 +268,79 @@ export type Database = {
           },
         ];
       };
+      horizon_daily_expenses: {
+        Row: {
+          account_id: string;
+          archived: boolean;
+          cap_minor: number | null;
+          charge_cadence: string;
+          created_at: string;
+          currency: string;
+          daily_amount_minor: number;
+          end_date: string | null;
+          household_id: string;
+          id: string;
+          name: string;
+          pocket_category_id: string | null;
+          start_date: string;
+          updated_at: string;
+        };
+        Insert: {
+          account_id: string;
+          archived?: boolean;
+          cap_minor?: number | null;
+          charge_cadence?: string;
+          created_at?: string;
+          currency: string;
+          daily_amount_minor: number;
+          end_date?: string | null;
+          household_id: string;
+          id?: string;
+          name: string;
+          pocket_category_id?: string | null;
+          start_date: string;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          archived?: boolean;
+          cap_minor?: number | null;
+          charge_cadence?: string;
+          created_at?: string;
+          currency?: string;
+          daily_amount_minor?: number;
+          end_date?: string | null;
+          household_id?: string;
+          id?: string;
+          name?: string;
+          pocket_category_id?: string | null;
+          start_date?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_daily_expenses_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_daily_expenses_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_daily_expenses_pocket_category_id_fkey';
+            columns: ['pocket_category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       horizon_fx_rates: {
         Row: {
           as_of_date: string;
@@ -584,6 +657,60 @@ export type Database = {
           },
           {
             foreignKeyName: 'horizon_obligations_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_one_off_events: {
+        Row: {
+          account_id: string;
+          amount_minor: number;
+          category: string;
+          created_at: string;
+          currency: string;
+          date: string;
+          direction: string;
+          household_id: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          account_id: string;
+          amount_minor: number;
+          category: string;
+          created_at?: string;
+          currency: string;
+          date: string;
+          direction: string;
+          household_id: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          account_id?: string;
+          amount_minor?: number;
+          category?: string;
+          created_at?: string;
+          currency?: string;
+          date?: string;
+          direction?: string;
+          household_id?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_one_off_events_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_one_off_events_household_id_fkey';
             columns: ['household_id'];
             isOneToOne: false;
             referencedRelation: 'households';

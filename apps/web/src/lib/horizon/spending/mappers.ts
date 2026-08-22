@@ -12,9 +12,14 @@ import type {
   SlippagePolicy,
 } from '@/lib/horizon/types';
 import type {
+  ChargeCadence,
+  DailyExpense,
   Obligation,
   ObligationCategory,
   ObligationSchedule,
+  OneOffCategory,
+  OneOffDirection,
+  OneOffEvent,
 } from './types';
 
 type Tables = Database['public']['Tables'];
@@ -22,6 +27,8 @@ type Row<T extends keyof Tables> = Tables[T]['Row'];
 
 export type HorizonObligationRow = Row<'horizon_obligations'>;
 export type HorizonObligationScheduleRow = Row<'horizon_obligation_schedules'>;
+export type HorizonDailyExpenseRow = Row<'horizon_daily_expenses'>;
+export type HorizonOneOffEventRow = Row<'horizon_one_off_events'>;
 
 const money = (n: number): Money => n as Money;
 
@@ -56,5 +63,34 @@ export function toObligationSchedule(
     anchorDate: row.anchor_date,
     slippagePolicy: row.slippage_policy as SlippagePolicy,
     coversPeriod: row.covers_period as CoversPeriod,
+  };
+}
+
+export function toDailyExpense(row: HorizonDailyExpenseRow): DailyExpense {
+  return {
+    id: row.id,
+    accountId: row.account_id,
+    pocketCategoryId: row.pocket_category_id,
+    name: row.name,
+    dailyAmountMinor: money(row.daily_amount_minor),
+    currency: row.currency as Currency,
+    chargeCadence: row.charge_cadence as ChargeCadence,
+    capMinor: row.cap_minor === null ? null : money(row.cap_minor),
+    startDate: row.start_date,
+    endDate: row.end_date,
+    archived: row.archived,
+  };
+}
+
+export function toOneOffEvent(row: HorizonOneOffEventRow): OneOffEvent {
+  return {
+    id: row.id,
+    accountId: row.account_id,
+    name: row.name,
+    category: row.category as OneOffCategory,
+    amountMinor: money(row.amount_minor),
+    currency: row.currency as Currency,
+    date: row.date,
+    direction: row.direction as OneOffDirection,
   };
 }

@@ -57,6 +57,10 @@
     "scheduleNotFound": "Это расписание не найдено.",
     "checkObligationFields": "Проверьте поля обязательства.",
     "obligationNotFound": "Это обязательство не найдено.",
+    "checkDailyExpenseFields": "Проверьте поля ежедневного расхода.",
+    "dailyExpenseNotFound": "Этот ежедневный расход не найден.",
+    "checkOneOffEventFields": "Проверьте поля разового события.",
+    "oneOffEventNotFound": "Это разовое событие не найдено.",
     "checkWorkCalendar": "Проверьте рабочие дни.",
     "checkHoliday": "Проверьте дату и название праздника.",
     "holidayNotFound": "Этот праздник не найден."

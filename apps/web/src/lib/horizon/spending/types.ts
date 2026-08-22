@@ -60,3 +60,54 @@ export interface ObligationSchedule {
   slippagePolicy: SlippagePolicy;
   coversPeriod: CoversPeriod;
 }
+
+export const CHARGE_CADENCES = ['daily', 'weekly', 'monthly'] as const;
+export type ChargeCadence = (typeof CHARGE_CADENCES)[number];
+
+export interface DailyExpense {
+  id: string;
+  accountId: string;
+  /** The Pocket category this budget's actuals are matched against, if any. */
+  pocketCategoryId: string | null;
+  name: string;
+  /** Per-day accrual rate, never a monthly total (D1). */
+  dailyAmountMinor: Money;
+  currency: Currency;
+  chargeCadence: ChargeCadence;
+  /** Monthly spending cap for the tracker, or null if uncapped. */
+  capMinor: Money | null;
+  /** `YYYY-MM-DD`; also the anchor for weekly charges. */
+  startDate: string;
+  /** `YYYY-MM-DD`, inclusive. */
+  endDate: string | null;
+  archived: boolean;
+}
+
+export const ONE_OFF_CATEGORIES = [
+  'housing',
+  'utilities',
+  'debt',
+  'subscriptions',
+  'insurance',
+  'transport',
+  'family',
+  'gift',
+  'bonus',
+  'other',
+] as const;
+export type OneOffCategory = (typeof ONE_OFF_CATEGORIES)[number];
+
+export const ONE_OFF_DIRECTIONS = ['in', 'out'] as const;
+export type OneOffDirection = (typeof ONE_OFF_DIRECTIONS)[number];
+
+export interface OneOffEvent {
+  id: string;
+  accountId: string;
+  name: string;
+  category: OneOffCategory;
+  amountMinor: Money;
+  currency: Currency;
+  /** `YYYY-MM-DD`. */
+  date: string;
+  direction: OneOffDirection;
+}
