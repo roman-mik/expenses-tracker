@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import type { ScheduleKind } from '@/lib/horizon/types';
-import { SLIPPAGE_POLICIES } from '@/lib/horizon/types';
+import { COVERS_PERIOD_VALUES, SLIPPAGE_POLICIES } from '@/lib/horizon/types';
 import {
   nextDatesForSchedules,
   type ScheduleCalendar,
@@ -168,10 +168,21 @@ function AddScheduleForm({
   const [weekday, setWeekday] = useState('5');
   const [slippagePolicy, setSlippagePolicy] =
     useState<(typeof SLIPPAGE_POLICIES)[number]>('nextBusinessDay');
+  const [coversPeriod, setCoversPeriod] =
+    useState<(typeof COVERS_PERIOD_VALUES)[number]>('same');
+
+  // No basis for what "covers the next period" means for an interval-based
+  // or single-shot schedule (see docs/horizon-epic-c-plan.md §2a) — those
+  // kinds always stay 'same' and never expose the picker.
+  const showCoversPeriod =
+    kind === 'dayOfMonth' || kind === 'monthEnd' || kind === 'nthWeekday';
 
   const submit = () => {
     if (pending) return;
-    const common = { slippagePolicy };
+    const common = {
+      slippagePolicy,
+      ...(showCoversPeriod ? { coversPeriod } : {}),
+    };
     let input: Record<string, unknown>;
     switch (kind) {
       case 'dayOfMonth':
@@ -317,6 +328,27 @@ function AddScheduleForm({
             onChange={(e) => setAnchorDate(e.target.value)}
             className="w-full rounded-lg bg-bg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent/40"
           />
+        </label>
+      ) : null}
+
+      {showCoversPeriod ? (
+        <label className="flex flex-col gap-1 text-xs text-ink-muted">
+          <span>{t('coversPeriodLabel')}</span>
+          <select
+            value={coversPeriod}
+            onChange={(e) =>
+              setCoversPeriod(
+                e.target.value as (typeof COVERS_PERIOD_VALUES)[number]
+              )
+            }
+            className="w-full rounded-lg bg-bg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent/40"
+          >
+            {COVERS_PERIOD_VALUES.map((cp) => (
+              <option key={cp} value={cp}>
+                {t(`coversPeriod.${cp}`)}
+              </option>
+            ))}
+          </select>
         </label>
       ) : null}
 

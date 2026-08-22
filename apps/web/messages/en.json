@@ -289,7 +289,6 @@
     "placeholder": {
       "today": "The one-glance answer: what you have, what's coming, and when it gets tight.",
       "timeline": "What's coming, day by day, with the intra-month minimum alongside the month-end balance.",
-      "moneyOut": "Manage obligations and daily expenses, each with its own due date.",
       "scenarios": "Compare up to four futures side by side.",
       "targetRate": "Solve backwards from a desired life to the hourly rate that covers it.",
       "assumptions": "Everything the model guessed, with its confidence and last-reviewed date."
@@ -462,6 +461,12 @@
           "prevBusinessDay": "Move to previous business day",
           "none": "Don't move it"
         },
+        "coversPeriodLabel": "This payment covers",
+        "coversPeriod": {
+          "same": "The same month",
+          "next": "The following month",
+          "previous": "The previous month"
+        },
         "summary": {
           "dayOfMonth": "Day {day} of each month",
           "monthEnd": "Last day of each month",
@@ -469,6 +474,64 @@
           "nthWeekday": "The {nth} {weekday} of each month",
           "oneOff": "Once, on {date}"
         }
+      }
+    },
+    "moneyOut": {
+      "title": "Money out",
+      "sectionTitle": "Obligations",
+      "noObligationsYet": "No obligations yet.",
+      "needsAccountFirst": "Add an account first, then come back to add obligations.",
+      "addObligation": "Add obligation",
+      "namePlaceholder": "Obligation name",
+      "accountLabel": "Account",
+      "categoryLabel": "Category",
+      "category": {
+        "housing": "Housing",
+        "utilities": "Utilities",
+        "debt": "Debt",
+        "subscriptions": "Subscriptions",
+        "insurance": "Insurance",
+        "transport": "Transport",
+        "family": "Family",
+        "other": "Other"
+      },
+      "currencyLabel": "Currency",
+      "amountLabel": "Amount",
+      "recurrenceLabel": "Recurrence",
+      "recurrence": {
+        "recurring": "Recurring",
+        "oneOff": "One-off"
+      },
+      "confidenceLabel": "Confidence",
+      "confidence": {
+        "confirmed": "Confirmed",
+        "expected": "Expected",
+        "uncertain": "Uncertain"
+      },
+      "startDateLabel": "Start date",
+      "endDateLabel": "End date (optional)",
+      "add": "Add",
+      "edit": "Edit",
+      "unknownAccount": "Unknown account",
+      "archivedTitle": "Archived",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "archiveConfirm": "Archive?",
+      "archiving": "Archiving…",
+      "archiveAria": "Archive obligation",
+      "obligationSaved": "Obligation saved.",
+      "obligationArchived": "Obligation archived.",
+      "obligationRestored": "Obligation restored.",
+      "obligationAdded": "Obligation added.",
+      "dueLabel": "Next due {date}",
+      "coveredPeriodLabel": "Covers {month}",
+      "noUpcomingOccurrence": "No upcoming occurrence.",
+      "hoursLabel": "≈ {hours} h",
+      "hoursSummary": "{total} of {available} available billable hours committed",
+      "hoursOverBudget": "Obligations cost more billable hours than are available this month.",
+      "shareBar": {
+        "title": "Share of total",
+        "missingRate": "missing rate"
       }
     }
   }

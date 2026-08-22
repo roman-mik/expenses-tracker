@@ -6,7 +6,10 @@
 import type { Category, Expense, HouseholdMember, Money } from '@/lib/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
-import type { ObligationSchedule } from '@/lib/horizon/spending/types';
+import type {
+  Obligation,
+  ObligationSchedule,
+} from '@/lib/horizon/spending/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}
@@ -102,6 +105,24 @@ export function incomeSchedule(
     coversPeriod: 'same',
     ...partial,
   };
+}
+
+export function obligation(partial: Partial<Obligation> = {}): Obligation {
+  return {
+    id: 'obligation-1',
+    accountId: 'account-1',
+    name: 'Rent',
+    category: 'housing',
+    amountMinor: 50000 as Money,
+    currency: 'RSD',
+    recurrence: 'recurring',
+    confidence: 'confirmed',
+    startDate: '2026-01-01',
+    endDate: null,
+    sortOrder: 0,
+    archived: false,
+    ...(partial as Partial<Obligation>),
+  } as Obligation;
 }
 
 export function obligationSchedule(

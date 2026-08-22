@@ -415,3 +415,24 @@ removed after `knip` flagged them unused — no UI consumes them yet, so they're
 `checkOneOffEventFields`/`oneOffEventNotFound` i18n keys. No UI. `database.types.ts` hand-edited
 again for the same reason as slice 2; `gen:types`/`test:db`/`test:integration` remain unverified —
 no local Supabase in this environment. format/lint/knip/typecheck/test/build all green.
+
+Slice 4 shipped (branch `feat/horizon-obligations-ui`, stacked on the slice-3 branch) — real
+content behind `/horizon/money-out`, replacing `HorizonPlaceholder`: `ObligationList`/
+`ObligationForm`/`CategoryShareBar` under `components/horizon/money-out/`, same add/edit/archive/
+restore shape as `IncomeStreamList`/`IncomeStreamForm`. Obligations reuse the shared
+`ScheduleEditor` exactly as money-in does, wired to `addObligationSchedule`/
+`deleteObligationSchedule` (both already shipped in slice 2's `app/actions/horizon-spending.ts`,
+no new actions needed). Each row shows its next occurrence plus a covered-period label composed
+from `coveredPeriod()` and the schedule's *unslipped* `originalDate` (never the slipped one, per
+§2a); a billable-hours column via `obligationCostInHours`/`blendedHourlyRate`/
+`availableWorkingHours`, with a summary line flagging when total obligation-hours exceed available
+working hours; and a `CategoryShareBar` above the list built from `categoryShares`. The shared
+`ScheduleEditor`'s `coversPeriod` picker (dayOfMonth/monthEnd/nthWeekday only, per §2a) didn't
+exist yet after slice 1 — income never needed to set it — so this slice adds it to the shared
+component; money-in gets the same control for free, still defaulting to `'same'`. New
+`Horizon.moneyOut.*` i18n keys (replacing the `placeholder.moneyOut` key) plus
+`moneyIn.schedule.coversPeriod*` keys, in both `en.json`/`ru.json`; `obligation` factory restored
+to `test/factories.ts`. New `ObligationList.test.tsx`/`CategoryShareBar.test.tsx` plus a
+`ScheduleEditor.test.tsx` case for the new `coversPeriod` control. format/lint/knip/typecheck/test
+all green; `supabase db reset`/`gen:types`/`test:db`/`test:integration`/by-hand browser walkthrough
+remain unverified — no local Supabase in this environment.
