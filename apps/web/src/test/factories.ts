@@ -3,8 +3,9 @@
  * helper in `category-breakdown.test.ts`. Every field has a sane default so a
  * test only needs to specify what it cares about.
  */
-import type { Category, Expense, HouseholdMember } from '@/lib/types';
+import type { Category, Expense, HouseholdMember, Money } from '@/lib/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
+import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}
@@ -59,5 +60,45 @@ export function horizonAccount(
     sortOrder: 0,
     archived: false,
     ...(partial as Partial<HorizonAccount>),
+  };
+}
+
+export function incomeStream(
+  partial: Partial<IncomeStream> = {}
+): IncomeStream {
+  return {
+    id: 'stream-1',
+    accountId: 'account-1',
+    name: 'Freelance',
+    currency: 'RSD',
+    kind: 'hourly',
+    hourlyRateMinor: 2000 as Money,
+    hoursPerDay: 8,
+    recurrence: 'recurring',
+    confidence: 'confirmed',
+    taxable: true,
+    startDate: '2026-01-01',
+    endDate: null,
+    sortOrder: 0,
+    archived: false,
+    ...(partial as Partial<IncomeStream>),
+  } as IncomeStream;
+}
+
+export function incomeSchedule(
+  partial: Partial<IncomeSchedule> = {}
+): IncomeSchedule {
+  return {
+    id: 'schedule-1',
+    incomeStreamId: 'stream-1',
+    kind: 'dayOfMonth',
+    dayOfMonth: 15,
+    intervalDays: null,
+    nthWeekday: null,
+    weekday: null,
+    anchorDate: null,
+    slippagePolicy: 'nextBusinessDay',
+    coversPeriod: 'same',
+    ...partial,
   };
 }

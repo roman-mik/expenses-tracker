@@ -348,6 +348,25 @@ and stale warning badges). Slice 5: balance reconciliation (A4) — `horizon_bal
 expected vs actual variance display, notes, and balance updates), pgTAP RLS coverage, unit and
 integration tests. All 5 slices of Epic A are now shipped!
 
-**Not yet built**: the projection engine (a pure,
-deterministic module in the `lib/pocket-math.ts` idiom), and real content behind the
-remaining placeholder screens (Timeline, Money in/out, Scenarios, Target rate).
+Epic B (`docs/horizon-epic-b-plan.md`), scope B1–B4 (B5 deferred to pair with Epic E's
+Scenario model, B6–B7 stay P2): slice 1 shipped — `horizon_work_calendars`/`horizon_holidays`
+(migration 0018), `horizon_income_streams`/`horizon_income_schedules` (migration 0019, a child
+table since one stream can carry several schedules), `lib/horizon/income/{types,mappers,validation}`,
+queries/mutations/actions, pgTAP + integration tests. Slice 2 shipped — `lib/horizon/income/schedule.ts`
+(pure date-generation + slippage, mirrors `fx.ts`) and `income-math.ts` (hourly derivation,
+schedule-aware monthly/annualized totals), exhaustively unit-tested. Slice 3 shipped —
+`/horizon/money-in` real content (`IncomeStreamList`/`IncomeStreamForm`/`ScheduleEditor`: add,
+edit, archive/restore an income stream; add/remove payment schedules with a merged
+next-6-dates preview showing slipped dates struck through) and a work-calendar editor
+(`WorkCalendarEditor`) on `/horizon/assumptions` (working-weekday toggle, holiday add/remove).
+All 3 slices of Epic B (B1–B4) are now shipped.
+
+Epic B's by-hand browser walkthrough (docs/horizon-epic-b-plan.md §7) has been run against the
+linked remote Supabase project, migrations 0018/0019 applied via `supabase db push` — B1–B4 are
+verified end-to-end (merged schedule preview, slippage over a holiday, and the work-calendar
+toggle dropping a stream's derived monthly amount all confirmed live).
+
+**Not yet built**: the projection engine (a pure, deterministic module in the `lib/pocket-math.ts`
+idiom); real content behind the remaining placeholder screens (Timeline, Money out, Scenarios,
+Target rate). Still pending (Docker/local Supabase unavailable in this environment): `pnpm
+test:db`/`pnpm test:integration` for Epic B's pgTAP and integration tests.

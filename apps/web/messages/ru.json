@@ -50,7 +50,14 @@
     "checkLocale": "Выберите поддерживаемый язык.",
     "checkAccountFields": "Проверьте название, валюту и тип счёта.",
     "accountNotFound": "Этот счёт не найден.",
-    "checkCurrency": "Выберите поддерживаемую валюту."
+    "checkCurrency": "Выберите поддерживаемую валюту.",
+    "checkIncomeStreamFields": "Проверьте поля источника дохода.",
+    "incomeStreamNotFound": "Этот источник дохода не найден.",
+    "checkScheduleFields": "Проверьте поля расписания.",
+    "scheduleNotFound": "Это расписание не найдено.",
+    "checkWorkCalendar": "Проверьте рабочие дни.",
+    "checkHoliday": "Проверьте дату и название праздника.",
+    "holidayNotFound": "Этот праздник не найден."
   },
   "Home": {
     "pageTitle": "Pocket — расходы за этот месяц",
@@ -276,7 +283,6 @@
     "placeholder": {
       "today": "Ответ одним взглядом: что есть, что будет и когда станет туго.",
       "timeline": "Что будет день за днём, с минимумом внутри месяца рядом с балансом на конец месяца.",
-      "moneyIn": "Источники дохода — ставка, график, повторяемость и уверенность.",
       "moneyOut": "Обязательства и ежедневные расходы, у каждого своя дата платежа.",
       "scenarios": "Сравнение до четырёх сценариев будущего одновременно.",
       "targetRate": "Расчёт от желаемой жизни к ставке, которая её покрывает.",
@@ -345,7 +351,119 @@
       "staleBadge": "Устарел (> 30 дн.)",
       "todayBadge": "Сегодня",
       "daysOldBadge": "{days} дн. назад",
-      "noRatesYet": "Сохранённые курсы валют отсутствуют."
+      "noRatesYet": "Сохранённые курсы валют отсутствуют.",
+      "workCalendar": {
+        "title": "Рабочий календарь",
+        "description": "Рабочие дни недели и праздники, используемые для расчёта почасового дохода и сдвига графика платежей.",
+        "workingWeekdaysLabel": "Рабочие дни недели",
+        "weekday": {
+          "0": "Вс",
+          "1": "Пн",
+          "2": "Вт",
+          "3": "Ср",
+          "4": "Чт",
+          "5": "Пт",
+          "6": "Сб"
+        },
+        "holidaysTitle": "Праздники",
+        "noHolidaysYet": "Праздники ещё не добавлены.",
+        "dateLabel": "Дата",
+        "nameLabel": "Название",
+        "namePlaceholder": "Название праздника",
+        "addHoliday": "Добавить праздник",
+        "holidayAdded": "Праздник добавлен.",
+        "removeHolidayAria": "Удалить праздник"
+      }
+    },
+    "moneyIn": {
+      "title": "Доходы",
+      "sectionTitle": "Источники дохода",
+      "noStreamsYet": "Пока нет источников дохода.",
+      "needsAccountFirst": "Сначала добавьте счёт, затем возвращайтесь добавлять источники дохода.",
+      "addStream": "Добавить источник дохода",
+      "namePlaceholder": "Название источника",
+      "accountLabel": "Счёт",
+      "kindLabel": "Тип",
+      "kind": {
+        "hourly": "Почасовой",
+        "fixed": "Фиксированный",
+        "variable": "Переменный"
+      },
+      "currencyLabel": "Валюта",
+      "hourlyRateLabel": "Почасовая ставка",
+      "hoursPerDayLabel": "Часов в день",
+      "fixedAmountLabel": "Сумма",
+      "recurrenceLabel": "Повторяемость",
+      "recurrence": {
+        "recurring": "Регулярный",
+        "oneOff": "Разовый"
+      },
+      "confidenceLabel": "Уверенность",
+      "confidence": {
+        "confirmed": "Подтверждён",
+        "expected": "Ожидаемый",
+        "uncertain": "Неопределённый"
+      },
+      "startDateLabel": "Дата начала",
+      "endDateLabel": "Дата окончания (необязательно)",
+      "taxable": "Облагается налогом",
+      "add": "Добавить",
+      "edit": "Изменить",
+      "perMonth": "месяц",
+      "unknownAccount": "Неизвестный счёт",
+      "archivedTitle": "Архив",
+      "restore": "Восстановить",
+      "restoring": "Восстановление…",
+      "archiveConfirm": "В архив?",
+      "archiving": "Архивация…",
+      "archiveAria": "Архивировать источник дохода",
+      "streamSaved": "Источник дохода сохранён.",
+      "streamArchived": "Источник дохода архивирован.",
+      "streamRestored": "Источник дохода восстановлен.",
+      "streamAdded": "Источник дохода добавлен.",
+      "schedule": {
+        "title": "График выплат",
+        "noSchedulesYet": "Пока нет графиков выплат.",
+        "upcomingTitle": "Ближайшие даты",
+        "addSchedule": "Добавить график",
+        "scheduleAdded": "График добавлен.",
+        "removeAria": "Удалить график",
+        "kindLabel": "Тип",
+        "kind": {
+          "dayOfMonth": "День месяца",
+          "monthEnd": "Конец месяца",
+          "everyNDays": "Каждые N дней",
+          "nthWeekday": "N-й день недели",
+          "oneOff": "Разово"
+        },
+        "dayOfMonthLabel": "День месяца",
+        "intervalDaysLabel": "Интервал (дней)",
+        "anchorDateLabel": "Опорная дата",
+        "nthWeekdayLabel": "По счёту",
+        "weekdayLabel": "День недели",
+        "weekday": {
+          "0": "Воскресенье",
+          "1": "Понедельник",
+          "2": "Вторник",
+          "3": "Среда",
+          "4": "Четверг",
+          "5": "Пятница",
+          "6": "Суббота"
+        },
+        "slippagePolicyLabel": "Если дата выпадает на нерабочий день",
+        "slippagePolicy": {
+          "nextBusinessDay": "Перенести на следующий рабочий день",
+          "prevBusinessDay": "Перенести на предыдущий рабочий день",
+          "none": "Не переносить"
+        },
+        "summary": {
+          "dayOfMonth": "{day}-е число каждого месяца",
+          "monthEnd": "Последний день каждого месяца",
+          "everyNDays": "Каждые {interval} дней от {anchor}",
+          "nthWeekday": "{nth}-й {weekday} каждого месяца",
+          "oneOff": "Один раз, {date}"
+        }
+      }
     }
   }
 }

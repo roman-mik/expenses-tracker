@@ -295,6 +295,202 @@ export type Database = {
         };
         Relationships: [];
       };
+      horizon_holidays: {
+        Row: {
+          date: string;
+          household_id: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          date: string;
+          household_id: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          date?: string;
+          household_id?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_holidays_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_income_schedules: {
+        Row: {
+          anchor_date: string | null;
+          covers_period: string;
+          created_at: string;
+          day_of_month: number | null;
+          household_id: string;
+          id: string;
+          income_stream_id: string;
+          interval_days: number | null;
+          kind: string;
+          nth_weekday: number | null;
+          slippage_policy: string;
+          weekday: number | null;
+        };
+        Insert: {
+          anchor_date?: string | null;
+          covers_period?: string;
+          created_at?: string;
+          day_of_month?: number | null;
+          household_id: string;
+          id?: string;
+          income_stream_id: string;
+          interval_days?: number | null;
+          kind: string;
+          nth_weekday?: number | null;
+          slippage_policy?: string;
+          weekday?: number | null;
+        };
+        Update: {
+          anchor_date?: string | null;
+          covers_period?: string;
+          created_at?: string;
+          day_of_month?: number | null;
+          household_id?: string;
+          id?: string;
+          income_stream_id?: string;
+          interval_days?: number | null;
+          kind?: string;
+          nth_weekday?: number | null;
+          slippage_policy?: string;
+          weekday?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_income_schedules_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_income_schedules_income_stream_id_fkey';
+            columns: ['income_stream_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_income_streams';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_income_streams: {
+        Row: {
+          account_id: string;
+          archived: boolean;
+          confidence: string;
+          created_at: string;
+          currency: string;
+          end_date: string | null;
+          fixed_amount_minor: number | null;
+          hourly_rate_minor: number | null;
+          hours_per_day_e2: number | null;
+          household_id: string;
+          id: string;
+          kind: string;
+          name: string;
+          recurrence: string;
+          sort_order: number;
+          start_date: string;
+          taxable: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          account_id: string;
+          archived?: boolean;
+          confidence?: string;
+          created_at?: string;
+          currency: string;
+          end_date?: string | null;
+          fixed_amount_minor?: number | null;
+          hourly_rate_minor?: number | null;
+          hours_per_day_e2?: number | null;
+          household_id: string;
+          id?: string;
+          kind: string;
+          name: string;
+          recurrence?: string;
+          sort_order?: number;
+          start_date: string;
+          taxable?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          archived?: boolean;
+          confidence?: string;
+          created_at?: string;
+          currency?: string;
+          end_date?: string | null;
+          fixed_amount_minor?: number | null;
+          hourly_rate_minor?: number | null;
+          hours_per_day_e2?: number | null;
+          household_id?: string;
+          id?: string;
+          kind?: string;
+          name?: string;
+          recurrence?: string;
+          sort_order?: number;
+          start_date?: string;
+          taxable?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_income_streams_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_income_streams_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_work_calendars: {
+        Row: {
+          created_at: string;
+          household_id: string;
+          updated_at: string;
+          working_weekdays: number[];
+        };
+        Insert: {
+          created_at?: string;
+          household_id: string;
+          updated_at?: string;
+          working_weekdays?: number[];
+        };
+        Update: {
+          created_at?: string;
+          household_id?: string;
+          updated_at?: string;
+          working_weekdays?: number[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_work_calendars_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: true;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       household_invites: {
         Row: {
           code: string;
