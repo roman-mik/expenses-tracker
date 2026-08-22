@@ -379,8 +379,8 @@ obligations, (2) `horizon_obligations`/`horizon_obligation_schedules` schema, (3
 content behind `/horizon/money-out` for obligations, (5) daily-expense cap tracker (reading
 Pocket's `expenses` for actuals) and one-off events on the same screen.
 
-Slice 1 shipped — `lib/horizon/income/schedule.ts` moved to `lib/horizon/schedule.ts` and its
-functions widened to a structural `ScheduleRule` type; the shared enum tuples (`ScheduleKind`,
+Slice 1 shipped (PR #68) — `lib/horizon/income/schedule.ts` moved to `lib/horizon/schedule.ts` and
+its functions widened to a structural `ScheduleRule` type; the shared enum tuples (`ScheduleKind`,
 `SlippagePolicy`, `CoversPeriod`, `Recurrence`, `Confidence`) moved up to `lib/horizon/types.ts`;
 `ScheduleEditor` moved to `components/horizon/schedule/` and generalized to take injected
 `onAdd`/`onRemove` props instead of hardcoded income actions; a new pure `coveredPeriod` function
@@ -388,3 +388,14 @@ was added with tests for same/next/previous, a year-boundary rollover, and the u
 case. All existing `schedule.test.ts` assertions pass unchanged; format/lint/knip/typecheck/test/
 build all green. The by-hand confirmation that `/horizon/money-in` behaves identically is still
 pending — this environment has no active Supabase session to sign in with.
+
+Slice 2 shipped — migration `0020_horizon_obligations.sql` (`horizon_obligations`,
+`horizon_obligation_schedules`, same shape as Epic B's income tables); `lib/horizon/spending/
+{types,mappers,validation}.ts`; obligation queries/mutations (`queries/spending.ts`,
+`mutations/spending.ts`) and server actions (`app/actions/horizon-spending.ts`); pgTAP RLS suites
+and an integration test for check constraints/cascades; `obligation`/`obligationSchedule` test
+factories; new `Errors.checkObligationFields`/`obligationNotFound` i18n keys. No UI — `/horizon/
+money-out` is still the placeholder. `database.types.ts` was hand-edited to add the two new tables
+rather than generated, since local Supabase remains unavailable in this environment; `pnpm
+gen:types` still needs to run for real once it is, to confirm the hand-edit matches. `pnpm test:db`/
+`pnpm test:integration` for the new pgTAP/integration suites are correspondingly still unverified.
