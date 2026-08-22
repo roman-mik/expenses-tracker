@@ -6,10 +6,6 @@ import { incomeSchedule } from '@/test/factories';
 
 const mockAdd = vi.fn();
 const mockDelete = vi.fn();
-vi.mock('@/app/actions/horizon-income', () => ({
-  addIncomeSchedule: (...args: unknown[]) => mockAdd(...args),
-  deleteIncomeSchedule: (...args: unknown[]) => mockDelete(...args),
-}));
 
 const mockToastError = vi.fn();
 const mockToastSuccess = vi.fn();
@@ -27,9 +23,10 @@ describe('ScheduleEditor', () => {
   it('shows the empty state and summarizes existing schedules', () => {
     render(
       <ScheduleEditor
-        incomeStreamId="stream-1"
         schedules={[incomeSchedule({ dayOfMonth: 15 })]}
         calendar={calendar}
+        onAdd={mockAdd}
+        onRemove={mockDelete}
       />
     );
     expect(screen.getByText('Day 15 of each month')).toBeInTheDocument();
@@ -39,9 +36,10 @@ describe('ScheduleEditor', () => {
     mockAdd.mockResolvedValue({ ok: true });
     render(
       <ScheduleEditor
-        incomeStreamId="stream-1"
         schedules={[]}
         calendar={calendar}
+        onAdd={mockAdd}
+        onRemove={mockDelete}
       />
     );
 
@@ -53,7 +51,6 @@ describe('ScheduleEditor', () => {
 
     await waitFor(() =>
       expect(mockAdd).toHaveBeenCalledWith(
-        'stream-1',
         expect.objectContaining({ kind: 'dayOfMonth', dayOfMonth: 20 })
       )
     );
@@ -63,9 +60,10 @@ describe('ScheduleEditor', () => {
     mockDelete.mockResolvedValue({ ok: true });
     render(
       <ScheduleEditor
-        incomeStreamId="stream-1"
         schedules={[incomeSchedule({ id: 'sched-1' })]}
         calendar={calendar}
+        onAdd={mockAdd}
+        onRemove={mockDelete}
       />
     );
 
@@ -77,11 +75,12 @@ describe('ScheduleEditor', () => {
   it('shows upcoming dates merged across schedules', () => {
     render(
       <ScheduleEditor
-        incomeStreamId="stream-1"
         schedules={[
           incomeSchedule({ id: 's1', kind: 'monthEnd', dayOfMonth: null }),
         ]}
         calendar={calendar}
+        onAdd={mockAdd}
+        onRemove={mockDelete}
       />
     );
     expect(screen.getByText('Upcoming')).toBeInTheDocument();

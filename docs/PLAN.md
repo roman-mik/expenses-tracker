@@ -370,3 +370,21 @@ toggle dropping a stream's derived monthly amount all confirmed live).
 idiom); real content behind the remaining placeholder screens (Timeline, Money out, Scenarios,
 Target rate). Still pending (Docker/local Supabase unavailable in this environment): `pnpm
 test:db`/`pnpm test:integration` for Epic B's pgTAP and integration tests.
+
+Epic C (`docs/horizon-epic-c-plan.md`), scope C1–C7 (the full epic, including `[P2]` C6 and
+`[P3]` C7 — neither depends on Epic E unlike B5), is in progress: 5 slices —
+(1) generalize the schedule engine to a structural `ScheduleRule` shared by income and
+obligations, (2) `horizon_obligations`/`horizon_obligation_schedules` schema, (3)
+`horizon_daily_expenses`/`horizon_one_off_events` schema plus pure spending/hours math, (4) real
+content behind `/horizon/money-out` for obligations, (5) daily-expense cap tracker (reading
+Pocket's `expenses` for actuals) and one-off events on the same screen.
+
+Slice 1 shipped — `lib/horizon/income/schedule.ts` moved to `lib/horizon/schedule.ts` and its
+functions widened to a structural `ScheduleRule` type; the shared enum tuples (`ScheduleKind`,
+`SlippagePolicy`, `CoversPeriod`, `Recurrence`, `Confidence`) moved up to `lib/horizon/types.ts`;
+`ScheduleEditor` moved to `components/horizon/schedule/` and generalized to take injected
+`onAdd`/`onRemove` props instead of hardcoded income actions; a new pure `coveredPeriod` function
+was added with tests for same/next/previous, a year-boundary rollover, and the unslipped-date
+case. All existing `schedule.test.ts` assertions pass unchanged; format/lint/knip/typecheck/test/
+build all green. The by-hand confirmation that `/horizon/money-in` behaves identically is still
+pending — this environment has no active Supabase session to sign in with.

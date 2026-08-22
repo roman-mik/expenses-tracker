@@ -5,10 +5,12 @@ import { useTranslations } from 'next-intl';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
 import { monthlyIncomeForStream } from '@/lib/horizon/income/income-math';
-import type { ScheduleCalendar } from '@/lib/horizon/income/schedule';
+import type { ScheduleCalendar } from '@/lib/horizon/schedule';
 import { formatMoney } from '@/lib/format';
 import {
+  addIncomeSchedule,
   addIncomeStream,
+  deleteIncomeSchedule,
   editIncomeStream,
 } from '@/app/actions/horizon-income';
 import { Button } from '@/components/ui/Button';
@@ -18,7 +20,7 @@ import {
   IncomeStreamForm,
   type IncomeStreamFormSubmitValues,
 } from './IncomeStreamForm';
-import { ScheduleEditor } from './ScheduleEditor';
+import { ScheduleEditor } from '../schedule/ScheduleEditor';
 
 function currentMonth(): string {
   return new Date().toISOString().slice(0, 7);
@@ -176,9 +178,10 @@ function StreamRow({
 
       {expanded && !stream.archived ? (
         <ScheduleEditor
-          incomeStreamId={stream.id}
           schedules={schedules}
           calendar={calendar}
+          onAdd={(input) => addIncomeSchedule(stream.id, input)}
+          onRemove={deleteIncomeSchedule}
         />
       ) : null}
     </li>

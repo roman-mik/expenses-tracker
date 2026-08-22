@@ -8,7 +8,7 @@ import {
   COVERS_PERIOD_VALUES,
   RECURRENCE_VALUES,
   SLIPPAGE_POLICIES,
-} from './types';
+} from '@/lib/horizon/types';
 
 const incomeStreamBaseFields = {
   accountId: z.string().min(1),

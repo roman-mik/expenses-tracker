@@ -2,19 +2,19 @@
 
 import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
-import type { IncomeSchedule, ScheduleKind } from '@/lib/horizon/income/types';
-import { SLIPPAGE_POLICIES } from '@/lib/horizon/income/types';
+import type { ScheduleKind } from '@/lib/horizon/types';
+import { SLIPPAGE_POLICIES } from '@/lib/horizon/types';
 import {
   nextDatesForSchedules,
   type ScheduleCalendar,
-} from '@/lib/horizon/income/schedule';
-import {
-  addIncomeSchedule,
-  deleteIncomeSchedule,
-} from '@/app/actions/horizon-income';
+  type ScheduleRule,
+} from '@/lib/horizon/schedule';
+import type { ActionResult } from '@/app/actions/expenses';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
 import { TrashIcon } from '@/components/ui/icons';
+
+type ScheduleRow = ScheduleRule & { id: string };
 
 const SCHEDULE_KINDS: ScheduleKind[] = [
   'dayOfMonth',
@@ -25,7 +25,7 @@ const SCHEDULE_KINDS: ScheduleKind[] = [
 ];
 
 function scheduleSummary(
-  schedule: IncomeSchedule,
+  schedule: ScheduleRow,
   t: ReturnType<typeof useTranslations>
 ): string {
   switch (schedule.kind) {
@@ -49,13 +49,15 @@ function scheduleSummary(
 }
 
 export function ScheduleEditor({
-  incomeStreamId,
   schedules,
   calendar,
+  onAdd,
+  onRemove,
 }: {
-  incomeStreamId: string;
-  schedules: IncomeSchedule[];
+  schedules: ScheduleRow[];
   calendar: ScheduleCalendar;
+  onAdd: (input: Record<string, unknown>) => Promise<ActionResult>;
+  onRemove: (id: string) => Promise<ActionResult>;
 }) {
   const t = useTranslations('Horizon.moneyIn.schedule');
   const toast = useToast();
@@ -69,7 +71,7 @@ export function ScheduleEditor({
   const remove = (id: string) => {
     setRemovingId(id);
     startTransition(async () => {
-      const result = await deleteIncomeSchedule(id);
+      const result = await onRemove(id);
       if (!result.ok) toast.error(result.error);
       setRemovingId(null);
     });
@@ -129,10 +131,7 @@ export function ScheduleEditor({
       ) : null}
 
       {adding ? (
-        <AddScheduleForm
-          incomeStreamId={incomeStreamId}
-          onDone={() => setAdding(false)}
-        />
+        <AddScheduleForm onAdd={onAdd} onDone={() => setAdding(false)} />
       ) : (
         <Button
           type="button"
@@ -148,10 +147,10 @@ export function ScheduleEditor({
 }
 
 function AddScheduleForm({
-  incomeStreamId,
+  onAdd,
   onDone,
 }: {
-  incomeStreamId: string;
+  onAdd: (input: Record<string, unknown>) => Promise<ActionResult>;
   onDone: () => void;
 }) {
   const t = useTranslations('Horizon.moneyIn.schedule');
@@ -203,7 +202,7 @@ function AddScheduleForm({
     }
 
     startTransition(async () => {
-      const result = await addIncomeSchedule(incomeStreamId, input);
+      const result = await onAdd(input);
       if (result.ok) {
         toast.success(t('scheduleAdded'));
         onDone();

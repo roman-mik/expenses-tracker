@@ -12,6 +12,29 @@ export const ACCOUNT_TYPES = ['business', 'personal', 'savings'] as const;
 
 export type AccountType = (typeof ACCOUNT_TYPES)[number];
 
+export const RECURRENCE_VALUES = ['recurring', 'oneOff'] as const;
+export type Recurrence = (typeof RECURRENCE_VALUES)[number];
+
+export const CONFIDENCE_VALUES = [
+  'confirmed',
+  'expected',
+  'uncertain',
+] as const;
+export type Confidence = (typeof CONFIDENCE_VALUES)[number];
+
+export type ScheduleKind =
+  'dayOfMonth' | 'monthEnd' | 'everyNDays' | 'nthWeekday' | 'oneOff';
+
+export const SLIPPAGE_POLICIES = [
+  'nextBusinessDay',
+  'prevBusinessDay',
+  'none',
+] as const;
+export type SlippagePolicy = (typeof SLIPPAGE_POLICIES)[number];
+
+export const COVERS_PERIOD_VALUES = ['same', 'next', 'previous'] as const;
+export type CoversPeriod = (typeof COVERS_PERIOD_VALUES)[number];
+
 export interface HorizonAccount {
   id: string;
   name: string;
