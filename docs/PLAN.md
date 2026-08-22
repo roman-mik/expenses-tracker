@@ -372,7 +372,7 @@ Target rate). Still pending (Docker/local Supabase unavailable in this environme
 test:db`/`pnpm test:integration` for Epic B's pgTAP and integration tests.
 
 Epic C (`docs/horizon-epic-c-plan.md`), scope C1–C7 (the full epic, including `[P2]` C6 and
-`[P3]` C7 — neither depends on Epic E unlike B5), is in progress: 5 slices —
+`[P3]` C7 — neither depends on Epic E unlike B5), all 5 slices shipped —
 (1) generalize the schedule engine to a structural `ScheduleRule` shared by income and
 obligations, (2) `horizon_obligations`/`horizon_obligation_schedules` schema, (3)
 `horizon_daily_expenses`/`horizon_one_off_events` schema plus pure spending/hours math, (4) real
@@ -436,3 +436,26 @@ to `test/factories.ts`. New `ObligationList.test.tsx`/`CategoryShareBar.test.tsx
 `ScheduleEditor.test.tsx` case for the new `coversPeriod` control. format/lint/knip/typecheck/test
 all green; `supabase db reset`/`gen:types`/`test:db`/`test:integration`/by-hand browser walkthrough
 remain unverified — no local Supabase in this environment.
+
+Slice 5 shipped (branch `feat/horizon-daily-expenses-ui`, stacked on the slice-4 branch) —
+`DailyExpenseList`/`DailyExpenseForm`/`CapTracker`/`OneOffEventList`/`OneOffEventForm` under
+`components/horizon/money-out/`, rendered below the obligations section on the same
+`/horizon/money-out` screen. Daily expenses get the same add/edit/archive/restore shape as
+obligations/income streams, plus an optional Pocket-category link (`pocketCategoryId`, via
+`getCategories`) that `sumPocketExpenses` matches actuals against. `CapTracker` reads
+`dailyExpenseForMonth`/`monthLengthVariants` from `spending-math.ts` for the planned side and the
+page's server-side `sumPocketExpenses` calls (one per capped daily expense, for the current month)
+for the actual side, flagging an "Over cap" badge when actual exceeds `capMinor`. One-off events
+have no `archived` column in the schema, so `OneOffEventList` uses an add/edit/delete flow instead
+of archive/restore, and each row carries a deposit/withdrawal badge (emerald/rose) that reads
+visually distinct from the recurring obligation/daily-expense rows, per C5/D7. New
+`Horizon.moneyOut.*` i18n keys for daily expenses, the cap tracker, and one-off events (cadence,
+direction, and the 10-category `oneOffCategory` set) in both `en.json`/`ru.json`.
+`dailyExpense`/`oneOffEvent` factories restored to `test/factories.ts` (following the
+`expense`/`horizonAccount` pattern of accepting a plain `number` for their branded `Money` fields,
+since the plain `Partial<T>` signature used by `obligation`/`obligationSchedule` doesn't
+typecheck against branded fields). New `DailyExpenseList.test.tsx`/`CapTracker.test.tsx`/
+`OneOffEventList.test.tsx` covering planned-vs-actual rendering, the over-cap state, the 28/30/31
+variants, and the one-off/recurring visual distinction. format/lint/knip/typecheck/test all green;
+`supabase db reset`/`gen:types`/`test:db`/`test:integration`/by-hand browser walkthrough remain
+unverified — no local Supabase in this environment. This completes Epic C (C1–C7).

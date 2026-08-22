@@ -532,7 +532,65 @@
       "shareBar": {
         "title": "Доля от общего",
         "missingRate": "нет курса"
-      }
+      },
+      "dailyExpenseSectionTitle": "Ежедневные расходы",
+      "noDailyExpensesYet": "Пока нет ежедневных расходов.",
+      "addDailyExpense": "Добавить ежедневный расход",
+      "dailyExpenseNamePlaceholder": "Название расхода",
+      "dailyAmountLabel": "Сумма в день",
+      "perDaySuffix": " / день",
+      "cadenceLabel": "Периодичность списания",
+      "cadence": {
+        "daily": "Ежедневно",
+        "weekly": "Еженедельно",
+        "monthly": "Ежемесячно"
+      },
+      "capLabel": "Месячный лимит (необязательно)",
+      "capBadge": "Лимит {cap}",
+      "pocketCategoryLabel": "Категория Pocket",
+      "pocketCategoryNone": "Без привязанной категории",
+      "dailyExpenseSaved": "Ежедневный расход сохранён.",
+      "dailyExpenseArchived": "Ежедневный расход архивирован.",
+      "dailyExpenseRestored": "Ежедневный расход восстановлен.",
+      "dailyExpenseAdded": "Ежедневный расход добавлен.",
+      "archiveDailyExpenseAria": "Архивировать ежедневный расход",
+      "capTracker": {
+        "title": "Отслеживание лимита",
+        "noneYet": "Пока нет расходов с лимитом.",
+        "plannedLabel": "Запланировано в этом месяце",
+        "actualLabel": "Потрачено фактически",
+        "capLabel": "Лимит",
+        "variantsLabel": "28 / 30 / 31 дней",
+        "overCap": "Превышен лимит"
+      },
+      "oneOffSectionTitle": "Разовые события",
+      "noOneOffEventsYet": "Пока нет разовых событий.",
+      "addOneOffEvent": "Добавить разовое событие",
+      "oneOffNamePlaceholder": "Название события",
+      "dateLabel": "Дата",
+      "directionLabel": "Направление",
+      "direction": {
+        "in": "Поступление",
+        "out": "Списание"
+      },
+      "oneOffCategory": {
+        "housing": "Жильё",
+        "utilities": "Коммунальные услуги",
+        "debt": "Долг",
+        "subscriptions": "Подписки",
+        "insurance": "Страхование",
+        "transport": "Транспорт",
+        "family": "Семья",
+        "gift": "Подарок",
+        "bonus": "Бонус",
+        "other": "Другое"
+      },
+      "oneOffEventSaved": "Разовое событие сохранено.",
+      "oneOffEventAdded": "Разовое событие добавлено.",
+      "oneOffEventDeleted": "Разовое событие удалено.",
+      "deleteOneOffEventAria": "Удалить разовое событие",
+      "deleteConfirm": "Удалить?",
+      "deleting": "Удаление…"
     }
   }
 }

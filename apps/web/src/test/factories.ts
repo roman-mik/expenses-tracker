@@ -7,8 +7,10 @@ import type { Category, Expense, HouseholdMember, Money } from '@/lib/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
 import type {
+  DailyExpense,
   Obligation,
   ObligationSchedule,
+  OneOffEvent,
 } from '@/lib/horizon/spending/types';
 
 export function expense(
@@ -141,4 +143,44 @@ export function obligationSchedule(
     coversPeriod: 'same',
     ...partial,
   };
+}
+
+export function dailyExpense(
+  partial: Partial<Omit<DailyExpense, 'dailyAmountMinor' | 'capMinor'>> & {
+    dailyAmountMinor?: number;
+    capMinor?: number | null;
+  } = {}
+): DailyExpense {
+  return {
+    id: 'daily-expense-1',
+    accountId: 'account-1',
+    pocketCategoryId: null,
+    name: 'Groceries',
+    dailyAmountMinor: 1000 as Money,
+    currency: 'RSD',
+    chargeCadence: 'daily',
+    capMinor: null,
+    startDate: '2026-01-01',
+    endDate: null,
+    archived: false,
+    ...(partial as Partial<DailyExpense>),
+  } as DailyExpense;
+}
+
+export function oneOffEvent(
+  partial: Partial<Omit<OneOffEvent, 'amountMinor'>> & {
+    amountMinor?: number;
+  } = {}
+): OneOffEvent {
+  return {
+    id: 'one-off-event-1',
+    accountId: 'account-1',
+    name: 'Refund',
+    category: 'other',
+    amountMinor: 5000 as Money,
+    currency: 'RSD',
+    date: '2026-01-15',
+    direction: 'out',
+    ...(partial as Partial<OneOffEvent>),
+  } as OneOffEvent;
 }
