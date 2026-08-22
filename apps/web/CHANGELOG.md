@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/roman-mik/kapa/compare/web-v0.6.0...web-v0.7.0) (2026-08-22)
+
+
+### Features
+
+* Horizon income streams (Epic B) ([#66](https://github.com/roman-mik/kapa/issues/66)) ([ee49d1b](https://github.com/roman-mik/kapa/commit/ee49d1b8e6f7502a9ce101ff960769262a9b6066))
+
 ## [0.6.0](https://github.com/roman-mik/kapa/compare/web-v0.5.0...web-v0.6.0) (2026-08-19)
 
 
