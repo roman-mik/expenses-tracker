@@ -1,11 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { fakeSupabase } from '@/test/fake-supabase';
 import {
+  createDailyExpense,
   createObligation,
   createObligationSchedule,
+  createOneOffEvent,
+  deleteDailyExpense,
   deleteObligation,
   deleteObligationSchedule,
+  deleteOneOffEvent,
+  updateDailyExpense,
   updateObligation,
+  updateOneOffEvent,
 } from './spending';
 
 describe('createObligation', () => {
@@ -182,5 +188,161 @@ describe('createObligationSchedule / deleteObligationSchedule', () => {
     ]);
     expect(await deleteObligationSchedule(client, 'h1', 'sc1')).toBe(true);
     expect(await deleteObligationSchedule(client, 'h1', 'sc1')).toBe(false);
+  });
+});
+
+describe('createDailyExpense', () => {
+  it('stores a daily expense with default charge cadence', async () => {
+    const { client } = fakeSupabase();
+    const expense = await createDailyExpense(client, 'h1', {
+      accountId: 'a1',
+      name: 'Groceries',
+      dailyAmountMinor: 1000,
+      currency: 'RSD',
+      startDate: '2026-01-01',
+    });
+    expect(expense).toMatchObject({
+      name: 'Groceries',
+      chargeCadence: 'daily',
+      capMinor: null,
+    });
+  });
+});
+
+describe('updateDailyExpense', () => {
+  it('returns null when the daily expense is not in this household', async () => {
+    const { client } = fakeSupabase();
+    expect(
+      await updateDailyExpense(client, 'h1', 'missing', { archived: true })
+    ).toBeNull();
+  });
+
+  it('patches only the given fields', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('horizon_daily_expenses', [
+      {
+        id: 'de1',
+        household_id: 'h1',
+        account_id: 'a1',
+        pocket_category_id: null,
+        name: 'Groceries',
+        daily_amount_minor: 1000,
+        currency: 'RSD',
+        charge_cadence: 'daily',
+        cap_minor: null,
+        start_date: '2026-01-01',
+        end_date: null,
+        archived: false,
+      },
+    ]);
+    const updated = await updateDailyExpense(client, 'h1', 'de1', {
+      capMinor: 30000,
+    });
+    expect(updated).toMatchObject({ capMinor: 30000, name: 'Groceries' });
+  });
+});
+
+describe('deleteDailyExpense', () => {
+  it('deletes a matching daily expense', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('horizon_daily_expenses', [
+      {
+        id: 'de1',
+        household_id: 'h1',
+        account_id: 'a1',
+        pocket_category_id: null,
+        name: 'Groceries',
+        daily_amount_minor: 1000,
+        currency: 'RSD',
+        charge_cadence: 'daily',
+        cap_minor: null,
+        start_date: '2026-01-01',
+        end_date: null,
+        archived: false,
+      },
+    ]);
+    expect(await deleteDailyExpense(client, 'h1', 'de1')).toBe(true);
+    expect(db.rows('horizon_daily_expenses')).toHaveLength(0);
+  });
+
+  it('returns false when nothing matched', async () => {
+    const { client } = fakeSupabase();
+    expect(await deleteDailyExpense(client, 'h1', 'missing')).toBe(false);
+  });
+});
+
+describe('createOneOffEvent', () => {
+  it('stores a one-off event', async () => {
+    const { client } = fakeSupabase();
+    const event = await createOneOffEvent(client, 'h1', {
+      accountId: 'a1',
+      name: 'Car repair',
+      category: 'transport',
+      amountMinor: 15000,
+      currency: 'RSD',
+      date: '2026-02-01',
+      direction: 'out',
+    });
+    expect(event).toMatchObject({
+      name: 'Car repair',
+      category: 'transport',
+      direction: 'out',
+    });
+  });
+});
+
+describe('updateOneOffEvent', () => {
+  it('returns null when the event is not in this household', async () => {
+    const { client } = fakeSupabase();
+    expect(
+      await updateOneOffEvent(client, 'h1', 'missing', { amountMinor: 500 })
+    ).toBeNull();
+  });
+
+  it('patches only the given fields', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('horizon_one_off_events', [
+      {
+        id: 'oo1',
+        household_id: 'h1',
+        account_id: 'a1',
+        name: 'Car repair',
+        category: 'transport',
+        amount_minor: 15000,
+        currency: 'RSD',
+        date: '2026-02-01',
+        direction: 'out',
+      },
+    ]);
+    const updated = await updateOneOffEvent(client, 'h1', 'oo1', {
+      amountMinor: 20000,
+    });
+    expect(updated).toMatchObject({ amountMinor: 20000, name: 'Car repair' });
+  });
+});
+
+describe('deleteOneOffEvent', () => {
+  it('deletes a matching one-off event', async () => {
+    const { client, db } = fakeSupabase();
+    db.seed('horizon_one_off_events', [
+      {
+        id: 'oo1',
+        household_id: 'h1',
+        account_id: 'a1',
+        name: 'Car repair',
+        category: 'transport',
+        amount_minor: 15000,
+        currency: 'RSD',
+        date: '2026-02-01',
+        direction: 'out',
+      },
+    ]);
+    expect(await deleteOneOffEvent(client, 'h1', 'oo1')).toBe(true);
+    expect(db.rows('horizon_one_off_events')).toHaveLength(0);
+  });
+
+  it('returns false when nothing matched', async () => {
+    const { client } = fakeSupabase();
+    expect(await deleteOneOffEvent(client, 'h1', 'missing')).toBe(false);
   });
 });

@@ -6,6 +6,7 @@
 import type { Category, Expense, HouseholdMember, Money } from '@/lib/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import type { IncomeSchedule, IncomeStream } from '@/lib/horizon/income/types';
+import type { ObligationSchedule } from '@/lib/horizon/spending/types';
 
 export function expense(
   partial: Partial<Omit<Expense, 'amountMinor'>> & { amountMinor?: number } = {}
@@ -93,6 +94,24 @@ export function incomeSchedule(
     incomeStreamId: 'stream-1',
     kind: 'dayOfMonth',
     dayOfMonth: 15,
+    intervalDays: null,
+    nthWeekday: null,
+    weekday: null,
+    anchorDate: null,
+    slippagePolicy: 'nextBusinessDay',
+    coversPeriod: 'same',
+    ...partial,
+  };
+}
+
+export function obligationSchedule(
+  partial: Partial<ObligationSchedule> = {}
+): ObligationSchedule {
+  return {
+    id: 'obligation-schedule-1',
+    obligationId: 'obligation-1',
+    kind: 'dayOfMonth',
+    dayOfMonth: 28,
     intervalDays: null,
     nthWeekday: null,
     weekday: null,

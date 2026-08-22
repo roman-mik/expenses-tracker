@@ -57,6 +57,10 @@
     "scheduleNotFound": "That schedule couldn't be found.",
     "checkObligationFields": "Please check the obligation's fields.",
     "obligationNotFound": "That obligation couldn't be found.",
+    "checkDailyExpenseFields": "Please check the daily expense's fields.",
+    "dailyExpenseNotFound": "That daily expense couldn't be found.",
+    "checkOneOffEventFields": "Please check the one-off event's fields.",
+    "oneOffEventNotFound": "That one-off event couldn't be found.",
     "checkWorkCalendar": "Please check the working days.",
     "checkHoliday": "Please check the holiday's date and name.",
     "holidayNotFound": "That holiday couldn't be found."

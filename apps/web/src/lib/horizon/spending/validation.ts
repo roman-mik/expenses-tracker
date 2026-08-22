@@ -1,5 +1,6 @@
 /**
- * Horizon obligation Zod schemas, same idiom as `@/lib/horizon/income/validation`.
+ * Horizon obligation/spending Zod schemas, same idiom as
+ * `@/lib/horizon/income/validation`.
  */
 import { z } from 'zod';
 import { CURRENCIES } from '@/lib/types';
@@ -9,7 +10,12 @@ import {
   RECURRENCE_VALUES,
   SLIPPAGE_POLICIES,
 } from '@/lib/horizon/types';
-import { OBLIGATION_CATEGORIES } from './types';
+import {
+  CHARGE_CADENCES,
+  OBLIGATION_CATEGORIES,
+  ONE_OFF_CATEGORIES,
+  ONE_OFF_DIRECTIONS,
+} from './types';
 
 export const obligationCreateSchema = z.object({
   accountId: z.string().min(1),
@@ -76,8 +82,61 @@ export const obligationScheduleCreateSchema = z.discriminatedUnion('kind', [
   }),
 ]);
 
+export const dailyExpenseCreateSchema = z.object({
+  accountId: z.string().min(1),
+  pocketCategoryId: z.string().min(1).optional(),
+  name: z.string().min(1).max(60),
+  dailyAmountMinor: z.number().int().positive(),
+  currency: z.enum(CURRENCIES),
+  chargeCadence: z.enum(CHARGE_CADENCES).optional(),
+  capMinor: z.number().int().positive().optional(),
+  startDate: z.string().min(1),
+  endDate: z.string().min(1).optional(),
+});
+
+export const dailyExpenseUpdateSchema = z
+  .object({
+    accountId: z.string().min(1).optional(),
+    pocketCategoryId: z.string().min(1).nullable().optional(),
+    name: z.string().min(1).max(60).optional(),
+    dailyAmountMinor: z.number().int().positive().optional(),
+    currency: z.enum(CURRENCIES).optional(),
+    chargeCadence: z.enum(CHARGE_CADENCES).optional(),
+    capMinor: z.number().int().positive().nullable().optional(),
+    startDate: z.string().min(1).optional(),
+    endDate: z.string().min(1).nullable().optional(),
+    archived: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, 'No changes given.');
+
+export const oneOffEventCreateSchema = z.object({
+  accountId: z.string().min(1),
+  name: z.string().min(1).max(60),
+  category: z.enum(ONE_OFF_CATEGORIES),
+  amountMinor: z.number().int().positive(),
+  currency: z.enum(CURRENCIES),
+  date: z.string().min(1),
+  direction: z.enum(ONE_OFF_DIRECTIONS),
+});
+
+export const oneOffEventUpdateSchema = z
+  .object({
+    accountId: z.string().min(1).optional(),
+    name: z.string().min(1).max(60).optional(),
+    category: z.enum(ONE_OFF_CATEGORIES).optional(),
+    amountMinor: z.number().int().positive().optional(),
+    currency: z.enum(CURRENCIES).optional(),
+    date: z.string().min(1).optional(),
+    direction: z.enum(ONE_OFF_DIRECTIONS).optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, 'No changes given.');
+
 export type ObligationCreateInput = z.infer<typeof obligationCreateSchema>;
 export type ObligationUpdateInput = z.infer<typeof obligationUpdateSchema>;
 export type ObligationScheduleCreateInput = z.infer<
   typeof obligationScheduleCreateSchema
 >;
+export type DailyExpenseCreateInput = z.infer<typeof dailyExpenseCreateSchema>;
+export type DailyExpenseUpdateInput = z.infer<typeof dailyExpenseUpdateSchema>;
+export type OneOffEventCreateInput = z.infer<typeof oneOffEventCreateSchema>;
+export type OneOffEventUpdateInput = z.infer<typeof oneOffEventUpdateSchema>;

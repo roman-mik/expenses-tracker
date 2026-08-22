@@ -5,16 +5,26 @@ import { getTranslations } from 'next-intl/server';
 import { getHouseholdId, verifySession } from '@/lib/auth/dal';
 import { createClient } from '@/lib/supabase/server';
 import {
+  dailyExpenseCreateSchema,
+  dailyExpenseUpdateSchema,
   obligationCreateSchema,
   obligationScheduleCreateSchema,
   obligationUpdateSchema,
+  oneOffEventCreateSchema,
+  oneOffEventUpdateSchema,
 } from '@/lib/horizon/spending/validation';
 import {
+  createDailyExpense,
   createObligation,
   createObligationSchedule,
+  createOneOffEvent,
+  deleteDailyExpense as deleteDailyExpenseRow,
   deleteObligation as deleteObligationRow,
   deleteObligationSchedule as deleteObligationScheduleRow,
+  deleteOneOffEvent as deleteOneOffEventRow,
+  updateDailyExpense,
   updateObligation,
+  updateOneOffEvent,
 } from '@/lib/horizon/mutations/spending';
 import { reportError } from '@/lib/observability';
 import type { ActionResult } from './expenses';
@@ -151,6 +161,154 @@ export async function deleteObligationSchedule(
     if (!deleted) return { ok: false, error: t('scheduleNotFound') };
   } catch (error) {
     reportError('deleteObligationSchedule', error);
+    return { ok: false, error: t('removeFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function addDailyExpense(input: unknown): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  const parsed = dailyExpenseCreateSchema.safeParse(input);
+  if (!parsed.success)
+    return { ok: false, error: t('checkDailyExpenseFields') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    await createDailyExpense(supabase, householdId, parsed.data);
+  } catch (error) {
+    reportError('addDailyExpense', error);
+    return { ok: false, error: t('saveFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function editDailyExpense(
+  id: string,
+  input: unknown
+): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  const parsed = dailyExpenseUpdateSchema.safeParse(input);
+  if (!parsed.success)
+    return { ok: false, error: t('checkDailyExpenseFields') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    const updated = await updateDailyExpense(
+      supabase,
+      householdId,
+      id,
+      parsed.data
+    );
+    if (!updated) return { ok: false, error: t('dailyExpenseNotFound') };
+  } catch (error) {
+    reportError('editDailyExpense', error);
+    return { ok: false, error: t('saveFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function deleteDailyExpense(id: string): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    const deleted = await deleteDailyExpenseRow(supabase, householdId, id);
+    if (!deleted) return { ok: false, error: t('dailyExpenseNotFound') };
+  } catch (error) {
+    reportError('deleteDailyExpense', error);
+    return { ok: false, error: t('removeFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function addOneOffEvent(input: unknown): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  const parsed = oneOffEventCreateSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: t('checkOneOffEventFields') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    await createOneOffEvent(supabase, householdId, parsed.data);
+  } catch (error) {
+    reportError('addOneOffEvent', error);
+    return { ok: false, error: t('saveFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function editOneOffEvent(
+  id: string,
+  input: unknown
+): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  const parsed = oneOffEventUpdateSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: t('checkOneOffEventFields') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    const updated = await updateOneOffEvent(
+      supabase,
+      householdId,
+      id,
+      parsed.data
+    );
+    if (!updated) return { ok: false, error: t('oneOffEventNotFound') };
+  } catch (error) {
+    reportError('editOneOffEvent', error);
+    return { ok: false, error: t('saveFailed') };
+  }
+
+  revalidatePath('/horizon/money-out');
+  return { ok: true };
+}
+
+export async function deleteOneOffEvent(id: string): Promise<ActionResult> {
+  const t = await getTranslations('Errors');
+  const user = await verifySession();
+  if (!user) return { ok: false, error: t('notSignedIn') };
+
+  try {
+    const householdId = await getHouseholdId(user.id);
+    if (!householdId) throw new Error('No household for user');
+    const supabase = await createClient();
+    const deleted = await deleteOneOffEventRow(supabase, householdId, id);
+    if (!deleted) return { ok: false, error: t('oneOffEventNotFound') };
+  } catch (error) {
+    reportError('deleteOneOffEvent', error);
     return { ok: false, error: t('removeFailed') };
   }
 
