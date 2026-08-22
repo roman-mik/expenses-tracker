@@ -1,14 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 
 type ScreenKey =
-  | 'today'
-  | 'timeline'
-  | 'moneyOut'
-  | 'scenarios'
-  | 'targetRate'
-  | 'assumptions';
+  'today' | 'timeline' | 'scenarios' | 'targetRate' | 'assumptions';
 
-/** Shared shape for the seven horizon screens until each gets real content. */
+/** Shared shape for the remaining placeholder horizon screens. */
 export async function HorizonPlaceholder({ screen }: { screen: ScreenKey }) {
   const tRail = await getTranslations('Horizon.rail');
   const tPlaceholder = await getTranslations('Horizon.placeholder');

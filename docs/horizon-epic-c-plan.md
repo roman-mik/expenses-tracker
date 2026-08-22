@@ -372,10 +372,16 @@ the same discipline as Epics A and B.
 | 1 | `refactor: generalize horizon schedule engine` | `schedule.ts` moves up and takes `ScheduleRule`; shared enum tuples move to `lib/horizon/types.ts`; `ScheduleEditor` generalized; `coveredPeriod` added with tests. No new tables, no new screens — money-in must behave identically | ✅ Done (pending manual browser walkthrough) |
 | 2 | `feat: add horizon obligations schema` | Migration 0020, `spending/{types,mappers,validation}`, obligation queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ✅ Done (pending `supabase db reset`/`gen:types`/`test:db`/`test:integration` — no local Supabase in this environment) |
 | 3 | `feat: add horizon spending schema and math` | Migration 0021 (daily expenses, one-offs), their data layer, `sumPocketExpenses`, plus pure `spending-math.ts`/`hours.ts` with exhaustive unit tests. No UI | ✅ Done (pending `supabase db reset`/`gen:types`/`test:db`/`test:integration` — no local Supabase in this environment) |
-| 4 | `feat: show horizon obligations` | `/horizon/money-out` real content: obligation CRUD, shared schedule editor, covered-period labels, category grouping + share bar, billable-hours column, i18n | ⏳ Not started |
+| 4 | `feat: show horizon obligations` | `/horizon/money-out` real content: obligation CRUD, shared schedule editor, covered-period labels, category grouping + share bar, billable-hours column, i18n | ✅ Done (pending manual browser walkthrough — no local Supabase in this environment) |
 | 5 | `feat: show horizon daily expenses and one-offs` | Cap tracker with Pocket actuals and 28/30/31 totals, one-off event list, on the same screen | ⏳ Not started |
 
 Update `PLAN.md` §9 as each slice lands, and run `graphify update .` after code changes.
+
+**Note (slice 4):** §2a's `ScheduleEditor` `coversPeriod` picker (shown only for
+`dayOfMonth`/`monthEnd`/`nthWeekday`) wasn't added by slice 1 — income never needed to set it, only
+read it via `covered_period`'s stored default. Slice 4 adds the picker to the shared editor since
+obligations are the first caller that actually needs `next`/`previous`; money-in gets the same
+control for free, defaulting to `'same'` exactly as before.
 
 ---
 

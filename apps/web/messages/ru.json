@@ -289,7 +289,6 @@
     "placeholder": {
       "today": "Ответ одним взглядом: что есть, что будет и когда станет туго.",
       "timeline": "Что будет день за днём, с минимумом внутри месяца рядом с балансом на конец месяца.",
-      "moneyOut": "Обязательства и ежедневные расходы, у каждого своя дата платежа.",
       "scenarios": "Сравнение до четырёх сценариев будущего одновременно.",
       "targetRate": "Расчёт от желаемой жизни к ставке, которая её покрывает.",
       "assumptions": "Все допущения модели, с уверенностью и датой последней проверки."
@@ -462,6 +461,12 @@
           "prevBusinessDay": "Перенести на предыдущий рабочий день",
           "none": "Не переносить"
         },
+        "coversPeriodLabel": "Этот платёж покрывает",
+        "coversPeriod": {
+          "same": "Тот же месяц",
+          "next": "Следующий месяц",
+          "previous": "Предыдущий месяц"
+        },
         "summary": {
           "dayOfMonth": "{day}-е число каждого месяца",
           "monthEnd": "Последний день каждого месяца",
@@ -469,6 +474,64 @@
           "nthWeekday": "{nth}-й {weekday} каждого месяца",
           "oneOff": "Один раз, {date}"
         }
+      }
+    },
+    "moneyOut": {
+      "title": "Расходы",
+      "sectionTitle": "Обязательства",
+      "noObligationsYet": "Пока нет обязательств.",
+      "needsAccountFirst": "Сначала добавьте счёт, затем возвращайтесь добавлять обязательства.",
+      "addObligation": "Добавить обязательство",
+      "namePlaceholder": "Название обязательства",
+      "accountLabel": "Счёт",
+      "categoryLabel": "Категория",
+      "category": {
+        "housing": "Жильё",
+        "utilities": "Коммунальные услуги",
+        "debt": "Долг",
+        "subscriptions": "Подписки",
+        "insurance": "Страхование",
+        "transport": "Транспорт",
+        "family": "Семья",
+        "other": "Другое"
+      },
+      "currencyLabel": "Валюта",
+      "amountLabel": "Сумма",
+      "recurrenceLabel": "Повторяемость",
+      "recurrence": {
+        "recurring": "Регулярный",
+        "oneOff": "Разовый"
+      },
+      "confidenceLabel": "Уверенность",
+      "confidence": {
+        "confirmed": "Подтверждён",
+        "expected": "Ожидаемый",
+        "uncertain": "Неопределённый"
+      },
+      "startDateLabel": "Дата начала",
+      "endDateLabel": "Дата окончания (необязательно)",
+      "add": "Добавить",
+      "edit": "Изменить",
+      "unknownAccount": "Неизвестный счёт",
+      "archivedTitle": "Архив",
+      "restore": "Восстановить",
+      "restoring": "Восстановление…",
+      "archiveConfirm": "В архив?",
+      "archiving": "Архивация…",
+      "archiveAria": "Архивировать обязательство",
+      "obligationSaved": "Обязательство сохранено.",
+      "obligationArchived": "Обязательство архивировано.",
+      "obligationRestored": "Обязательство восстановлено.",
+      "obligationAdded": "Обязательство добавлено.",
+      "dueLabel": "Следующий платёж {date}",
+      "coveredPeriodLabel": "Покрывает {month}",
+      "noUpcomingOccurrence": "Нет предстоящих платежей.",
+      "hoursLabel": "≈ {hours} ч",
+      "hoursSummary": "{total} из {available} доступных оплачиваемых часов задействовано",
+      "hoursOverBudget": "Обязательства стоят больше оплачиваемых часов, чем доступно в этом месяце.",
+      "shareBar": {
+        "title": "Доля от общего",
+        "missingRate": "нет курса"
       }
     }
   }

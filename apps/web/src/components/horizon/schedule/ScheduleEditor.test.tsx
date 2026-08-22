@@ -72,6 +72,37 @@ describe('ScheduleEditor', () => {
     await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('sched-1'));
   });
 
+  it('sends coversPeriod for dayOfMonth but omits it for kinds with no defined semantics', async () => {
+    mockAdd.mockResolvedValue({ ok: true });
+    render(
+      <ScheduleEditor
+        schedules={[]}
+        calendar={calendar}
+        onAdd={mockAdd}
+        onRemove={mockDelete}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add schedule' }));
+    fireEvent.change(screen.getByLabelText('This payment covers'), {
+      target: { value: 'next' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Add schedule' }));
+
+    await waitFor(() =>
+      expect(mockAdd).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'dayOfMonth', coversPeriod: 'next' })
+      )
+    );
+
+    mockAdd.mockClear();
+    fireEvent.click(screen.getByRole('button', { name: 'Add schedule' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Every N days' }));
+    expect(
+      screen.queryByLabelText('This payment covers')
+    ).not.toBeInTheDocument();
+  });
+
   it('shows upcoming dates merged across schedules', () => {
     render(
       <ScheduleEditor
