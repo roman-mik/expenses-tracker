@@ -525,8 +525,8 @@ export type Database = {
       horizon_obligations: {
         Row: {
           account_id: string;
-          archived: boolean;
           amount_minor: number;
+          archived: boolean;
           category: string;
           confidence: string;
           created_at: string;
@@ -542,8 +542,8 @@ export type Database = {
         };
         Insert: {
           account_id: string;
-          archived?: boolean;
           amount_minor: number;
+          archived?: boolean;
           category: string;
           confidence?: string;
           created_at?: string;
@@ -559,8 +559,8 @@ export type Database = {
         };
         Update: {
           account_id?: string;
-          archived?: boolean;
           amount_minor?: number;
+          archived?: boolean;
           category?: string;
           confidence?: string;
           created_at?: string;
