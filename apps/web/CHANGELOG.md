@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.0](https://github.com/roman-mik/kapa/compare/web-v0.7.0...web-v0.8.0) (2026-08-22)
+
+
+### Features
+
+* add horizon obligations schema ([#69](https://github.com/roman-mik/kapa/issues/69)) ([8d75d1f](https://github.com/roman-mik/kapa/commit/8d75d1fa5ff9c4cbd5983c5326b30cdec6552007))
+* add horizon spending schema and math ([#70](https://github.com/roman-mik/kapa/issues/70)) ([55404de](https://github.com/roman-mik/kapa/commit/55404de3e47ef28cfcc46d04a81d15f419dd04fa))
+* show horizon daily expenses and one-offs ([#72](https://github.com/roman-mik/kapa/issues/72)) ([0152774](https://github.com/roman-mik/kapa/commit/01527749caa9deb7b2c0e15be2e0aa4835e95f54))
+* show horizon obligations ([#71](https://github.com/roman-mik/kapa/issues/71)) ([4f4caf2](https://github.com/roman-mik/kapa/commit/4f4caf219fb28f4c6c991e59241aed88a9673898))
+
 ## [0.7.0](https://github.com/roman-mik/kapa/compare/web-v0.6.0...web-v0.7.0) (2026-08-22)
 
 
