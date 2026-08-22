@@ -55,6 +55,8 @@
     "incomeStreamNotFound": "Этот источник дохода не найден.",
     "checkScheduleFields": "Проверьте поля расписания.",
     "scheduleNotFound": "Это расписание не найдено.",
+    "checkObligationFields": "Проверьте поля обязательства.",
+    "obligationNotFound": "Это обязательство не найдено.",
     "checkWorkCalendar": "Проверьте рабочие дни.",
     "checkHoliday": "Проверьте дату и название праздника.",
     "holidayNotFound": "Этот праздник не найден."

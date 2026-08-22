@@ -462,6 +462,135 @@ export type Database = {
           },
         ];
       };
+      horizon_obligation_schedules: {
+        Row: {
+          anchor_date: string | null;
+          covers_period: string;
+          created_at: string;
+          day_of_month: number | null;
+          household_id: string;
+          id: string;
+          interval_days: number | null;
+          kind: string;
+          nth_weekday: number | null;
+          obligation_id: string;
+          slippage_policy: string;
+          weekday: number | null;
+        };
+        Insert: {
+          anchor_date?: string | null;
+          covers_period?: string;
+          created_at?: string;
+          day_of_month?: number | null;
+          household_id: string;
+          id?: string;
+          interval_days?: number | null;
+          kind: string;
+          nth_weekday?: number | null;
+          obligation_id: string;
+          slippage_policy?: string;
+          weekday?: number | null;
+        };
+        Update: {
+          anchor_date?: string | null;
+          covers_period?: string;
+          created_at?: string;
+          day_of_month?: number | null;
+          household_id?: string;
+          id?: string;
+          interval_days?: number | null;
+          kind?: string;
+          nth_weekday?: number | null;
+          obligation_id?: string;
+          slippage_policy?: string;
+          weekday?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_obligation_schedules_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_obligation_schedules_obligation_id_fkey';
+            columns: ['obligation_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_obligations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_obligations: {
+        Row: {
+          account_id: string;
+          archived: boolean;
+          amount_minor: number;
+          category: string;
+          confidence: string;
+          created_at: string;
+          currency: string;
+          end_date: string | null;
+          household_id: string;
+          id: string;
+          name: string;
+          recurrence: string;
+          sort_order: number;
+          start_date: string;
+          updated_at: string;
+        };
+        Insert: {
+          account_id: string;
+          archived?: boolean;
+          amount_minor: number;
+          category: string;
+          confidence?: string;
+          created_at?: string;
+          currency: string;
+          end_date?: string | null;
+          household_id: string;
+          id?: string;
+          name: string;
+          recurrence?: string;
+          sort_order?: number;
+          start_date: string;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          archived?: boolean;
+          amount_minor?: number;
+          category?: string;
+          confidence?: string;
+          created_at?: string;
+          currency?: string;
+          end_date?: string | null;
+          household_id?: string;
+          id?: string;
+          name?: string;
+          recurrence?: string;
+          sort_order?: number;
+          start_date?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_obligations_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_obligations_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       horizon_work_calendars: {
         Row: {
           created_at: string;

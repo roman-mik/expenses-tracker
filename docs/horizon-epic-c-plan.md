@@ -370,7 +370,7 @@ the same discipline as Epics A and B.
 | # | Branch / title | Contents | Status |
 |---|---|---|---|
 | 1 | `refactor: generalize horizon schedule engine` | `schedule.ts` moves up and takes `ScheduleRule`; shared enum tuples move to `lib/horizon/types.ts`; `ScheduleEditor` generalized; `coveredPeriod` added with tests. No new tables, no new screens — money-in must behave identically | ✅ Done (pending manual browser walkthrough) |
-| 2 | `feat: add horizon obligations schema` | Migration 0020, `spending/{types,mappers,validation}`, obligation queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ⏳ Not started |
+| 2 | `feat: add horizon obligations schema` | Migration 0020, `spending/{types,mappers,validation}`, obligation queries/mutations/actions, `gen:types`, pgTAP + integration tests. No UI | ✅ Done (pending `supabase db reset`/`gen:types`/`test:db`/`test:integration` — no local Supabase in this environment) |
 | 3 | `feat: add horizon spending schema and math` | Migration 0021 (daily expenses, one-offs), their data layer, `sumPocketExpenses`, plus pure `spending-math.ts`/`hours.ts` with exhaustive unit tests. No UI | ⏳ Not started |
 | 4 | `feat: show horizon obligations` | `/horizon/money-out` real content: obligation CRUD, shared schedule editor, covered-period labels, category grouping + share bar, billable-hours column, i18n | ⏳ Not started |
 | 5 | `feat: show horizon daily expenses and one-offs` | Cap tracker with Pocket actuals and 28/30/31 totals, one-off event list, on the same screen | ⏳ Not started |

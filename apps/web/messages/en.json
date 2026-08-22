@@ -55,6 +55,8 @@
     "incomeStreamNotFound": "That income stream couldn't be found.",
     "checkScheduleFields": "Please check the schedule's fields.",
     "scheduleNotFound": "That schedule couldn't be found.",
+    "checkObligationFields": "Please check the obligation's fields.",
+    "obligationNotFound": "That obligation couldn't be found.",
     "checkWorkCalendar": "Please check the working days.",
     "checkHoliday": "Please check the holiday's date and name.",
     "holidayNotFound": "That holiday couldn't be found."
