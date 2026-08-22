@@ -361,7 +361,12 @@ next-6-dates preview showing slipped dates struck through) and a work-calendar e
 (`WorkCalendarEditor`) on `/horizon/assumptions` (working-weekday toggle, holiday add/remove).
 All 3 slices of Epic B (B1–B4) are now shipped.
 
+Epic B's by-hand browser walkthrough (docs/horizon-epic-b-plan.md §7) has been run against the
+linked remote Supabase project, migrations 0018/0019 applied via `supabase db push` — B1–B4 are
+verified end-to-end (merged schedule preview, slippage over a holiday, and the work-calendar
+toggle dropping a stream's derived monthly amount all confirmed live).
+
 **Not yet built**: the projection engine (a pure, deterministic module in the `lib/pocket-math.ts`
 idiom); real content behind the remaining placeholder screens (Timeline, Money out, Scenarios,
-Target rate); Epic B's by-hand browser walkthrough (docs/horizon-epic-b-plan.md §7) hasn't been
-run yet — do that before treating B1–B4 as fully verified.
+Target rate). Still pending (Docker/local Supabase unavailable in this environment): `pnpm
+test:db`/`pnpm test:integration` for Epic B's pgTAP and integration tests.

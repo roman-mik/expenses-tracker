@@ -269,9 +269,20 @@ Update `PLAN.md` §9 as each slice lands, and run `graphify update .` after code
 originally sketched in §4 — `HourlyCalculator` folded into `IncomeStreamForm` as a plain
 rate/hours input pair (no separate live-recompute widget), and `SchedulePreview` folded into
 `ScheduleEditor` (the upcoming-dates list). jsdom tests were written and pass (`format:check`,
-`lint`, `knip`, `typecheck`, `pnpm test` all green, `pnpm build` succeeds) — but the by-hand
-browser walkthrough in §7 was **not** run this session, since the Chrome browser-automation
-tool wasn't connected in this environment. Do that pass before calling B1–B4 fully verified.
+`lint`, `knip`, `typecheck`, `pnpm test` all green, `pnpm build` succeeds).
+
+The by-hand browser walkthrough in §7 **was run** this session against the linked remote
+Supabase project ("kapa") after applying migrations 0018/0019 with `supabase db push`
+(Docker/local Supabase still unavailable, so `pnpm test:db`/`pnpm test:integration` are still
+unrun — same gap as slices 1–2). `supabase gen types typescript --linked` was also diffed
+against the hand-edited `database.types.ts`: the four new tables matched field-for-field
+(only cosmetic quote-style/CLI-version noise elsewhere), confirming the hand-edit was correct.
+Walkthrough results: added an hourly stream, added a `dayOfMonth=15` and a `monthEnd` schedule
+on it — the merged preview showed both correctly sorted, with the 15th struck through and
+slipped to the 16th (a holiday added on the 15th during the same pass) and month-end slipping
+Sat→Mon; toggling Friday off the work calendar dropped the stream's derived monthly amount
+312.000→264.000 RSD live, confirming B1's core promise. Test data (the stream, the holiday,
+the calendar toggles) was cleaned up/reverted afterward.
 
 ---
 
